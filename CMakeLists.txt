@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.15)
 project(polygonbackshape)
 find_package(Boost REQUIRED COMPONENTS )
 include_directories(${Boost_INCLUDE_DIRS})

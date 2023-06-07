@@ -35,34 +35,34 @@ namespace Route_Planning
      };
 
      virtual void initiate(int use_get_curve_point,
-                           double distance) = 0;                         //参数初始化
-     virtual void process(std::vector<Point>& points) = 0;               //关键点获取
+                           double distance) = 0 ;                         //参数初始化
+     virtual void process(std::vector<Point>& points) = 0 ;               //关键点获取
 
-     virtual  void processCurve() = 0;                                   //获取关键点生成弯道关键点，并做个映射
+     virtual  void processCurve() = 0 ;                                   //获取关键点生成弯道关键点，并做个映射
 
-     virtual  void  processComputeTraversalNumbers() = 0;                //计算遍历次数
+     virtual  void  processComputeTraversalNumbers()  = 0;                //计算遍历次数
 
-     virtual  void processComputeRidges() = 0;                           //计算需要的垄数
+     virtual  void processComputeRidges()  = 0;                           //计算需要的垄数
 
      virtual  int  getRidges();                                          //获取垄数
 
-     virtual  std::vector<Point> densify(const std::vector<Point>& points, int factor) = 0;
+     virtual  std::vector<Point> densify(const std::vector<Point>& points, int factor)  = 0;
 
-     virtual  std::vector<pathInterface::pathPoint> processComputeRidgePath(int ridge_index) = 0;
+     virtual  std::vector<pathInterface::pathPoint> processComputeRidgePath(int ridge_index)  = 0;
 
      virtual  std::vector<Point>  getKeyPoints() ;                       //获取相对坐标系下的关键点信息
 
 
 
-     virtual  std::unordered_map<int,std::vector<pathBasePlan::curvePoint>>  getCurvePoints() = 0;
+     virtual  std::unordered_map<int,std::vector<pathBasePlan::curvePoint>>  getCurvePoints() =0 ;
 
      virtual  void diff1PointToJudgeDirection(Point p1,Point p2,
                                               std::vector<pathInterface::pathPoint> &path,
-                                              int ridge_index) = 0;
+                                              int ridge_index)  = 0;
      virtual  void processTwoPointsDifference(Point &point1,
                                               Point& point2,
                                               std::vector<pathInterface::pathPoint> &path,
-                                              int ridge_number) = 0;
+                                              int ridge_number)  = 0;
      virtual  std::vector<Point>  getDiff3Points(Point&m,Point&n) = 0;
 
 

@@ -17,6 +17,13 @@
 #define  BACKSHAPE_SPACE_SETTING  4    //回字形间距设置
 #define  REEDSHEPP_SAMPLE_INTERVAL 0.2 //reedshepp算法采样间隔
 
+
+//任意多边形回字形规划相关
+#define RIDGE_WIDTH_LENGTH        4      //垄宽设置
+#define MAX_TRAVERSALS_NUMBERS    100   //最大遍历次数
+#define CHOOSE_NARROW_TYPE              //定义则选择点内缩，未定义选择边内缩
+
+
 //LOG以及相关txt信息输出
 #define DEBUG_MIDDLE_INFO              //控制输出的txt文件debug使用
 
