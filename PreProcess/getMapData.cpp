@@ -9,7 +9,7 @@ getMapData::~getMapData() {
 }
 void getMapData::loadMapOuter(){
 //     std::ifstream infile( "/home/zzm/Downloads/middle/009.txt");
-    std::ifstream infile("/home/zzm/Downloads/map_0511/hard/046.txt");
+    std::ifstream infile("/home/zzm/Downloads/map_0511/hard/043.txt");
      // 检查文件是否成功打开
       if (!infile) {
           LOG(INFO) << "Failed to open  load map outter file.";
@@ -32,4 +32,44 @@ void getMapData::loadMapOuter(){
 
 std::vector<Point> getMapData::getMapOuter(){
    return pointsOuter_;
+}
+
+
+//检查给出的多边形是否符合要求，不符合需要做更新处理
+//默认为逆时针为正，顺时针不符合要求，需要修正为逆时针处理
+void getMapData::updatepolygonSequence() {
+    polygon_map  poly_temp;
+    for(auto it : pointsOuter_){
+        point_map temp;
+        temp.x(it.x);
+        temp.y(it.y);
+        poly_temp.outer().push_back(temp);
+    }
+    double area_before = boost::geometry::area(poly_temp);
+    if(area_before >=0){                               //顺时针翻转为逆时针
+        LOG(INFO) << "the origin polygon is clockwise ！";
+        boost::geometry::reverse(poly_temp);
+        for(auto it = poly_temp.outer().begin();
+                 it != poly_temp.outer().end();
+                 it++){
+            Point temp;
+            temp.x = it->x();
+            temp.y = it->y();
+            updatedPointOuter_.push_back(temp);
+        }
+
+    }else{                                      //逆时针则保持不变
+        LOG(INFO) << "the origin polygon is counterclockwise！";
+        for(auto it : pointsOuter_){
+            Point temp;
+            temp.x = it.x;
+            temp.y = it.y;
+            updatedPointOuter_.push_back(temp);
+        }
+    }
+}
+
+
+std::vector<Point>  getMapData::getMapUpdatedOuter() {
+    return updatedPointOuter_;
 }

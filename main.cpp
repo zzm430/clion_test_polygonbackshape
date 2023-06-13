@@ -1,5 +1,5 @@
 #include <iostream>
-#include "getMapData.h"
+#include "PreProcess/getMapData.h"
 #include "Planning/path_common.h"
 #include <boost/geometry.hpp>
 #include <boost/geometry/algorithms/buffer.hpp>
@@ -23,7 +23,8 @@ int main() {
     defaultConf.setToDefault();
     getMapData  getMapPoints;
     getMapPoints.loadMapOuter();
-    std::vector<Point> originalPoints = getMapPoints.getMapOuter();
+    getMapPoints.updatepolygonSequence();
+    std::vector<Point> originalPoints = getMapPoints.getMapUpdatedOuter();
 
     std::vector<Point>  narrowingPolygonPoints;
 
