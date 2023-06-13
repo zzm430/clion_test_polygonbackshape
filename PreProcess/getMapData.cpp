@@ -8,9 +8,8 @@ getMapData::~getMapData() {
 
 }
 void getMapData::loadMapOuter(){
-
-//     std::ifstream infile( "/home/zzm/Downloads/middle/025.txt");
-    std::ifstream infile("/home/zzm/Downloads/map_0511/hard/040.txt");
+//     std::ifstream infile( "/home/zzm/Downloads/middle/009.txt");
+    std::ifstream infile("/home/zzm/Downloads/map_0511/hard/046.txt");
      // 检查文件是否成功打开
       if (!infile) {
           LOG(INFO) << "Failed to open  load map outter file.";
@@ -29,7 +28,6 @@ void getMapData::loadMapOuter(){
           temp_point.y = row[2];
           pointsOuter_.push_back(temp_point);
       }
-
 }
 
 std::vector<Point> getMapData::getMapOuter(){

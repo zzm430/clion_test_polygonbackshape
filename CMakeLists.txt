@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.15)
 project(polygonbackshape)
 find_package(Boost REQUIRED COMPONENTS )
+find_package(OpenCV REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 set(CMAKE_CXX_STANDARD 11)
 
 
 include_directories(.)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 add_executable(polygonbackshape
               main.cpp
 #              PreProcess/getMapData.h
@@ -15,4 +18,4 @@ add_executable(polygonbackshape
 #              Planning/path_baseplan.h
               Planning/path_baseplan.cpp
               easylogging++.cc Planning/path_polygonplan.cpp common/math/common_math.h)
-target_link_libraries(polygonbackshape ${Boost_LIBRARIES} )
+target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})

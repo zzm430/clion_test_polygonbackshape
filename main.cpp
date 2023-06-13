@@ -10,7 +10,7 @@
 #include "easylogging++.h"
 #include "common/math/common_math.h"
 #include "Planning/path_polygonplan.h"
-
+#include "Geometry/innerRect.h"
 namespace bg = boost::geometry;
 
 
@@ -85,21 +85,45 @@ int main() {
     //another_line direction
     std::vector<Point>  another_line;
     another_line.push_back(temp_line[1]);
-    another_line.push_back(storageForwardAndBack[0]);
+    another_line.push_back(storageForwardAndBack[1]);
 
     //计算平移后的向量
+    //计算需要平移的距离
+    Point vector_1((storageForwardAndBack[0].x - temp_line[1].x),
+                    storageForwardAndBack[0].y - temp_line[1].y);
+    Point vector_2((storageForwardAndBack[1].x - temp_line[1].x),
+                   (storageForwardAndBack[1].y - temp_line[1].y));
+
+    double move_angle = common::commonMath::computeTwoLineAngle(vector_1,vector_2);
+    double move_distance ;
+    if(fabs(move_angle) < PI/2){
+        move_distance = RIDGE_WIDTH_LENGTH/sin(move_angle);
+    }else{
+        move_distance = RIDGE_WIDTH_LENGTH;
+    }
+    LOG(INFO) << "chosen point angle is :" << move_angle * (180 /PI);
     std::vector<Point> real_line =
             common::commonMath::computeLineTranslationPoints(temp_line,
                                                              another_line,
-                                                             RIDGE_WIDTH_LENGTH);
-
+                                                             move_distance);
+    std::ofstream  realline;
+    realline.open("/home/zzm/Desktop/test_path_figure-main/src/realline.txt",std::ios::out);
+    for(auto i : real_line){
+        realline << " " << i.x;
+    }
+    realline << std::endl;
+    for(auto j : real_line){
+        realline << " " << j.y;
+    }
+    realline << std::endl;
+    realline.close();
     //计算平移后的向量和内缩多边形们的交点
     instance_pathPolygonPlan.computePolygonsAndLineNode(real_line);
+    auto nodes = instance_pathPolygonPlan.getPolygonAndLineNodes();
 
-
+    //根据生成的交点和内缩多边形们生成回字形关键点
     std::ofstream interNodes;
     interNodes.open("/home/zzm/Desktop/test_path_figure-main/src/inter_nodes.txt",std::ios::out);
-    auto nodes = instance_pathPolygonPlan.getPolygonAndLineNodes();
     for(auto node : nodes){
         interNodes << " " << node.x;
     }
@@ -110,7 +134,45 @@ int main() {
     interNodes << std::endl;
     interNodes.close();
 
+    instance_pathPolygonPlan.updatePolygonPointsIncrease();
+    instance_pathPolygonPlan.updatePolygonPointsSequence1();
+    auto m = instance_pathPolygonPlan.getMiddlePointsPolygon();
+    std::ofstream  increaseNodes;
+    increaseNodes.open("/home/zzm/Desktop/test_path_figure-main/src/increaseNodes.txt",std::ios::out);
+    for(auto it : m ){
+        for(auto j : it){
+            increaseNodes << " " << j.x ;
+        }
+    }
+    increaseNodes << std::endl;
+    for(auto it : m){
+        for(auto j : it){
+            increaseNodes << " " << j.y;
+        }
+    }
+    increaseNodes << std::endl;
+    increaseNodes.close();
 
+
+
+    instance_pathPolygonPlan.computebackShapeKeypoints();
+    auto keypoints_m = instance_pathPolygonPlan.getBackShapeKeyPoints();
+
+    std::ofstream keypoints;
+    keypoints.open("/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt",std::ios::out);
+    for(auto it : keypoints_m){
+        for(auto j : it){
+            keypoints << " " << j.x;
+        }
+    }
+    keypoints << std::endl;
+    for(auto it : keypoints_m){
+        for(auto j : it){
+            keypoints << " " << j.y;
+        }
+    }
+    keypoints << std::endl;
+    keypoints.close();
 
 //    // Declare strategies
 //     double buffer_distance = -50;
