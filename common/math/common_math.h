@@ -174,7 +174,7 @@ namespace common{
         static double  distanceTwoPolygonPoints(aiforce::Route_Planning::polygonPoint  point_1,
                                                 aiforce::Route_Planning::polygonPoint point_2){
                  double  result;
-                 result = sqrt((point_2.x - point_1.x) * (point_2.x - point_1.x) *
+                 result = sqrt((point_2.x - point_1.x) * (point_2.x - point_1.x) +
                                        (point_2.y - point_1.y) * (point_2.y - point_1.y));
             return  result;
         }
