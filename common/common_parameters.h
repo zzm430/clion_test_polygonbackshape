@@ -20,7 +20,7 @@
 
 //任意多边形回字形规划相关
 #define RIDGE_WIDTH_LENGTH        4      //垄宽设置
-#define MAX_TRAVERSALS_NUMBERS    500      //最大遍历次数
+#define MAX_TRAVERSALS_NUMBERS    100      //最大遍历次数
 #define CHOOSE_NARROW_TYPE               //定义则选择点内缩，未定义选择边内缩
 
 

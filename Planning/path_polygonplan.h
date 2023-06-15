@@ -23,6 +23,11 @@ namespace Route_Planning
     public:
         polygonPoint() = default;
         virtual  ~polygonPoint(){};
+        bool operator==(const polygonPoint& other) const{
+            return (fabs(x - other.x) < 0.1 &&
+                    fabs(y -other.y) < 0.1);
+        }
+
 
     private:
         int origin_polygon_point_index_;   //对应多边形起始点的索引号
@@ -69,6 +74,7 @@ namespace Route_Planning
      virtual void updatePolygonPointsIncrease();                       //向多边形中增加点
      virtual std::vector<polygonPoint> anewStoragePolygonPoints(std::vector<polygonPoint> points,
                                                                           polygonPoint given_point);  //给定点距离最近对多边形重新排序存储
+     virtual std::vector<polygonPoint>  deleteRepeatPolyPts(std::vector<polygonPoint> points);   //删除多边形中的重复点并返回
 
 
      const std::vector<std::vector<polygonPoint>> getNarrowPolygonPoints() const; //得到缩小后多边形点位信息

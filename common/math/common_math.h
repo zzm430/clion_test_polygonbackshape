@@ -119,7 +119,8 @@ namespace common{
                 p = polyPoints[i];
                 prev = polyPoints[(i + num -1) % num];
                 next = polyPoints[(i +1) % num];
-                if(p == topPoint){
+                if(fabs(p.x -topPoint.x)< 0.5 &&
+                   fabs(p.y -topPoint.y) < 0.5){
                     storagePoints.push_back(prev);
                     storagePoints.push_back(next);
                     return storagePoints;
@@ -169,6 +170,7 @@ namespace common{
                double mag_b = magnitude(line_2.x,line_2.y);
                return acos(dot / (mag_a * mag_b));
         }
+        //计算两点之间的距离
         static double  distanceTwoPolygonPoints(aiforce::Route_Planning::polygonPoint  point_1,
                                                 aiforce::Route_Planning::polygonPoint point_2){
                  double  result;
@@ -176,6 +178,21 @@ namespace common{
                                        (point_2.y - point_1.y) * (point_2.y - point_1.y));
             return  result;
         }
+        static std::vector<Point>  extendLineLength(std::vector<Point> points,double distance){
+            Point p1 = points[0];
+            Point p2 = points[1];
+            std::vector<Point> storage_points;
+            Point p3 ;
+            double k = (p2.y - p1.y)/(p2.x - p1.x);
+            double b = p1.y - k * p1.x;
+            p3.x = p2.x + distance;
+            p3.y = k * p3.x + b;
+            storage_points.push_back(p1);
+            storage_points.push_back(p3);
+            return storage_points;
+        }
+
+
     };
 }
 #endif //POLYGONBACKSHAPE_COMMON_MATH_H

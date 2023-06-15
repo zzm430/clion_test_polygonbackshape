@@ -118,7 +118,9 @@ int main() {
     }
     realline << std::endl;
     realline.close();
-    //计算平移后的向量和内缩多边形们的交点
+    //将计算得到的回字形入口线段延长一段距离
+//    auto real_line_extend = common::commonMath::extendLineLength(real_line,0.5);
+//    计算平移后的向量和内缩多边形们的交点
     instance_pathPolygonPlan.computePolygonsAndLineNode(real_line);
     auto nodes = instance_pathPolygonPlan.getPolygonAndLineNodes();
 
@@ -247,6 +249,6 @@ int main() {
 //          polygon_origin << std::endl;
 //      }
 //   }
-    std::cout << "Hello, World!" << std::endl;
+    LOG(INFO) << "happy ending!" << std::endl;
     return 0;
 }

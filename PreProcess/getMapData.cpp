@@ -8,8 +8,8 @@ getMapData::~getMapData() {
 
 }
 void getMapData::loadMapOuter(){
-//     std::ifstream infile( "/home/zzm/Downloads/middle/009.txt");
-    std::ifstream infile("/home/zzm/Downloads/map_0511/hard/043.txt");
+//     std::ifstream infile( "/home/zzm/Downloads/middle/024.txt");
+    std::ifstream infile("/home/zzm/Downloads/map_0511/hard/024.txt");
      // 检查文件是否成功打开
       if (!infile) {
           LOG(INFO) << "Failed to open  load map outter file.";
@@ -46,7 +46,7 @@ void getMapData::updatepolygonSequence() {
         poly_temp.outer().push_back(temp);
     }
     double area_before = boost::geometry::area(poly_temp);
-    if(area_before >=0){                               //顺时针翻转为逆时针
+    if(area_before >=0){                      //顺时针翻转为逆时针
         LOG(INFO) << "the origin polygon is clockwise ！";
         boost::geometry::reverse(poly_temp);
         for(auto it = poly_temp.outer().begin();
@@ -57,8 +57,7 @@ void getMapData::updatepolygonSequence() {
             temp.y = it->y();
             updatedPointOuter_.push_back(temp);
         }
-
-    }else{                                      //逆时针则保持不变
+    }else{                                   //逆时针则保持不变
         LOG(INFO) << "the origin polygon is counterclockwise！";
         for(auto it : pointsOuter_){
             Point temp;

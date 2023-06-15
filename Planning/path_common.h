@@ -13,12 +13,12 @@ public:
 
     Point(long double a, long double b):x(a),y(b){}
 
-    bool operator==(const Point& other) const{
+     bool operator==(const Point& other) const{
         return (fabs(x - other.x) < 0.1 &&
                 fabs(y -other.y) < 0.1);
     }
 
-    bool operator<(const Point& other) const{
+     bool operator<(const Point& other) const{
         if(x != other.x){
             return x < other.x;
         } else {

@@ -74,7 +74,10 @@ void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
             if(count_first_ridge ==
                count_second_ridge){
                 //计算出各个斜率直线并保存
+                LOG(INFO) << "the count_first_ridge == count_second_ridge !";
                 computeEveryKbLine();
+            }else{
+                LOG(ERROR) << "the count_firsg_ridge != count_second_ridge !";
             }
         }else {
             judgePointPosition(i,result);  //为找到最长的内缩边提供count
@@ -162,60 +165,79 @@ const std::vector<std::vector<polygonPoint>> pathPolygonPlan::getMiddlePointsPol
     return middle_points_polygon_;
 }
 
+
+std::vector<polygonPoint>  pathPolygonPlan::deleteRepeatPolyPts(std::vector<polygonPoint> points){
+    std::vector<polygonPoint>   temp_storage_pts;
+    int num = points.size();
+    for(const auto & p : points){
+        if(std::find(temp_storage_pts.begin(),temp_storage_pts.end(),p)
+                == temp_storage_pts.end()){
+            temp_storage_pts.push_back(p);
+        }
+    }
+    return temp_storage_pts;
+}
+
 //计算内缩第一次和第二次构成的往中心走的线段的kbline
 void pathPolygonPlan::computeEveryKbLine(){
-     auto first_polygon = storageNarrowPolygonPoints_[0];
-     auto second_polygon = anewStoragePolygonPoints(storageNarrowPolygonPoints_[1],
-             storageNarrowPolygonPoints_[0][0]);
-    //因为最后一组点为起点所以不用比较
-    for(int i = 0; i < first_polygon.size() -1;i++){
-        double  k = (storageNarrowPolygonPoints_[1][i].y -
-                       storageNarrowPolygonPoints_[0][i].y)/
-                (storageNarrowPolygonPoints_[1][i].x -
-                 storageNarrowPolygonPoints_[0][i].x);
-        if(fabs(storageNarrowPolygonPoints_[1][i].x -
-           storageNarrowPolygonPoints_[0][i].x)  < 0.01){
+     auto first_polygon    =    deleteRepeatPolyPts(storageNarrowPolygonPoints_[0]);
+     LOG(INFO) << "narrow  first polygon(no repeat points) size is :" << first_polygon.size();
+     auto delete_polygon = deleteRepeatPolyPts(storageNarrowPolygonPoints_[1]);
+     LOG(INFO) << "narrow  second polygon(no repeat points) size is :" << delete_polygon.size();
+     auto second_polygon = anewStoragePolygonPoints(delete_polygon,
+             first_polygon[0]);
+
+    for(int i = 0; i < first_polygon.size() ;i++){
+        double  k = (second_polygon[i].y -
+                       first_polygon[i].y)/
+                (second_polygon[i].x -
+                 first_polygon[i].x);
+        if(fabs(second_polygon[i].x -
+           first_polygon[i].x)  < 0.01){
             LOG(ERROR) << "the line k value is fault!";
             return;
         }
-        double b = storageNarrowPolygonPoints_[0][i].y -
-                k * storageNarrowPolygonPoints_[0][i].x;
+        double b = first_polygon[i].y -
+                k * first_polygon[i].x;
         lineKb temp;
         temp.k = k;
         temp.b = b;
         temp.count = 0;
         polygonPoint temp1,temp2;
-        temp1.x = storageNarrowPolygonPoints_[0][i].x;
-        temp1.y = storageNarrowPolygonPoints_[0][i].y;
-        temp2.x = storageNarrowPolygonPoints_[1][i].x;
-        temp2.y = storageNarrowPolygonPoints_[1][i].y;
+        temp1.x = first_polygon[i].x;
+        temp1.y = first_polygon[i].y;
+        temp2.x = second_polygon[i].x;
+        temp2.y = second_polygon[i].y;
         temp.points.push_back(temp1);
         temp.points.push_back(temp2);
         temp.distance = sqrt((temp2.x - temp1.x) * (temp2.x - temp1.x) +
                                      (temp2.y - temp1.y) * (temp2.y - temp1.y));
         k_b_data_.push_back(temp);
     }
+    LOG(INFO) << "all kb line nubmer is :" << k_b_data_.size();
 }
 
 //沿着某个点最近的点开始对多边形的点重新开始排序
 std::vector<polygonPoint>  pathPolygonPlan::anewStoragePolygonPoints(std::vector<polygonPoint> points,
                                                                       polygonPoint given_point){
     polygonPoint min_point;
-    double min_distance  ;
+    double min_distance = DBL_MAX;
     std::vector<polygonPoint> storage_points;
     //找到距离最小的点
     for(auto it : points){
          double result = common::commonMath::distanceTwoPolygonPoints(it,given_point);
-         if(min_distance < result){
+         if(min_distance > result){
              min_point.x = it.x;
              min_point.y = it.y;
+             min_distance = result;
          }
     }
     //从这个点开始进行顺时针排序
     int num = points.size();
     int number ;
     for(int i = 0;i < num;i++){
-        if(points[i].x < min_point.x){
+        if(fabs(points[i].x - min_point.x) < 0.1 &&
+           fabs(points[i].y - min_point.y) < 0.1){
             number = i;
         }
     }
@@ -233,7 +255,7 @@ std::vector<polygonPoint>  pathPolygonPlan::anewStoragePolygonPoints(std::vector
 void pathPolygonPlan::judgePointPosition(int i ,
                              boost::geometry::model::multi_polygon<polygon> result ){
     //bug fmod()函数除以自身余数为自身
-    double times,y_value,distancePts_2;
+    double times,y_value,distancePts_2,distancePts_near_2;
     if(i != 1 && i != 2){
         for(auto it = result.begin();
             it != result.end();
@@ -249,7 +271,13 @@ void pathPolygonPlan::judgePointPosition(int i ,
                                                 ((*j).y() - im.points[1].y));
                      times = fmod(distancePts_2 + 0.1,im.distance);
 //                       times = fmod(distancePts_2,1);
-                    if (fabs((y_value - (*j).y())) < 0.01 && fabs(times) < 0.15 ){
+                     int num = im.points.size();
+                     distancePts_near_2 = sqrt( ((*j).x() - im.points[num-1].x) *
+                                                        ((*j).x() - im.points[num-1].x) +
+                                                        ((*j).y() - im.points[num-1].y) *
+                                                                ((*j).y() - im.points[num-1].y));
+                    if (fabs((y_value - (*j).y())) < 1 &&
+                        fabs(distancePts_near_2 - im.distance) < 0.2){
                         im.count += 1;
                         polygonPoint temp;
                         temp.x = (*j).x();
@@ -278,6 +306,10 @@ void pathPolygonPlan::findSuitableEntrance(std::vector<Point> points ){
             if(i.count == count_narrow_polygon_numbers_ - 1){
                 LOG(INFO) << "find the kb line point size is :" << i.count + 2;
                 LOG(INFO) << "narrow polygons size == kb line points size !";
+            }
+            if(i.count == count_narrow_polygon_numbers_ - 2){
+                LOG(INFO) << "find the kb line point size is :" << i.count + 2;
+                LOG(INFO) << "narrow polygons size == kb line points size +2!";
             }
 
             //求一个足够长的线段与原始多边形相交的点
