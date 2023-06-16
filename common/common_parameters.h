@@ -22,6 +22,7 @@
 #define RIDGE_WIDTH_LENGTH        4      //垄宽设置
 #define MAX_TRAVERSALS_NUMBERS    100      //最大遍历次数
 #define CHOOSE_NARROW_TYPE               //定义则选择点内缩，未定义选择边内缩
+//#define JUDGE_CLOCKWISE              //判断回字形按照顺时针走还是逆时针
 
 
 //LOG以及相关txt信息输出

@@ -94,7 +94,7 @@ namespace Route_Planning
  private:
      std::vector<std::vector<polygonPoint>>   storageNarrowPolygonPoints_; //存储缩小的多边形点位
      std::vector<std::vector<polygonPoint>>   insertedPtToNarrowPolygon_;   //插入交点到内缩多边形们中
-     std::vector<std::vector<polygonPoint>>   middle_points_polygon_;   //将增点后的多边形点位开始排序处理
+     std::vector<std::vector<polygonPoint>>   middle_points_polygon_;   //将增点后的多边形点位开始排序处理，第一个点是入口点
 //     std::vector<std::vector<Point>>   updatedPolygonPointsSequence_; //按照给定点为起始点存储多边形,这里都不包含重复点
      std::vector<boost::geometry::model::multi_polygon<polygon>>     storageNarrowPolygonPoints2_; //同上
      polygonPoint min_polygon_centroid_;                             //缩小的最小多边形的质心

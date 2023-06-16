@@ -85,8 +85,14 @@ int main() {
                                                             temp_line[1]);
     //another_line direction
     std::vector<Point>  another_line;
-    another_line.push_back(temp_line[1]);
-    another_line.push_back(storageForwardAndBack[1]);
+#ifdef  JUDGE_CLOCKWISE
+        another_line.push_back(temp_line[1]);
+        another_line.push_back(storageForwardAndBack[1]);
+#else
+        another_line.push_back(temp_line[1]);
+        another_line.push_back(storageForwardAndBack[0]);
+#endif
+
 
     //计算平移后的向量
     //计算需要平移的距离

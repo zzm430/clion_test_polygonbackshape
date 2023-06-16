@@ -127,6 +127,7 @@ void pathPolygonPlan::computeOriginPolygonKbline(std::vector<Point> &points){
     lineOriginPolygonInfo_[points.size()-1] = linepoint_1;
 }
 
+//约定每个多边形的起点都是从回字形的入口点开始
 void pathPolygonPlan::updatePolygonPointsSequence1(){
     int num = insertedPtToNarrowPolygon_.size();
     int number;
@@ -429,7 +430,6 @@ void pathPolygonPlan::updatePolygonPointsIncrease(){
         }
 
     }
-
     insertedPtToNarrowPolygon_.push_back(end_polygon);
 }
 
@@ -466,6 +466,7 @@ void pathPolygonPlan::computebackShapeKeypoints(){
     int diff_narrow_and_intsPts = count_narrow_polygon_numbers_
             - polygonIntersectionPoints_.size();
     LOG(INFO) << "narrow polygon number - polygonsectionpoints  = " << diff_narrow_and_intsPts;
+#ifdef  JUDGE_CLOCKWISE
     if(fabs(diff_narrow_and_intsPts) == 1 ||
        fabs(diff_narrow_and_intsPts) == 0){
         LOG(INFO) << "the situation + the last ridge can finish plan !";
@@ -515,6 +516,57 @@ void pathPolygonPlan::computebackShapeKeypoints(){
     }else {
         LOG(INFO) << "the situation + no consider !";
     }
+#else
+    if(fabs(diff_narrow_and_intsPts) == 1 ||
+       fabs(diff_narrow_and_intsPts) == 0){
+        LOG(INFO) << "the situation + the last ridge can finish plan !";
+        //未包含最后一垄
+        for(int i = 0;i < count_narrow_polygon_numbers_ -1;i++){
+                for(auto it = middle_points_polygon_[i].rbegin();
+                         it != middle_points_polygon_[i].rend();
+                         it++){
+                    temp_points.push_back(*it);
+                }
+            backShape_keypoints_.push_back(temp_points);
+            temp_points.clear();
+        }
+        //添加最后两笼
+        std::vector<polygonPoint>  last_ridge;
+        for(auto it = middle_points_polygon_[count_narrow_polygon_numbers_-1].rbegin() ;
+                 it != middle_points_polygon_[count_narrow_polygon_numbers_-1].rend();
+                 it++){
+            last_ridge.push_back(*it);
+        }
+        backShape_keypoints_.push_back(last_ridge);
+    }else if(fabs(diff_narrow_and_intsPts) == 2){
+        LOG(INFO) << "the situation + the last two ridge can finish plan !";
+        for(int i = 0;i < count_narrow_polygon_numbers_ -2;i++){
+            for(auto it = middle_points_polygon_[i].rbegin();
+                it != middle_points_polygon_[i].rend();
+                it++){
+                temp_points.push_back(*it);
+            }
+            backShape_keypoints_.push_back(temp_points);
+            temp_points.clear();
+        }
+        std::vector<polygonPoint> last_first_ridge;
+        std::vector<polygonPoint> last_second_ridge;
+        for(auto it = storageNarrowPolygonPoints_[count_narrow_polygon_numbers_-2].rbegin();
+                 it != storageNarrowPolygonPoints_[count_narrow_polygon_numbers_-2].rend();
+                 it ++){
+            last_second_ridge.push_back(*it);
+        }
+        for(auto it = storageNarrowPolygonPoints_[count_narrow_polygon_numbers_-1].rbegin();
+                 it != storageNarrowPolygonPoints_[count_narrow_polygon_numbers_-1].rend();
+                 it ++){
+            last_first_ridge.push_back(*it);
+        }
+        backShape_keypoints_.push_back(last_second_ridge);
+        backShape_keypoints_.push_back(last_first_ridge);
+    }else {
+        LOG(INFO) << "the situation + no consider !";
+    }
+#endif
 }
 
 const std::vector<std::vector<polygonPoint>> pathPolygonPlan::getBackShapeKeyPoints() const{
