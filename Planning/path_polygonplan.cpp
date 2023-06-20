@@ -10,6 +10,8 @@ namespace Route_Planning{
 //void pathPolygonPlan::initiate() {
 //
 //}
+
+
 void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
     double buffer_distance = -DBL_MAX;
     //按照垄宽得到缩小后的各个多边形
@@ -179,7 +181,167 @@ std::vector<polygonPoint>  pathPolygonPlan::deleteRepeatPolyPts(std::vector<poly
     return temp_storage_pts;
 }
 
-//计算内缩第一次和第二次构成的往中心走的线段的kbline
+void   pathPolygonPlan::filteredBackShapeKeyPoints(){
+    std::vector<polygonPoint>  temp_storage_pts;
+    for(auto it : backShape_keypoints_){
+         temp_storage_pts = deleteRepeatPolyPts(it);
+         filtered_backshape_keypoints_.push_back(temp_storage_pts);
+    }
+}
+
+
+void pathPolygonPlan::computeKeypointsRelativeInfo(){
+    std::ofstream  test;
+    test.open("/home/zzm/Desktop/test_path_figure-main/src/test0620.txt",std::ios::out);
+    std::ofstream  test1;
+    test1.open("/home/zzm/Desktop/test_path_figure-main/src/test06201.txt",std::ios::out);
+    for(int i = 0; i < filtered_backshape_keypoints_.size();i++){
+        for(int j = 1; j < filtered_backshape_keypoints_[i].size();j++){
+            ridgeKeypoint tempPtInfo;
+            tempPtInfo.start_dis = SET_STARTTURN_DISTANCE;
+            tempPtInfo.end_dis  = SET_ENDTURN_DISTANCE;
+            tempPtInfo.ridge_index = i + 1;
+            tempPtInfo.keypoint_index = j;
+            tempPtInfo.numbers = filtered_backshape_keypoints_[i].size();
+            auto forward_last_points =               //注意点的顺序
+                    common::commonMath::computeForwardAndBackPoints(filtered_backshape_keypoints_[i],
+                                                                    filtered_backshape_keypoints_[i][j]);
+            tempPtInfo.start_curve_point =
+                    common::commonMath::findPointOnSegment(forward_last_points[0],
+                                                          filtered_backshape_keypoints_[i][j],
+                                                           SET_STARTTURN_DISTANCE,
+                                                           false);
+            //计算下一垄的第二个点
+            polygonPoint last_point;
+            if(i+1 < filtered_backshape_keypoints_.size()-1){
+                 last_point =  filtered_backshape_keypoints_[i+1][1];
+            }
+            if(j == filtered_backshape_keypoints_[i].size()-1){
+                tempPtInfo.end_curve_point =
+                        common::commonMath::findPointOnSegment(filtered_backshape_keypoints_[i][j],
+                                                               last_point,
+                                                               SET_ENDTURN_DISTANCE,
+                                                               true);
+            }else{
+                tempPtInfo.end_curve_point =
+                        common::commonMath::findPointOnSegment(filtered_backshape_keypoints_[i][j],
+                                                               forward_last_points[1],
+                                                               SET_ENDTURN_DISTANCE,
+                                                               true);
+            }
+//            LOG(INFO) << "1 :" << filtered_backshape_keypoints_[i][j].x << " " << filtered_backshape_keypoints_[i][j].y;
+//            LOG(INFO) << "2 :" <<  tempPtInfo.start_curve_point.x << " " <<  tempPtInfo.start_curve_point.y;
+//            LOG(INFO) << "3 :" <<  tempPtInfo.end_curve_point.x << " " << tempPtInfo.end_curve_point.y;
+//
+//            test << " " << filtered_backshape_keypoints_[i][j].x << " " <<tempPtInfo.start_curve_point.x
+//                 << " " << tempPtInfo.end_curve_point.x ;
+//            test1 << " " << filtered_backshape_keypoints_[i][j].y << " " <<tempPtInfo.start_curve_point.y
+//                 << " " << tempPtInfo.end_curve_point.y ;
+            backshape_keypts_info_[filtered_backshape_keypoints_[i][j]] = tempPtInfo;
+        }
+    }
+}
+
+std::vector<pathInterface::pathPoint> pathPolygonPlan::computeRidgeRoutingpts(int ridge_index){
+        //暂时约定每一垄第一个点是不需要进行处理弯道的
+        pathInterface::pathPoint  point_1;
+        ReedsSheppStateSpace   *r=new ReedsSheppStateSpace;
+        std::vector<std::vector<double>> finalpath;
+        std::vector<pathInterface::pathPoint>  storageAllPath;
+        double startPoint[3],endPoint[3];
+        auto  ordered_points = filtered_backshape_keypoints_[ridge_index];
+        //第一个点
+        point_1.x = ordered_points[0].x;
+        point_1.y = ordered_points[0].y;
+        point_1.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+        point_1.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+        point_1.ridge_number = ridge_index;
+        storageAllPath.push_back(point_1);
+        //后续点位均包含弯道处理
+        //统计需要弯道处理的点
+        int num = filtered_backshape_keypoints_[ridge_index].size() -1;
+        for(int i = 1;i <=num;i++){
+            //点位弯道处理
+            auto temp_point =  ordered_points[i];
+            Point point_temp1 = backshape_keypts_info_[temp_point].start_curve_point;
+            Point point_temp2 = backshape_keypts_info_[temp_point].end_curve_point;
+            startPoint[0] = point_temp1.x;
+            startPoint[1] = point_temp1.y;
+            startPoint[2] = point_temp1.heading;
+            endPoint[0] = point_temp2.x;
+            endPoint[1] = point_temp2.y;
+            endPoint[2] = point_temp2.heading;
+            r->reedsShepp(startPoint,endPoint);
+            finalpath = r->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int i = 0;i < finalpath.size();i++){
+                pathInterface::pathPoint   pathPointCurve;
+                pathPointCurve.x = finalpath[i][0];
+                pathPointCurve.y = finalpath[i][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+
+            //判断是否需要添加
+            if(SET_REVERSING_FLAG){
+                //弯道结束需要增加3个点位信息
+                aiforce::Route_Planning::polygonPoint p2;
+                p2.x = point_temp2.x;
+                p2.y = point_temp2.y;
+                auto increase_points3 =
+                        common::commonMath::findPointExtendSegment(temp_point,
+                                                                   p2,
+                                                                   SET_CONVERTDIRECTION_DIST,
+                                                                   true,
+                                                                   SET_CONVERTDIRECTION_COUNT);
+                for(auto it : increase_points3){
+                    it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                    it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+                    it.ridge_number = ridge_index;
+                    storageAllPath.push_back(it);
+                }
+                //增加倒车点位信息
+                std::vector<polygonPoint>  lineInfo;
+                lineInfo.push_back(p2);
+                lineInfo.push_back(temp_point);
+                auto back_points =
+                        common::commonMath::densify(lineInfo,
+                                SET_BACK_DIS);
+                for(auto it : back_points){
+                       pathInterface::pathPoint temp_point;
+                       temp_point.x = it.x;
+                       temp_point.y = it.y;
+                       temp_point.path_point_mode1 =  pathInterface::pathPointMode1::WORK_AREA;
+                       temp_point.path_point_mode2 =  pathInterface::pathPointMode2::BACK;
+                       temp_point.ridge_number = ridge_index;
+                       storageAllPath.push_back(temp_point);
+                }
+                //结束倒车增加3个点位信息
+                auto ending_back_points =
+                        common::commonMath::findPointExtendSegment(temp_point,
+                                                                   p2,
+                                                                   SET_CONVERTDIRECTION_DIST,
+                                                                   false,
+                                                                   SET_CONVERTDIRECTION_COUNT);
+                for(auto it : ending_back_points){
+                    it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                    it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+                    it.ridge_number = ridge_index;
+                    storageAllPath.push_back(it);
+                }
+            }else{
+                //不倒车处理
+            }
+        }
+        return storageAllPath;
+}
+
+const std::vector<std::vector<polygonPoint>> pathPolygonPlan::getFilteredBackShapeKeyPoints()  const{
+    return filtered_backshape_keypoints_;
+}
+
+    //计算内缩第一次和第二次构成的往中心走的线段的kbline
 void pathPolygonPlan::computeEveryKbLine(){
      auto first_polygon    =    deleteRepeatPolyPts(storageNarrowPolygonPoints_[0]);
      LOG(INFO) << "narrow  first polygon(no repeat points) size is :" << first_polygon.size();
@@ -563,7 +725,7 @@ void pathPolygonPlan::computebackShapeKeypoints(){
         }
         backShape_keypoints_.push_back(last_second_ridge);
         backShape_keypoints_.push_back(last_first_ridge);
-    }else {
+    } else {
         LOG(INFO) << "the situation + no consider !";
     }
 #endif

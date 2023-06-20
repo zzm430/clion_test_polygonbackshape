@@ -17,5 +17,7 @@ add_executable(polygonbackshape
               Planning/path_common.cpp
 #              Planning/path_baseplan.h
               Planning/path_baseplan.cpp
+              Geometry/reeds_shepp.cpp
+              Geometry/reeds_shepp.h
               easylogging++.cc Planning/path_polygonplan.cpp common/math/common_math.h)
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})

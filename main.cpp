@@ -92,8 +92,6 @@ int main() {
         another_line.push_back(temp_line[1]);
         another_line.push_back(storageForwardAndBack[0]);
 #endif
-
-
     //计算平移后的向量
     //计算需要平移的距离
     Point vector_1((storageForwardAndBack[0].x - temp_line[1].x),
@@ -125,8 +123,8 @@ int main() {
     realline << std::endl;
     realline.close();
     //将计算得到的回字形入口线段延长一段距离
-//    auto real_line_extend = common::commonMath::extendLineLength(real_line,0.5);
-//    计算平移后的向量和内缩多边形们的交点
+    //auto real_line_extend = common::commonMath::extendLineLength(real_line,0.5);
+    //计算平移后的向量和内缩多边形们的交点
     instance_pathPolygonPlan.computePolygonsAndLineNode(real_line);
     auto nodes = instance_pathPolygonPlan.getPolygonAndLineNodes();
 
@@ -165,7 +163,10 @@ int main() {
 
 
     instance_pathPolygonPlan.computebackShapeKeypoints();
-    auto keypoints_m = instance_pathPolygonPlan.getBackShapeKeyPoints();
+    instance_pathPolygonPlan.filteredBackShapeKeyPoints();
+    instance_pathPolygonPlan.computeKeypointsRelativeInfo();
+
+    auto keypoints_m = instance_pathPolygonPlan.getFilteredBackShapeKeyPoints();
 
     std::ofstream keypoints;
     keypoints.open("/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt",std::ios::out);
@@ -183,78 +184,42 @@ int main() {
     keypoints << std::endl;
     keypoints.close();
 
-//    // Declare strategies
-//     double buffer_distance = -50;
-//   for(auto i = 1;i  <= 16; i++ ) {
-//       const int points_per_circle = 0;
-//       buffer_distance = i * -4;
-//       boost::geometry::strategy::buffer::distance_symmetric<coordinate_type> distance_strategy(buffer_distance);
-//       boost::geometry::strategy::buffer::join_round join_strategy(0.01);
-////       boost::geometry::strategy::buffer::join_round join_strategy;
-//       boost::geometry::strategy::buffer::end_round end_strategy;
-//       boost::geometry::strategy::buffer::point_circle circle_strategy;
-//       boost::geometry::strategy::buffer::side_straight side_strategy;
-//
-//       // Declare output
-//       boost::geometry::model::multi_polygon<polygon> result;
-//
-//       boost::geometry::model::multi_polygon<polygon> mpol;
-////
-//
-////    boost::geometry::read_wkt("MULTIPOLYGON(((0,0,0 150,30 150,60 100,80 100,80 170,200 150,200 0, 0,0)))", mpol);
-//
-//       boost::geometry::read_wkt("MULTIPOLYGON(((20 270,40 270,40 230,60 230,100 300,140 220,200 190,320 70,300 50,150 50,60 140,20 100,20 270)))",mpol);
-//       // Create the buffer of a multi polygon
-//       boost::geometry::buffer(mpol, result,
-//                               distance_strategy, side_strategy,
-//                               join_strategy, end_strategy, circle_strategy);
-//       point centroid;
-//       boost::geometry::centroid(mpol, centroid);
-//      std::cout << "the center  is :" << boost::geometry::dsv(centroid) << std::endl;
-//      point  centroid_souxiao;
-//      boost::geometry::centroid(result,centroid_souxiao);
-//      std::cout << "the center suoxiao is :" << boost::geometry::dsv(centroid_souxiao) << std::endl;
-//
-//       std::ofstream polygon_reduce;
-//       std::string temp1 = "/home/zzm/Desktop/test_path_figure-main/src/polygon_reduce" + std::to_string(i) + ".txt";
-//       std::string temp2 = "/home/zzm/Desktop/test_path_figure-main/src/polygon_origin" + std::to_string(i) + ".txt";
-//       polygon_reduce.open(temp1, std::ios::out);
-//       int number_a = 0, number_b = 0;
-//       for (auto it = result.begin(); it != result.end(); it++) {
-//           for (auto j = it->outer().begin(); j != it->outer().end(); j++) {
-//               polygon_reduce << " " << (*j).x();
-//               number_a += 1;
-//           }
-//       }
-//       std::cout << std::endl;
-//       std::cout << "the bian li ci shu is :" << i << " " << "the ridge is :" << number_a;
-//       polygon_reduce << std::endl;
-//       for (auto it = result.begin(); it != result.end(); it++) {
-//           for (auto j = it->outer().begin(); j != it->outer().end(); j++) {
-//               polygon_reduce << " " << (*j).y();
-//           }
-//       }
-//       polygon_reduce << std::endl;
-//
-//      if(i==1) {
-//          std::ofstream polygon_origin;
-//          polygon_origin.open(temp2, std::ios::out);
-//          for (auto it = mpol.begin(); it != mpol.end(); it++) {
-//              for (auto j = it->outer().begin(); j != it->outer().end(); j++) {
-//                  polygon_origin << " " << (*j).x();
-//              }
-//
-//          }
-//          polygon_origin << std::endl;
-//          for (auto it = mpol.begin(); it != mpol.end(); it++) {
-//              for (auto j = it->outer().begin(); j != it->outer().end(); j++) {
-//                  polygon_origin << " " << (*j).y();
-//              }
-//
-//          }
-//          polygon_origin << std::endl;
-//      }
-//   }
+
+    //获取routing信息
+    std::ofstream  show_ridge_path;
+    show_ridge_path.open("/home/zzm/Desktop/reeds_shepp-master/RS_Lib/show_ridge_path12.txt",
+                         std::ios::out);
+    auto ridges = keypoints_m.size();
+    std::vector<pathInterface::pathPoint> routing_pts;
+    std::vector<std::vector<pathInterface::pathPoint>>  all_path;
+    for(auto i  = 0;i < ridges;i++){
+         routing_pts =
+                instance_pathPolygonPlan.computeRidgeRoutingpts(i);
+        for (int i = 0; i < (int)routing_pts.size(); i++) {
+                show_ridge_path << routing_pts[i].x << " " << routing_pts[i].y  << std::endl;
+            }
+         all_path.push_back(routing_pts);
+    }
+    show_ridge_path.close();
+
+    std::ofstream  routing_ps;
+    routing_ps.open("/home/zzm/Desktop/reeds_shepp-master/RS_Lib/show_ridge_path11.txt",std::ios::out);
+    for(auto i : all_path){
+        for(auto it : i){
+            routing_ps << " " << it.x;
+        }
+    }
+    routing_ps << std::endl;
+    for(auto i : all_path){
+        for(auto j : i){
+            routing_ps << " " << j.y;
+        }
+    }
+    routing_ps << std::endl;
+    routing_ps.close();
+
+
+
     LOG(INFO) << "happy ending!" << std::endl;
     return 0;
 }
