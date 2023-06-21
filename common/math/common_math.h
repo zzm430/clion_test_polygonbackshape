@@ -287,7 +287,6 @@ namespace common{
             densified_points.push_back(points.back());
             return densified_points;
         }
-
     };
 }
 #endif //POLYGONBACKSHAPE_COMMON_MATH_H

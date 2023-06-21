@@ -30,8 +30,8 @@ namespace Route_Planning
         virtual  ~polygonPoint(){};
 
         bool operator==(const polygonPoint& other) const{
-            return (fabs(x - other.x) < 0.1 &&
-                    fabs(y -other.y) < 0.1);
+            return (fabs(x - other.x) < 0.001 &&
+                    fabs(y -other.y) < 0.001);
         }
 
         // 定义小于运算符
@@ -62,11 +62,12 @@ namespace Route_Planning
 
 //     virtual void initiate();
     struct lineKb{
-         double k;           //斜率
-         double b;           //截距
          double count;       //记录有多少个点在这个线段的延长线上
          double distance;    //两点之间间隔
          double index;       //对应多边形的顶点的序号
+         Point  fixedPt;     //线段初始的位置
+         double dx;          //方向向量x分量
+         double dy;          //方向向量y分量
          std::vector<polygonPoint> points; //初始的线段点位
      };
      class lineOrignPolygon{

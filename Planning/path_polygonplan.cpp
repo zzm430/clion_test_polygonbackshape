@@ -229,14 +229,7 @@ void pathPolygonPlan::computeKeypointsRelativeInfo(){
                                                                SET_ENDTURN_DISTANCE,
                                                                true);
             }
-//            LOG(INFO) << "1 :" << filtered_backshape_keypoints_[i][j].x << " " << filtered_backshape_keypoints_[i][j].y;
-//            LOG(INFO) << "2 :" <<  tempPtInfo.start_curve_point.x << " " <<  tempPtInfo.start_curve_point.y;
-//            LOG(INFO) << "3 :" <<  tempPtInfo.end_curve_point.x << " " << tempPtInfo.end_curve_point.y;
-//
-//            test << " " << filtered_backshape_keypoints_[i][j].x << " " <<tempPtInfo.start_curve_point.x
-//                 << " " << tempPtInfo.end_curve_point.x ;
-//            test1 << " " << filtered_backshape_keypoints_[i][j].y << " " <<tempPtInfo.start_curve_point.y
-//                 << " " << tempPtInfo.end_curve_point.y ;
+
             backshape_keypts_info_[filtered_backshape_keypoints_[i][j]] = tempPtInfo;
         }
     }
@@ -273,10 +266,10 @@ std::vector<pathInterface::pathPoint> pathPolygonPlan::computeRidgeRoutingpts(in
             endPoint[2] = point_temp2.heading;
             r->reedsShepp(startPoint,endPoint);
             finalpath = r->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
-            for(int i = 0;i < finalpath.size();i++){
+            for(int j = 0;j < finalpath.size();j++){
                 pathInterface::pathPoint   pathPointCurve;
-                pathPointCurve.x = finalpath[i][0];
-                pathPointCurve.y = finalpath[i][1];
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
                 pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
                 pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
                 pathPointCurve.ridge_number = ridge_index;
@@ -351,21 +344,18 @@ void pathPolygonPlan::computeEveryKbLine(){
              first_polygon[0]);
 
     for(int i = 0; i < first_polygon.size() ;i++){
-        double  k = (second_polygon[i].y -
-                       first_polygon[i].y)/
-                (second_polygon[i].x -
-                 first_polygon[i].x);
-        if(fabs(second_polygon[i].x -
-           first_polygon[i].x)  < 0.01){
-            LOG(ERROR) << "the line k value is fault!";
-            return;
-        }
-        double b = first_polygon[i].y -
-                k * first_polygon[i].x;
+        double segmentLength =
+                sqrt(pow(second_polygon[i].x - first_polygon[i].x,2) +
+                     pow(second_polygon[i].y - first_polygon[i].y,2));
+        double dx = second_polygon[i].x - first_polygon[i].x;
+        double dy = second_polygon[i].y - first_polygon[i].y;
+
         lineKb temp;
-        temp.k = k;
-        temp.b = b;
         temp.count = 0;
+        temp.fixedPt.x = first_polygon[i].x;
+        temp.fixedPt.y = first_polygon[i].y;
+        temp.dx = dx;
+        temp.dy = dy;
         polygonPoint temp1,temp2;
         temp1.x = first_polygon[i].x;
         temp1.y = first_polygon[i].y;
@@ -419,6 +409,8 @@ void pathPolygonPlan::judgePointPosition(int i ,
                              boost::geometry::model::multi_polygon<polygon> result ){
     //bug fmod()函数除以自身余数为自身
     double times,y_value,distancePts_2,distancePts_near_2;
+    double judge_value_x,judge_value_y;
+    Point vector_p1p2 ;
     if(i != 1 && i != 2){
         for(auto it = result.begin();
             it != result.end();
@@ -427,20 +419,21 @@ void pathPolygonPlan::judgePointPosition(int i ,
                 j != it->outer().end()-1;
                 j++){
                 for(auto& im : k_b_data_) {
-                     y_value = im.k * (*j).x() + im.b;
-                     distancePts_2 = sqrt(((*j).x() - im.points[1].x) *
-                                                ((*j).x() - im.points[1].x) +
-                                                ((*j).y() - im.points[1].y) *
-                                                ((*j).y() - im.points[1].y));
-                     times = fmod(distancePts_2 + 0.1,im.distance);
-//                       times = fmod(distancePts_2,1);
+                     vector_p1p2.x = (*j).x() - im.fixedPt.x;
+                     vector_p1p2.y = (*j).y() - im.fixedPt.y;
+                     double dot = vector_p1p2.x * im.dx + vector_p1p2.y * im.dy;
+                     double len1 = sqrt(im.dx * im.dx + im.dy * im.dy);
+                     double len2 = sqrt(vector_p1p2.x * vector_p1p2.x + vector_p1p2.y *vector_p1p2.y);
+                     double cosvalue = dot / (len1 * len2);
+                     double angle = acos(cosvalue) * 180 / M_PI;
+
                      int num = im.points.size();
                      distancePts_near_2 = sqrt( ((*j).x() - im.points[num-1].x) *
                                                         ((*j).x() - im.points[num-1].x) +
                                                         ((*j).y() - im.points[num-1].y) *
                                                                 ((*j).y() - im.points[num-1].y));
-                    if (fabs((y_value - (*j).y())) < 1 &&
-                        fabs(distancePts_near_2 - im.distance) < 0.2){
+                    if ((fabs(angle)< 5) &&
+                            (fabs(distancePts_near_2 - im.distance) < 0.5)){
                         im.count += 1;
                         polygonPoint temp;
                         temp.x = (*j).x();
@@ -456,6 +449,7 @@ void pathPolygonPlan::judgePointPosition(int i ,
 //找到内缩对应的最长边对应的原始多边形顶点
 void pathPolygonPlan::findSuitableEntrance(std::vector<Point> points ){
     for(auto i  : k_b_data_){
+        LOG(INFO) << "count is :" << i.count << " " << i.fixedPt.x << " "<< i.fixedPt.y;
         if( i.count == count_narrow_polygon_numbers_ - 2  ||
             i.count == count_narrow_polygon_numbers_ - 3  ||
             i.count == count_narrow_polygon_numbers_ -1 ){ //找到对应的最长边
@@ -476,15 +470,17 @@ void pathPolygonPlan::findSuitableEntrance(std::vector<Point> points ){
             }
 
             //求一个足够长的线段与原始多边形相交的点
-            double k_value = i.k;
-            double b = i.b;
-            double temp_x = 0;
-            if(i.points[i.points.size()-1].x > i.points[i.points.size()-2].x){
-                temp_x = i.points[i.points.size()-1].x - (i.count + 3) * i.distance * 2;
-            }else{
-                temp_x = i.points[i.points.size()-1].x + (i.count + 3) * i.distance * 2;
-            }
-            double temp_y = i.k * temp_x + b;
+//            double k_value = i.k;
+//            double b = i.b;
+            double temp_x = 0,temp_y = 0;
+//            if(i.points[i.points.size()-1].x > i.points[i.points.size()-2].x){ //x在增大
+                temp_x = i.points[i.points.size()-1].x  - i.dx * SET_VIRTUAL_LINE_LENGTH;
+                temp_y = i.points[i.points.size()-1].y  - i.dy * SET_VIRTUAL_LINE_LENGTH;
+//            }else{ //x在减小
+//                temp_x = i.points[i.points.size()-1].x - i.dx * SET_VIRTUAL_LINE_LENGTH;
+//                temp_y = i.points[i.points.size()-1].y - i.dy * SET_VIRTUAL_LINE_LENGTH;
+//            }
+           LOG(INFO) << "the last point is :" << i.points[i.points.size()-1].x << " " << i.points[i.points.size()-1].y;
             //计算该线段与原始多边形的交点
             polygon  poly;
             for(auto it : points){
@@ -503,6 +499,7 @@ void pathPolygonPlan::findSuitableEntrance(std::vector<Point> points ){
             Point tempPt;
             tempPt.x = output[0].x();
             tempPt.y = output[0].y();
+            LOG(INFO) << "temp           " << tempPt.x << " " << tempPt.y;
             //线段最外侧的点
             line_origin_entrance_.push_back(tempPt);
             return;   //暂时只算一次
