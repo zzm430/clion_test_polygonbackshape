@@ -244,12 +244,26 @@ std::vector<pathInterface::pathPoint> pathPolygonPlan::computeRidgeRoutingpts(in
         double startPoint[3],endPoint[3];
         auto  ordered_points = filtered_backshape_keypoints_[ridge_index];
         //第一个点
-        point_1.x = ordered_points[0].x;
-        point_1.y = ordered_points[0].y;
-        point_1.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
-        point_1.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
-        point_1.ridge_number = ridge_index;
-        storageAllPath.push_back(point_1);
+        if(SET_REVERSING_FLAG){
+            point_1.x = ordered_points[0].x;
+            point_1.y = ordered_points[0].y;
+            point_1.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+            point_1.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            point_1.ridge_number = ridge_index;
+            storageAllPath.push_back(point_1);
+        }else{        //这样处理有问题，这个弯道的结束点并不一定等于直线段的起点，暂时这样处理
+            if(ridge_index == 0){
+                point_1.x = ordered_points[0].x;
+                point_1.y = ordered_points[0].y;
+                point_1.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                point_1.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                point_1.ridge_number = ridge_index;
+                storageAllPath.push_back(point_1);
+            }else{
+                //do nothing
+            }
+        }
+
         //后续点位均包含弯道处理
         //统计需要弯道处理的点
         int num = filtered_backshape_keypoints_[ridge_index].size() -1;

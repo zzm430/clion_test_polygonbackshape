@@ -29,7 +29,7 @@
 #define  SET_ENDTURN_DISTANCE     6       //末尾转弯距离设置
 #define  SET_CONVERTDIRECTION_DIST 0.1    //设置转换方向点的间距
 #define  SET_CONVERTDIRECTION_COUNT 3     //设置转换方向点的个数
-#define  SET_REVERSING_FLAG       true    //设置倒车标志位
+#define  SET_REVERSING_FLAG       false    //设置倒车标志位
 #define  SET_BACK_DIS             20      //设置倒车间隔
 #define  SET_VIRTUAL_LINE_LENGTH  2500    //设置虚拟线的长度
 
