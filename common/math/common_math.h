@@ -26,15 +26,22 @@ namespace common{
 //10.对一个多边形的顶点进行排序按照逆时针左下角点为起始点(未实现)
 //11.针对给定的多边形的点位信息，找到x最小的点作为起始点，开始逆时针排序存储
 //12.针对给定点，插入到多边形的指定边上，前提是插入的点在多边形的边上
-
+//13.给出一个三角形，求三角形对应的最短边，及其对角的顶点
 
 //1.计算两点之间的距离
 //2.找到线段上固定端点固定距离的点
 //3.找到线段上固定端点的延长线上固定距离的点
 //4.在线段之间插入factor-1个点，等间隔插入
+//5.计算点到线段所在直线距离
+//6.计算点p在线段AB上的投影点
+
+//基础数学运算
+//1.取得余数
+//2.计算两点之间欧式距离
         commonMath() = default;
         virtual ~commonMath() = default;
 
+        //1.计算x范围内最小值
         static  double get_point_min_x( std::vector<Point>& points ) {
                 double min_value;
 
@@ -47,7 +54,7 @@ namespace common{
 
                 return min_value;
         }
-
+        //2.计算y范围内最小值
         static  double get_point_min_y( std::vector<Point>& points ) {
                 double min_value;
 
@@ -60,10 +67,6 @@ namespace common{
                 return min_value;
         }
 
-        //计算两个向量的叉积
-        static double cross(const Point &v1, const Point &v2){
-            return v1.x * v2.y - v1.y * v2.x;
-        }
 
         //判断这三个点构成的三角形是否是凸三角形
         static bool  isConvex(const Point& p, const Point & prev, const Point & next){
@@ -72,7 +75,7 @@ namespace common{
             return cross(v1,v2) > 0.0;
         }
 
-        //计算得到凹凸多边形的凸点或凹点
+        //3.计算得到凹凸多边形的凸点或凹点
         static  std::vector<Point> IsHollow_vec(std::vector<Point> curveLoopPoints){
             //假设法向量判断凹凸性，检测多边形上上是否有凸点，每个顶点转向都应该一致，不一致则为凹点
             //假设给出的点是顺时针，则选择的是给出的是凸点，逆时针给出的是凹点
@@ -90,7 +93,13 @@ namespace common{
             return hollowPoints;
         }
 
-        //计算一条线段沿着另外一条线段的方向移动固定的距离distance
+        //4.计算两个向量的叉积
+        static double cross(const Point &v1, const Point &v2){
+            return v1.x * v2.y - v1.y * v2.x;
+        }
+
+
+        //6.计算一条线段沿着另外一条线段的方向移动固定的距离distance
         static std::vector<Point>   computeLineTranslationPoints(std::vector<Point> initialPoints,
                                                             std::vector<Point> directionPoints,
                                                             double distance){
@@ -114,7 +123,31 @@ namespace common{
                 return result;
         }
 
-        //对于给定点，求出给定点的前向点和后向点
+        static std::vector<aiforce::Route_Planning::polygonPoint>   computeLineTranslationPoints(
+                                                std::vector<aiforce::Route_Planning::polygonPoint> initialPoints,
+                                                std::vector<aiforce::Route_Planning::polygonPoint> directionPoints,
+                                                                 double distance){
+            long double Bx = directionPoints[1].x - directionPoints[0].x;
+            long double By = directionPoints[1].y - directionPoints[0].y;
+            long double length_B_squared = Bx * Bx + By * By;
+            long double u_Bx = Bx / sqrt(length_B_squared);
+            long double u_By = By / sqrt(length_B_squared);
+            long double p1x_new = initialPoints[0].x + distance * u_Bx;
+            long double p1y_new = initialPoints[0].y + distance * u_By;
+            long double p2x_new = initialPoints[1].x + distance * u_Bx;
+            long double p2y_new = initialPoints[1].y + distance * u_By;
+            aiforce::Route_Planning::polygonPoint p1,p2;
+            p1.x = p1x_new;
+            p1.y = p1y_new;
+            p2.x = p2x_new;
+            p2.y = p2y_new;
+            std::vector<aiforce::Route_Planning::polygonPoint>  result;
+            result.push_back(p1);
+            result.push_back(p2);
+            return result;
+        }
+
+        //7.对于给定点，求出给定点的前向点和后向点
         static std::vector<Point>  computeForwardAndBackPoints(std::vector<Point> polyPoints,
                                                                Point topPoint){
             //要求polyPoints中没有重复点，是按照逆时针给的
@@ -126,8 +159,8 @@ namespace common{
                 p = polyPoints[i];
                 prev = polyPoints[(i + num -1) % num];
                 next = polyPoints[(i +1) % num];
-                if(fabs(p.x -topPoint.x)< 0.5 &&
-                   fabs(p.y -topPoint.y) < 0.5){
+                if(fabs(p.x -topPoint.x)< 2.5 &&
+                   fabs(p.y -topPoint.y) < 0.8){
                     storagePoints.push_back(prev);
                     storagePoints.push_back(next);
                     return storagePoints;
@@ -135,7 +168,7 @@ namespace common{
             }
         }
 
-        //对于给定点，求出给定点的前向点和后向点
+        //7.对于给定点，求出给定点的前向点和后向点
         static std::vector<aiforce::Route_Planning::polygonPoint>  computeForwardAndBackPoints(
                                         std::vector<aiforce::Route_Planning::polygonPoint> polyPoints,
                                         aiforce::Route_Planning::polygonPoint topPoint){
@@ -156,7 +189,7 @@ namespace common{
             }
         }
 
-        //针对给定的多边形的点位信息，找到x最小的点作为起始点，开始逆时针排序存储
+        //11.针对给定的多边形的点位信息，找到x最小的点作为起始点，开始逆时针排序存储
         static std::vector<Point> updatePolygonPointsSequence(std::vector<Point> polyPoints){
             polyPoints.pop_back(); //删除最后一个用于闭环的点(起点重复的点)
             Point min_point;
@@ -181,6 +214,15 @@ namespace common{
             }
             return storage_new_points;
         }
+        //13.给出一个三角形，删除重复点，按照逆时针返回
+//        static std::vector<aiforce::Route_Planning::polygonPoint> computeOrderedPts(
+//                std::vector<aiforce::Route_Planning::polygonPoint> points){
+//               //默认给出的三角形是闭环的
+//               int num = points.size();
+//               double min_distance = DBL_MAX;
+//
+//               return storage_pts;
+//        }
         //计算两向量之间的点积
         static double dot_product(Point line_1,
                            Point line_2){
@@ -197,6 +239,13 @@ namespace common{
                double mag_a = magnitude(line_1.x,line_1.y);
                double mag_b = magnitude(line_2.x,line_2.y);
                return acos(dot / (mag_a * mag_b));
+        }
+        static double computeTwoLineAngle(aiforce::Route_Planning::polygonPoint line_1,
+                                          aiforce::Route_Planning::polygonPoint line_2){
+            double dot = dot_product(line_1,line_2);
+            double mag_a = magnitude(line_1.x,line_1.y);
+            double mag_b = magnitude(line_2.x,line_2.y);
+            return acos(dot / (mag_a * mag_b));
         }
         //1.计算两点之间的距离
         static double  distanceTwoPolygonPoints(aiforce::Route_Planning::polygonPoint  point_1,
@@ -272,10 +321,8 @@ namespace common{
         static std::vector<Point> densify(const std::vector<aiforce::Route_Planning::polygonPoint>& points,
                                                       int factor) {
             std::vector<Point> densified_points;
-
             for (size_t i = 0; i < points.size() - 1; ++i) {
                 densified_points.push_back(points[i]);
-
                 for (int j = 1; j < factor; ++j) {
                     double t = static_cast<double>(j) / factor;
                     Point interpolated_point;
@@ -287,6 +334,94 @@ namespace common{
             densified_points.push_back(points.back());
             return densified_points;
         }
+        //5.计算点到线段所在直线距离
+        static double distanceToLineSegment(double x1, double y1,
+                                              double x2,double y2,
+                                              double x,double y){
+            double distanceAB =
+                    std::sqrt(std::pow(x2 - x1,2) + std::pow(y2 - y1,2));
+            double distancePToAB =
+                    std::abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - x1 * y2) / distanceAB;
+            return distanceAB;
+        }
+        //6.计算点p在线段AB上的投影点
+        static aiforce::Route_Planning::polygonPoint  projectPointOnSegment(
+                aiforce::Route_Planning::polygonPoint p,
+                aiforce::Route_Planning::polygonPoint a,
+                aiforce::Route_Planning::polygonPoint b){
+            double  segmentLength =
+                    std::sqrt(std::pow(b.x - a.x,2) + std::pow(b.y - a.y,2));
+            if(segmentLength == 0){
+                return p;
+            }
+            //计算向量ab的单位向量
+            double vx = (b.x - a.x) / segmentLength;
+            double vy = (b.y - a.y) / segmentLength;
+
+            //计算向量ap
+            double dx = p.x - a.x;
+            double dy = p.y - a.y;
+
+            double projectionLength = dx * vx + dy * vy;
+
+            //如果投影长度小于等于0,则点p在线段ab之外，返回点a
+            if(projectionLength <= 0){
+                LOG(INFO) << "projection length <= 0";
+                return a;
+            }
+            //如果投影長度大于等于线段长度，泽点ｐ在线段ａｂ之外，返回点ｂ
+            if(projectionLength >= segmentLength){
+                LOG(INFO) << "projection length >= length ab";
+                return b;
+            }
+            aiforce::Route_Planning::polygonPoint projectionPoint;
+            projectionPoint.x = a.x + projectionLength * vx;
+            projectionPoint.y = a.y + projectionLength * vy;
+
+            return  projectionPoint;
+        }
+
+       // 7.计算点p在线段AB上的垂足点
+        static aiforce::Route_Planning::polygonPoint  computeFootPoint(
+               aiforce::Route_Planning::polygonPoint P,
+               aiforce::Route_Planning::polygonPoint A,
+               aiforce::Route_Planning::polygonPoint B){
+           aiforce::Route_Planning::polygonPoint AP = {P.x - A.x, P.y - A.y};
+           aiforce::Route_Planning::polygonPoint AB = {B.x - A.x, B.y - A.y};
+
+           double dotProduct = AP.x * AB.x + AP.y * AB.y;
+           double abSquared = AB.x * AB.x + AB.y * AB.y;
+
+           double t = dotProduct/abSquared;
+
+           aiforce::Route_Planning::polygonPoint footPoint;
+           footPoint.x = A.x + t * AB.x;
+           footPoint.y = A.y + t * AB.y;
+           return footPoint;
+        }
+
+        //基础数学运算
+        //1.取得余数
+       static double  doubleMod(double x, double y){
+            double q  = x / y;
+            long int q_number = static_cast<long int>(q);
+            return (x - static_cast<double>(q_number) * y) / y;
+        }
+        //2.计算两点之间欧式距离
+        static double distance2(aiforce::Route_Planning::polygonPoint a,
+                                aiforce::Route_Planning::polygonPoint b){
+            double distance;
+            distance =   std::sqrt(std::pow(b.x - a.x,2) + std::pow(b.y - a.y,2));
+            return  distance;
+        }
+        static  double distance2(Point a,
+                                aiforce::Route_Planning::polygonPoint b){
+            double distance;
+            distance =   std::sqrt(std::pow(b.x - a.x,2) + std::pow(b.y - a.y,2));
+            return  distance;
+        }
+
+
     };
 }
 #endif //POLYGONBACKSHAPE_COMMON_MATH_H

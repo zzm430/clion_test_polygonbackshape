@@ -20,6 +20,7 @@ public:
     getMapData();
     ~getMapData();
     void loadMapOuter();
+    void loadMapOuter(std::string & loadPath);
     std::vector<Point> getMapOuter();
     void updatepolygonSequence();
     std::vector<Point> getMapUpdatedOuter();

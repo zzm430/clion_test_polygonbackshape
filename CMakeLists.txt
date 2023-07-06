@@ -2,10 +2,18 @@ cmake_minimum_required(VERSION 3.15)
 project(polygonbackshape)
 find_package(Boost REQUIRED COMPONENTS )
 find_package(OpenCV REQUIRED)
+find_package(CGAL REQUIRED)
+if(CGAL_FOUND)
+    message(STATUS "Found CGAL library")
+else()
+    message(FATAL_ERROR "Could not find CGAL library")
+endif()
 include_directories(${Boost_INCLUDE_DIRS})
 set(CMAKE_CXX_STANDARD 11)
 
 
+# 添加CGAL库的头文件路径
+include_directories(${CGAL_INCLUDE_DIRS})
 include_directories(.)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -19,5 +27,7 @@ add_executable(polygonbackshape
               Planning/path_baseplan.cpp
               Geometry/reeds_shepp.cpp
               Geometry/reeds_shepp.h
+              common/plotter.h
               easylogging++.cc Planning/path_polygonplan.cpp common/math/common_math.h)
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})

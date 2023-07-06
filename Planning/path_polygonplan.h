@@ -10,11 +10,18 @@
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
+#include <CGAL/Cartesian.h>
+#include <CGAL/Polygon_2.h>
+#include <CGAL/point_generators_2.h>
+#include <CGAL/random_convex_set_2.h>
+#include <CGAL/min_quadrilateral_2.h>
+#include <CGAL/intersections.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <Planning/path_interface.h>
 #include <Geometry/reeds_shepp.h>
 #include "path_baseplan.h"
 #include "common/common_parameters.h"
-
+#include <common/plotter.h>
 namespace aiforce{
 namespace Route_Planning
 {
@@ -24,20 +31,39 @@ namespace Route_Planning
     typedef boost::geometry::model::linestring<point> linestring_type;
     typedef boost::geometry::model::segment<point> Segment;
 
+    struct Kernel : public CGAL::Cartesian<double> {};
+
+    typedef Kernel::Point_2                           Point_2;
+    typedef Kernel::Line_2                            Line_2;
+    typedef Kernel::Segment_2                         Segment_2;
+    typedef CGAL::Polygon_2<Kernel>                   Polygon_2;
+//
+//    typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+//
+//    typedef K::Point_2                           Point1__2;
+
     class  polygonPoint: public Point{
     public:
         polygonPoint() = default;
+
         virtual  ~polygonPoint(){};
 
-        bool operator==(const polygonPoint& other) const{
+        polygonPoint(long double f, long double g):Point(f,g){}
+
+        bool operator == (const polygonPoint& other) const{
             return (fabs(x - other.x) < 0.001 &&
                     fabs(y -other.y) < 0.001);
         }
 
+        bool operator != (const polygonPoint& other) const {
+            return !(*this == other);
+        }
+
         // 定义小于运算符
-        bool operator<(const polygonPoint& other) const {
+        bool operator < (const polygonPoint& other) const {
             if (x != other.x) {
                 return x < other.x;
+
             } else {
                 return y < other.y;
             }
@@ -53,6 +79,13 @@ namespace Route_Planning
             std::hash<long double> h;
             return h(s.x) ^ h(s.y);
         }
+    };
+
+    enum class lastPolyIdentify:uint8_t {
+       POLY_FOUR_AND_THREE = 0,  //四边形内嵌三角形
+       POLY_FOUR_AND_FOUR,       //四边形内嵌四边形
+       POLY_FOUR,                //四边形
+       POLY_FIVE                 //五边形
     };
 
  class pathPolygonPlan  {
@@ -109,7 +142,14 @@ namespace Route_Planning
      virtual void  filteredBackShapeKeyPoints();  //删除关键点中的重复点
      virtual void  computeKeypointsRelativeInfo();  //计算后续用于弯道处理信息
      virtual std::vector<pathInterface::pathPoint> computeRidgeRoutingpts(int ridge_index); //根据垄号计算routingpath信息
-
+     virtual void dealWithLastSeveralPolygons();   //根据最后几垄的情况分类处理
+     virtual void computeLastRidgePoints4and3();     //提供用于处理最后几垄的关键点4边行内嵌3角形信息
+     virtual void computeLastRidgeKeyPoints4and3();  //计算得到最后几垄的关键点4边行内嵌3角形信息
+     virtual void computeLastRidgePoints4and4();     //提供用于处理最后的4边形内嵌4边形信息
+     virtual void computeLastRidgeSituation();       //处理最后几垄信息
+     virtual void computeLastRidgeKeyPoints4and4(int count_flag);   //计算得到最后几垄的关键点4边行内嵌4边行信息
+     virtual void computeLastRidgePoints4();         //处理最后一垄是四边行的情况
+     virtual void computeLastRidgeKeyPoints4();      //处理最后一垄是四边形的关键点
 
      const std::vector<std::vector<polygonPoint>> getNarrowPolygonPoints() const; //得到缩小后多边形点位信息
      const polygonPoint  getMinPolygonCentroid() const;               //得到最小多边形的质心
@@ -140,6 +180,25 @@ namespace Route_Planning
      std::vector<std::vector<polygonPoint>>  filtered_backshape_keypoints_;  //过滤后的关键点信息
      std::unordered_map<polygonPoint,ridgeKeypoint,polyPointHash>  backshape_keypts_info_; //获取关键点的映射信息
      std::vector<pathInterface::pathPoint>      ridge_routing_points_;           //每垄的routing信息
+
+ private:                                                              //用于4边形内嵌3角形
+     std::vector<std::vector<polygonPoint>>   last_several_polygons_;  //最后几垄特殊处理
+     lastPolyIdentify       last_polys_type_;                          //最后几垄的类别
+     int  record_poly_index_;                                          //记录特定内缩四边形的索引
+     std::vector<polygonPoint>      last_ridge_AC_pts_;       //用于最后一笼的AC点位信息
+     std::vector<polygonPoint>      last_ridge_BC_pts_;       //用于最后一笼的BC点位信息
+     std::vector<polygonPoint>      move_last_ridge_AC_pts_;  //平移后的最后一笼的AC点位信息
+     std::vector<polygonPoint>      move_last_ridge_BC_pts_;  //平移后的最后一笼的BC点位信息
+     std::vector<polygonPoint>      line_long_AB_;            //三角形对应的最长边
+
+ private:                                                    //用于4边形内嵌4边形
+     std::vector<polygonPoint>       line_rec_short_BA_;     //矩形短边BA上的关键点
+     std::vector<polygonPoint>       line_rec_short_CD_;      //矩形短边CD上的关键点
+     std::vector<polygonPoint>       line_rec_short_AB_;      //矩形角点信息
+     std::vector<polygonPoint>       line_rec_short_DC_;      //矩形角点信息
+
+ private:                                                   //用于4边行
+     std::vector<polygonPoint>       line_middle_;          //四边形中线
 
  };
 }

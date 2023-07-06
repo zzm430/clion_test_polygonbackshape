@@ -17,12 +17,22 @@ namespace bg = boost::geometry;
 
 INITIALIZE_EASYLOGGINGPP
 
-int main() {
+int main(int argc, char **argv) {
     //获取到原始点位信息
+    std::cout << "the argc number is :" << argc  << std::endl;
+    std::cout << "the argv frist is :" << *argv <<  std::endl;
+    std::string loadPath;
+
     el::Configurations defaultConf;
     defaultConf.setToDefault();
     getMapData  getMapPoints;
-    getMapPoints.loadMapOuter();
+    if(argc == 1){
+        getMapPoints.loadMapOuter();
+    }else{
+        loadPath = argv[1];
+        std::cout << "the argv is :" << argv[1]<<std::endl;
+        getMapPoints.loadMapOuter(loadPath);
+    }
     getMapPoints.updatepolygonSequence();
     std::vector<Point> originalPoints = getMapPoints.getMapUpdatedOuter();
 
@@ -160,8 +170,6 @@ int main() {
     increaseNodes << std::endl;
     increaseNodes.close();
 
-
-
     instance_pathPolygonPlan.computebackShapeKeypoints();
     instance_pathPolygonPlan.filteredBackShapeKeyPoints();
     instance_pathPolygonPlan.computeKeypointsRelativeInfo();
@@ -170,21 +178,35 @@ int main() {
 
     std::ofstream keypoints;
     keypoints.open("/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt",std::ios::out);
-    for(auto it : keypoints_m){
-        for(auto j : it){
-            keypoints << " " << j.x;
-        }
+    int all_size = keypoints_m.size();
+    for(auto i  = 0;i < all_size;i++){
+         for(auto j : keypoints_m[i]){
+             keypoints << " " << j.x;
+         }
     }
     keypoints << std::endl;
-    for(auto it : keypoints_m){
-        for(auto j : it){
+    for(auto i = 0;i < all_size;i++){
+        for(auto j : keypoints_m[i]){
             keypoints << " " << j.y;
         }
     }
     keypoints << std::endl;
     keypoints.close();
+//    for(auto it : keypoints_m){
+//        for(auto j : it){
+//            keypoints << " " << j.x;
+//        }
+//    }
+//    keypoints << std::endl;
+//    for(auto it : keypoints_m){
+//        for(auto j : it){
+//            keypoints << " " << j.y;
+//        }
+//    }
+//    keypoints << std::endl;
+//    keypoints.close();
 
-
+   LOG(INFO) << "the program can enter here !";
     //获取routing信息
     std::ofstream  show_ridge_path;
     show_ridge_path.open("/home/zzm/Desktop/reeds_shepp-master/RS_Lib/show_ridge_path12.txt",
@@ -201,7 +223,6 @@ int main() {
          all_path.push_back(routing_pts);
     }
     show_ridge_path.close();
-
     std::ofstream  routing_ps;
     routing_ps.open("/home/zzm/Desktop/reeds_shepp-master/RS_Lib/show_ridge_path11.txt",std::ios::out);
     for(auto i : all_path){
@@ -217,8 +238,6 @@ int main() {
     }
     routing_ps << std::endl;
     routing_ps.close();
-
-
 
     LOG(INFO) << "happy ending!" << std::endl;
     return 0;
