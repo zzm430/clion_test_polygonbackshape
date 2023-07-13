@@ -50,6 +50,8 @@ namespace Route_Planning
 
         polygonPoint(long double f, long double g):Point(f,g){}
 
+        polygonPoint(long double f, long double g,double heading):Point(f,g,heading){}
+
         bool operator == (const polygonPoint& other) const{
             return (fabs(x - other.x) < 0.001 &&
                     fabs(y -other.y) < 0.001);
@@ -150,6 +152,13 @@ namespace Route_Planning
      virtual void computeLastRidgeKeyPoints4and4(int count_flag);   //计算得到最后几垄的关键点4边行内嵌4边行信息
      virtual void computeLastRidgePoints4();         //处理最后一垄是四边行的情况
      virtual void computeLastRidgeKeyPoints4();      //处理最后一垄是四边形的关键点
+     virtual void computeLastRidgeRoutingFour(std::vector<pathInterface::pathPoint> &storageAllPath,
+                                                       int ridge_index);  //处理最后一垄是四边形的path
+     virtual  void   computeLastRidgeRoutingFourAndFour(std::vector<pathInterface::pathPoint> &storageAllPath,
+                                                        int ridge_index);
+     virtual void  computeKeypointsHeading();        //计算最后一笼点位的heading
+
+
 
      const std::vector<std::vector<polygonPoint>> getNarrowPolygonPoints() const; //得到缩小后多边形点位信息
      const polygonPoint  getMinPolygonCentroid() const;               //得到最小多边形的质心
@@ -191,17 +200,20 @@ namespace Route_Planning
      std::vector<polygonPoint>      move_last_ridge_BC_pts_;  //平移后的最后一笼的BC点位信息
      std::vector<polygonPoint>      line_long_AB_;            //三角形对应的最长边
 
- private:                                                    //用于4边形内嵌4边形
-     std::vector<polygonPoint>       line_rec_short_BA_;     //矩形短边BA上的关键点
+ private:                                                     //用于4边形内嵌4边形
+     std::vector<polygonPoint>       line_rec_short_BA_;      //矩形短边BA上的关键点
      std::vector<polygonPoint>       line_rec_short_CD_;      //矩形短边CD上的关键点
      std::vector<polygonPoint>       line_rec_short_AB_;      //矩形角点信息
      std::vector<polygonPoint>       line_rec_short_DC_;      //矩形角点信息
 
- private:                                                   //用于4边行
-     std::vector<polygonPoint>       line_middle_;          //四边形中线
+ private:                                                    //用于4边行
+     std::vector<polygonPoint>       line_middle_;           //四边形中线
 
+
+ private:                                                    //用于四边形内嵌四边形
+     std::vector<polygonPoint>  move_pts_line_1_;            //线段的交点1
+     std::vector<polygonPoint>  move_pts_line_2_;            //线段的交点2
  };
 }
 }
-
 #endif // PATH_POLYGONPLAN_H

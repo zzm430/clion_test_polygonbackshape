@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
     instance_pathPolygonPlan.computeKeypointsRelativeInfo();
 
     auto keypoints_m = instance_pathPolygonPlan.getFilteredBackShapeKeyPoints();
-
+    LOG(INFO) << "the all ridge number is : " << keypoints_m.size();
     std::ofstream keypoints;
     keypoints.open("/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt",std::ios::out);
     int all_size = keypoints_m.size();

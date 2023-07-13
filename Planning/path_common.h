@@ -13,6 +13,8 @@ public:
 
     Point(long double a, long double b):x(a),y(b){}
 
+    Point(long double a,long double b,long double c):x(a),y(b),heading(c){}
+
      bool operator==(const Point& other) const{
         return (fabs(x - other.x) < 0.1 &&
                 fabs(y -other.y) < 0.1);

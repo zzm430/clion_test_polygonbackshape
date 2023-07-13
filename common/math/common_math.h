@@ -38,6 +38,9 @@ namespace common{
 //基础数学运算
 //1.取得余数
 //2.计算两点之间欧式距离
+//3.计算向量的heading
+//4.计算一个点是在线段AB所在直线的左侧还是右侧
+//5.根据两点构造一个向量
         commonMath() = default;
         virtual ~commonMath() = default;
 
@@ -98,6 +101,10 @@ namespace common{
             return v1.x * v2.y - v1.y * v2.x;
         }
 
+        static double cross(aiforce::Route_Planning::polygonPoint A,
+                            aiforce::Route_Planning::polygonPoint B){
+            return A.x * B.y - A.y * B.x;
+        }
 
         //6.计算一条线段沿着另外一条线段的方向移动固定的距离distance
         static std::vector<Point>   computeLineTranslationPoints(std::vector<Point> initialPoints,
@@ -180,8 +187,8 @@ namespace common{
                 p = polyPoints[i];
                 prev = polyPoints[(i + num -1) % num];
                 next = polyPoints[(i +1) % num];
-                if(fabs(p.x -topPoint.x)< 0.5 &&
-                   fabs(p.y -topPoint.y) < 0.5){
+                if(fabs(p.x -topPoint.x)< 0.01 &&
+                   fabs(p.y -topPoint.y) < 0.01){
                     storagePoints.push_back(prev);
                     storagePoints.push_back(next);
                     return storagePoints;
@@ -381,7 +388,7 @@ namespace common{
             return  projectionPoint;
         }
 
-       // 7.计算点p在线段AB上的垂足点
+        // 7.计算点p在线段AB上的垂足点
         static aiforce::Route_Planning::polygonPoint  computeFootPoint(
                aiforce::Route_Planning::polygonPoint P,
                aiforce::Route_Planning::polygonPoint A,
@@ -420,7 +427,33 @@ namespace common{
             distance =   std::sqrt(std::pow(b.x - a.x,2) + std::pow(b.y - a.y,2));
             return  distance;
         }
-
+        //3.计算向量的heading
+        static double calculateHeading(aiforce::Route_Planning::polygonPoint vector_p){
+            double heading = std::atan2(vector_p.y,vector_p.x);
+            return heading;
+        }
+        //4.计算一个点是在线段AB所在直线的左侧还是右侧,左侧返回1,右侧返回-1,直线上返回0
+        static int pointLocation(aiforce::Route_Planning::polygonPoint v1,
+                                 aiforce::Route_Planning::polygonPoint v2){
+            double result = cross(v1,v2);
+            if(result > 0){
+                return 1;  //点在直线左侧
+            }else if(result < 0){
+                return  -1; //点在直线右侧
+            }else {
+                return 0;
+            }
+        }
+        //5.根据两点构造一个向量
+         static  aiforce::Route_Planning::polygonPoint  construceVector(
+                aiforce::Route_Planning::polygonPoint A,
+                aiforce::Route_Planning::polygonPoint B){
+            aiforce::Route_Planning::polygonPoint vector_C;
+            vector_C.x = A.x - B.x;
+            vector_C.y = A.y - B.y;
+            return vector_C;
+        }
+        //
 
     };
 }

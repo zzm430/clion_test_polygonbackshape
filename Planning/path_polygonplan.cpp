@@ -107,6 +107,7 @@ void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
 
 void pathPolygonPlan::dealWithLastSeveralPolygons(){
       auto num = storageNarrowPolygonPoints_.size();
+    LOG(INFO) << "--------------------------------------------------------------";
       if(storageNarrowPolygonPoints_[num-1].size() == 6){
          last_polys_type_ = lastPolyIdentify::POLY_FIVE;
          LOG(INFO) << "the last poly type is : poly_five !";
@@ -161,8 +162,7 @@ void pathPolygonPlan::dealWithLastSeveralPolygons(){
                       last_polys_type_ = lastPolyIdentify::POLY_FOUR_AND_THREE;
                       last_several_polygons_.push_back(storageNarrowPolygonPoints_[i-1]);
                       record_poly_index_ = i;
-                  } else{
-                      LOG(INFO) << "--------------------------------------------------------------";
+                  } else {
                       LOG(INFO) << "the shape of quadrangle after being retracted is quadrangle !";
                       LOG(INFO) << "the quadrangle size is : " << poly_res.size();
                       last_polys_type_ = lastPolyIdentify::POLY_FOUR_AND_FOUR;
@@ -170,11 +170,12 @@ void pathPolygonPlan::dealWithLastSeveralPolygons(){
                       record_poly_index_ = i;
                   }
                   LOG(INFO) << "the record poly index is : " << record_poly_index_;
-                  LOG(INFO) <<  "--------------------------------------------------------------";
+
                   last_several_polygons_.push_back(poly_res);
               }
           }
       }
+      LOG(INFO) <<  "--------------------------------------------------------------";
       std::ofstream  tempfile;
       tempfile.open("/home/zzm/Desktop/test_path_figure-main/src/templastridge.txt",std::ios::out);
       for(auto it :last_several_polygons_){
@@ -251,26 +252,49 @@ void pathPolygonPlan::computeLastRidgePoints4(){
     }
 }
 void pathPolygonPlan::computeLastRidgePoints4and4(){
-    std::vector<polygonPoint> stor_pts = deleteRepeatPolyPts(last_several_polygons_[1]);
-    Polygon_2 poly_4,poly_rect;
-    for(auto it = stor_pts.rbegin();it != stor_pts.rend();it ++){
-        poly_4.push_back(Point_2(it->x,it->y));
-    }
+//    std::vector<polygonPoint> stor_pts = deleteRepeatPolyPts(last_several_polygons_[1]);
+//    Polygon_2 poly_4,poly_rect;
+//    for(auto it = stor_pts.rbegin();it != stor_pts.rend();it ++){
+//        poly_4.push_back(Point_2(it->x,it->y));
+//    }
 
-    CGAL::min_rectangle_2(
-            poly_4.vertices_begin(), poly_4.vertices_end(), std::back_inserter(poly_rect));
-
-    std::ofstream test_rect;
-    test_rect.open("/home/zzm/Desktop/test_path_figure-main/src/test_rect.txt",std::ios::out);
-    for(auto it = poly_rect.begin(); it != poly_rect.end();it++){
-        test_rect << " " << (*it).x();
+//    CGAL::min_rectangle_2(
+//            poly_4.vertices_begin(), poly_4.vertices_end(), std::back_inserter(poly_rect));
+    std::vector<polygonPoint> stor_pts = last_several_polygons_[1];
+    //找到四边形的最长边
+    double max_dis_ridge = -DBL_MAX;
+    int  count_ordered;
+    for(int i = 0;i < 4;i++){
+        double dis = common::commonMath::distance2(stor_pts[i],stor_pts[i+1]);
+        if(dis > max_dis_ridge){
+            max_dis_ridge = dis;
+            count_ordered = i;
+        }
     }
-    test_rect << std::endl;
-    for(auto it = poly_rect.begin(); it != poly_rect.end();it++){
-        test_rect << " " << (*it).y();
+    std::vector<polygonPoint> longest_line;
+    longest_line.push_back(stor_pts[count_ordered]);
+    longest_line.push_back(stor_pts[count_ordered+1]);
+    std::vector<polygonPoint> other_points;
+    for(int i = 0;i < 4;i++){
+        if(stor_pts[i] != stor_pts[count_ordered] &&
+           stor_pts[i] != stor_pts[count_ordered+1]){
+            other_points.push_back(stor_pts[i]);
+        }
     }
-    test_rect<< std::endl;
-    test_rect.close();
+    double max_dis = -DBL_MAX;
+    polygonPoint max_dis_pt;
+    polygonPoint foot_print;
+    for(auto it : other_points){
+         auto  temp_foot_print = common::commonMath::computeFootPoint(it,
+                                                               longest_line[0],
+                                                               longest_line[1]);
+         double dis_pts = common::commonMath::distance2(it,temp_foot_print);
+         if(dis_pts > max_dis){
+             max_dis = dis_pts;
+             foot_print = temp_foot_print;
+             max_dis_pt = it;
+         }
+    }
 
     std::ofstream test_4;
     test_4.open("/home/zzm/Desktop/test_path_figure-main/src/test_4.txt",std::ios::out);
@@ -284,71 +308,123 @@ void pathPolygonPlan::computeLastRidgePoints4and4(){
     test_4 << std::endl;
     test_4.close();
 
-    //计算出对应的矩形的两个短边
-   std::vector<polygonPoint>  polygon_rect;
-   for(auto it = poly_rect.begin();it != poly_rect.end();it++){
-       polygon_rect.push_back(polygonPoint((*it).x(),(*it).y()));
-   }
+    //计算需要平移次数
+    double integer_number =  ceil(max_dis/RIDGE_WIDTH_LENGTH);
+    double mod = common::commonMath::doubleMod(max_dis,RIDGE_WIDTH_LENGTH);
+    double last_path_cover = mod * RIDGE_WIDTH_LENGTH;
 
-   double distance1 = common::commonMath::distance2(polygon_rect[0],polygon_rect[1]);
-   double distance2 = common::commonMath::distance2(polygon_rect[1],polygon_rect[2]);
+    LOG(INFO) << "max distance is : " << max_dis;
+    LOG(INFO) << "need move size is :" << integer_number;
+    LOG(INFO) << "the last line cover is :" << last_path_cover;
 
-   //构建两个矩形的短边AB、 DC
-   std::vector<polygonPoint>  line_AB,line_DC;
-   //构建移动点需要的两个line BC \ CD
-   std::vector<polygonPoint>  line_BC,line_CD;
-   if(distance1 < distance2){
-       line_AB.push_back(polygon_rect[0]);
-       line_AB.push_back(polygon_rect[1]);
-       line_DC.push_back(polygon_rect[3]);
-       line_DC.push_back(polygon_rect[2]);
-       line_BC.push_back(polygon_rect[1]);
-       line_BC.push_back(polygon_rect[2]);
-       line_CD.push_back(polygon_rect[2]);
-       line_CD.push_back(polygon_rect[3]);
-   }else{
-       line_AB.push_back(polygon_rect[1]);
-       line_AB.push_back(polygon_rect[2]);
-       line_DC.push_back(polygon_rect[0]);
-       line_DC.push_back(polygon_rect[3]);
-       line_BC.push_back(polygon_rect[2]);
-       line_BC.push_back(polygon_rect[3]);
-       line_CD.push_back(polygon_rect[3]);
-       line_CD.push_back(polygon_rect[0]);
-   }
-   line_rec_short_AB_.push_back(line_AB[0]);
-   line_rec_short_AB_.push_back(line_AB[1]);
-   line_rec_short_DC_.push_back(line_DC[0]);
-   line_rec_short_DC_.push_back(line_DC[1]);
+    //计算平移的点位信息
+    std::vector<polygonPoint>  foot_line;
+    foot_line.push_back(foot_print);
+    foot_line.push_back(max_dis_pt);
 
-   double distanceAB = common::commonMath::distance2(line_AB[0],line_AB[1]);
-   double distanceDC = common::commonMath::distance2(line_DC[0],line_DC[1]);
+    polygonPoint  vector_1,vector_2;
+    vector_1 = common::commonMath::construceVector(max_dis_pt,foot_print);
+    vector_2 = common::commonMath::construceVector(longest_line[0],foot_print);
+    double judge_direction = common::commonMath::pointLocation(vector_1,vector_2);
+    if(judge_direction == 1){
+        move_pts_line_1_.push_back(longest_line[0]);
+        move_pts_line_2_.push_back(longest_line[1]);
+    }else{
+        move_pts_line_1_.push_back(longest_line[1]);
+        move_pts_line_2_.push_back(longest_line[0]);
+    }
 
-   LOG(INFO) << "the last ridge rectangle short bridge AB length is : " << distanceAB;
-   LOG(INFO) << "the last ridge rectangle short bridge DC length is : " << distanceDC;
+    //这里需要对这个longest_line进行延伸一下防止与四边形没有交点
+    auto temp_pt1 = common::commonMath::findPointExtendSegment(
+            longest_line[0],
+            longest_line[1],
+            10,
+            true,
+            1);
+    auto temp_pt2 = common::commonMath::findPointExtendSegment(
+            longest_line[0],
+            longest_line[1],
+            10,
+            false,
+            1);
+    longest_line.clear();
+    longest_line.push_back(polygonPoint(temp_pt1[0].x,temp_pt1[0].y));
+    longest_line.push_back(polygonPoint(temp_pt2[0].x,temp_pt2[0].y));
+    for(int i = 1;i <= integer_number;i++){
+        std::vector<polygonPoint> points;
+        if(i == 1){
+            points = common::commonMath::computeLineTranslationPoints(
+                    longest_line,
+                     foot_line,
+                     RIDGE_WIDTH_LENGTH/2);
+        }else{
+            points = common::commonMath::computeLineTranslationPoints(
+                    longest_line,
+                     foot_line,
+                     RIDGE_WIDTH_LENGTH/2 + RIDGE_WIDTH_LENGTH *(i-1));
+        }
 
-   //计算AB和DC上的点位信息
-   double integer_number = ceil(distanceAB/RIDGE_WIDTH_LENGTH);
-   double mod = common::commonMath::doubleMod(distanceAB,RIDGE_WIDTH_LENGTH);
-   double last_path_cover = mod * RIDGE_WIDTH_LENGTH;
-   LOG(INFO) << "last path cover distance is :" << last_path_cover;
-
-   for(int i = 1;i <= integer_number;i++){
-       std::vector<polygonPoint> points;
-       if(i == 1){
-           points = common::commonMath::computeLineTranslationPoints(
-                    line_BC,
-                    line_CD,
+        //计算平移后的线段与四边形的交点
+        polygon  poly;
+        std::reverse(stor_pts.begin(),stor_pts.end());
+        for(auto it : stor_pts){
+            poly.outer().push_back(point(it.x,it.y));
+        }
+        linestring_type  line;
+        line.push_back(point(points[0].x,
+                             points[0].y));
+        line.push_back(point(points[1].x,points[1].y));
+        std::vector<point> output;
+        boost::geometry::intersection(line,poly,output);
+        LOG(INFO) << "output size is :" << output.size();
+        if(output.size() != 2){
+            LOG(ERROR) << "the line points is wrong !";
+            break;
+        }
+        polygonPoint  trans_pt;
+        trans_pt.x = output[0].x();
+        trans_pt.y = output[0].y();
+        std::vector<polygonPoint> origin_line;
+        vector_2  = common::commonMath::construceVector(trans_pt,foot_print);
+        double cross_2 =  common::commonMath::pointLocation(vector_1,vector_2);
+        if(cross_2 == 1){
+            origin_line.push_back(polygonPoint(output[0].x(),output[0].y()));
+            origin_line.push_back(polygonPoint(output[1].x(),output[1].y()));
+            auto result_pts = common::commonMath::computeLineTranslationPoints(
+                    origin_line,
+                    foot_line,
                     RIDGE_WIDTH_LENGTH/2);
-       }else{
-           points = common::commonMath::computeLineTranslationPoints(
-                   line_BC,
-                   line_CD,
-                   RIDGE_WIDTH_LENGTH/2 + RIDGE_WIDTH_LENGTH *(i-1));
-       }
-       line_rec_short_BA_.push_back(points[0]);
-       line_rec_short_CD_.push_back(points[1]);
-   }
+            move_pts_line_1_.push_back(polygonPoint(result_pts[0].x,result_pts[0].y));
+            move_pts_line_2_.push_back(polygonPoint(result_pts[1].x,result_pts[1].y));
+        }else{
+            origin_line.push_back(polygonPoint(output[0].x(),output[0].y()));
+            origin_line.push_back(polygonPoint(output[1].x(),output[1].y()));
+            auto res_pts = common::commonMath::computeLineTranslationPoints(
+                    origin_line,
+                    foot_line,
+                    RIDGE_WIDTH_LENGTH/2);
+            move_pts_line_1_.push_back(polygonPoint(res_pts[1].x,res_pts[1].y));
+            move_pts_line_2_.push_back(polygonPoint(res_pts[0].x,res_pts[0].y));
+        }
+    }
+    std::vector<polygonPoint>  temp;
+    for(auto it : move_pts_line_1_){
+        temp.push_back(it);
+    }
+    for(auto it : move_pts_line_2_){
+        temp.push_back(it);
+    }
+    std::ofstream test_rect;
+    test_rect.open("/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt",std::ios::out);
+    for(auto it = longest_line.begin(); it != longest_line.end();it++){
+        test_rect << " " << (*it).x;
+    }
+    test_rect << std::endl;
+    for(auto it = longest_line.begin(); it != longest_line.end();it++){
+        test_rect << " " << (*it).y;
+    }
+    test_rect<< std::endl;
+    test_rect.close();
 }
 
 void pathPolygonPlan::computeLastRidgePoints4and3(){
@@ -475,7 +551,7 @@ void pathPolygonPlan::computeLastRidgePoints4and3(){
     test_pts<< std::endl;
     test_pts.close();
 
-//
+
     std::ofstream test_tangle;
     test_tangle.open("/home/zzm/Desktop/test_path_figure-main/src/test_tangle.txt",std::ios::out);
     for(auto it = stor_pts.begin(); it != stor_pts.end();it++){
@@ -569,7 +645,6 @@ void pathPolygonPlan::computeLastRidgePoints4and3(){
 //    }
 //    test_middle<< std::endl;
 //    test_middle.close();
-
 }
 
 //计算多边形的kbline和对应的顶点相对应起来,未使用
@@ -655,12 +730,28 @@ std::vector<polygonPoint>  pathPolygonPlan::deleteRepeatPolyPts(std::vector<poly
 void   pathPolygonPlan::filteredBackShapeKeyPoints(){
     std::vector<polygonPoint>  temp_storage_pts;
     int num = backShape_keypoints_.size();
-    for(int it = 0 ;it < backShape_keypoints_.size() -2;it++){
+    for(int it = 0 ;it < backShape_keypoints_.size() - 2;it++){
          temp_storage_pts = deleteRepeatPolyPts(backShape_keypoints_[it]);
          filtered_backshape_keypoints_.push_back(temp_storage_pts);
     }
-    filtered_backshape_keypoints_.push_back(backShape_keypoints_[num -2]);
-    filtered_backshape_keypoints_.push_back(backShape_keypoints_[num -1]);
+//    filtered_backshape_keypoints_.push_back(backShape_keypoints_[num -2]);
+   //对最后一垄单独过滤
+   temp_storage_pts.clear();
+    for(int i =  0;i < backShape_keypoints_[num -2].size()-1;i++){
+        if(backShape_keypoints_[num - 2][i] != backShape_keypoints_[num - 2][i+1]) {
+            temp_storage_pts.push_back(backShape_keypoints_[num-2][i]);
+        }
+    }
+    temp_storage_pts.push_back(backShape_keypoints_[num - 2][backShape_keypoints_[num -2].size()-1]);
+    filtered_backshape_keypoints_.push_back(temp_storage_pts);
+    temp_storage_pts.clear();
+   for(int i = 0;i < backShape_keypoints_[num-1].size()-1;i++){
+       if(backShape_keypoints_[num - 1][i] != backShape_keypoints_[num - 1][i+1]){
+           temp_storage_pts.push_back(backShape_keypoints_[num -1][i]);
+       }
+   }
+    temp_storage_pts.push_back(backShape_keypoints_[num - 1][backShape_keypoints_[num -1].size()-1]);
+    filtered_backshape_keypoints_.push_back(temp_storage_pts);
 }
 
 
@@ -680,15 +771,36 @@ void pathPolygonPlan::computeKeypointsRelativeInfo(){
             auto forward_last_points =               //注意点的顺序
                     common::commonMath::computeForwardAndBackPoints(filtered_backshape_keypoints_[i],
                                                                     filtered_backshape_keypoints_[i][j]);
-            tempPtInfo.start_curve_point =
-                    common::commonMath::findPointOnSegment(forward_last_points[0],
-                                                          filtered_backshape_keypoints_[i][j],
-                                                           SET_STARTTURN_DISTANCE,
-                                                           false);
+            if(last_polys_type_ == aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR_AND_FOUR &&
+               i == filtered_backshape_keypoints_.size() -2 &&
+               j == filtered_backshape_keypoints_[i].size() - 1){
+                auto temp_point = filtered_backshape_keypoints_[i][filtered_backshape_keypoints_[i].size()-1];
+                auto temp_point1 = filtered_backshape_keypoints_[i][filtered_backshape_keypoints_[i].size()-2];
+                tempPtInfo.start_curve_point =  common::commonMath::findPointOnSegment(temp_point,
+                                                                                           temp_point1,
+                                                                                           SET_STARTTURN_DISTANCE,
+                                                                                           true);
+            } else {
+                tempPtInfo.start_curve_point =
+                        common::commonMath::findPointOnSegment(forward_last_points[0],
+                                                               filtered_backshape_keypoints_[i][j],
+                                                               SET_STARTTURN_DISTANCE,
+                                                               false);
+            }
+
             //计算下一垄的第二个点
             polygonPoint last_point;
             if(i+1 < filtered_backshape_keypoints_.size()-1){
-                 last_point =  filtered_backshape_keypoints_[i+1][1];
+                last_point =  filtered_backshape_keypoints_[i+1][1];
+            }
+            //处理最后一笼是POLY_FOUR的情况下last_point
+            if(i == filtered_backshape_keypoints_.size() -1 -1 &&
+               last_polys_type_ == aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR){
+                last_point = common::commonMath::findPointOnSegment(
+                                        filtered_backshape_keypoints_[i][tempPtInfo.numbers-1],
+                                        filtered_backshape_keypoints_[i+1][1],
+                                        5,
+                                        true);
             }
             if(j == filtered_backshape_keypoints_[i].size()-1){
                 tempPtInfo.end_curve_point =
@@ -703,6 +815,70 @@ void pathPolygonPlan::computeKeypointsRelativeInfo(){
                                                                SET_ENDTURN_DISTANCE,
                                                                true);
             }
+//            switch(last_polys_type_){
+//                case aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR_AND_FOUR:
+//                case aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR_AND_THREE:
+//                case aiforce::Route_Planning::lastPolyIdentify::POLY_FIVE:{
+//                    if(i+1 < filtered_backshape_keypoints_.size()-1){
+//                        last_point =  filtered_backshape_keypoints_[i+1][1];
+//                    }
+//                    if(j == filtered_backshape_keypoints_[i].size()-1){
+//                        tempPtInfo.end_curve_point =
+//                                common::commonMath::findPointOnSegment(filtered_backshape_keypoints_[i][j],
+//                                                                       last_point,
+//                                                                       SET_ENDTURN_DISTANCE,
+//                                                                       true);
+//                    }else{
+//                        tempPtInfo.end_curve_point =
+//                                common::commonMath::findPointOnSegment(filtered_backshape_keypoints_[i][j],
+//                                                                       forward_last_points[1],
+//                                                                       SET_ENDTURN_DISTANCE,
+//                                                                       true);
+//                    }
+//                    break;
+//                }
+//                case aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR:{
+//                    if(i+1 < filtered_backshape_keypoints_.size()-1){
+//                        last_point =  filtered_backshape_keypoints_[i+1][1];
+//                    }else if(i == filtered_backshape_keypoints_.size() -1 -1){
+//                        last_point =
+//                                common::commonMath::findPointOnSegment(
+//                                        filtered_backshape_keypoints_[i][tempPtInfo.numbers-1],
+//                                        filtered_backshape_keypoints_[i+1][1],
+//                                        5,
+//                                        true);
+//                    }
+//                    if(j == filtered_backshape_keypoints_[i].size()-1){
+//                        tempPtInfo.end_curve_point = last_point;
+//                    }else{
+//                        tempPtInfo.end_curve_point =
+//                                common::commonMath::findPointOnSegment(filtered_backshape_keypoints_[i][j],
+//                                                                       forward_last_points[1],
+//                                                                       SET_ENDTURN_DISTANCE,
+//                                                                       true);
+//                    }
+//                    break;
+//                }
+//                default:{
+//                    if(i+1 < filtered_backshape_keypoints_.size()-1){
+//                        last_point =  filtered_backshape_keypoints_[i+1][1];
+//                    }
+//                    if(j == filtered_backshape_keypoints_[i].size()-1){
+//                        tempPtInfo.end_curve_point =
+//                                common::commonMath::findPointOnSegment(filtered_backshape_keypoints_[i][j],
+//                                                                       last_point,
+//                                                                       SET_ENDTURN_DISTANCE,
+//                                                                       true);
+//                    }else{
+//                        tempPtInfo.end_curve_point =
+//                                common::commonMath::findPointOnSegment(filtered_backshape_keypoints_[i][j],
+//                                                                       forward_last_points[1],
+//                                                                       SET_ENDTURN_DISTANCE,
+//                                                                       true);
+//                    }
+//                    break;
+//                }
+//            }
             backshape_keypts_info_[filtered_backshape_keypoints_[i][j]] = tempPtInfo;
         }
     }
@@ -716,6 +892,44 @@ std::vector<pathInterface::pathPoint> pathPolygonPlan::computeRidgeRoutingpts(in
         std::vector<pathInterface::pathPoint>  storageAllPath;
         double startPoint[3],endPoint[3];
         auto  ordered_points = filtered_backshape_keypoints_[ridge_index];
+        int ridges_counts  = filtered_backshape_keypoints_.size();
+        //最后一垄特殊处理
+    if(ridge_index == ridges_counts -1 ){
+        //计算倒数第二笼最后一个点的heading
+        std::vector<polygonPoint> vector_heading ;
+        int pts_size = filtered_backshape_keypoints_[ridge_index-1].size();
+        for(int i = pts_size-2;i <= pts_size-1;i++){
+            vector_heading.push_back(filtered_backshape_keypoints_[ridge_index-1][i]);
+        }
+        double heading_spec_pt = common::commonMath::computeTwoLineAngle(vector_heading[0],
+                                                                         vector_heading[1]);
+        double heading_first_pt = common::commonMath::computeTwoLineAngle(ordered_points[0],
+                                                                          ordered_points[1]);
+        //根据最后一垄的种类区分
+        switch(last_polys_type_){
+            case aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR:{
+                computeLastRidgeRoutingFour(storageAllPath,
+                                            ridge_index);
+                return storageAllPath;
+            }
+            case aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR_AND_FOUR:{
+                computeLastRidgeRoutingFourAndFour(storageAllPath,ridge_index);
+                return storageAllPath;
+            }
+            case aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR_AND_THREE:{
+
+                return storageAllPath;
+            }
+            case aiforce::Route_Planning::lastPolyIdentify::POLY_FIVE:{
+
+                return  storageAllPath;
+            }
+            default:{
+
+                return storageAllPath;
+            }
+        }
+    }
         //第一个点
         if(SET_REVERSING_FLAG){
             point_1.x = ordered_points[0].x;
@@ -740,6 +954,10 @@ std::vector<pathInterface::pathPoint> pathPolygonPlan::computeRidgeRoutingpts(in
         //后续点位均包含弯道处理
         //统计需要弯道处理的点
         int num = filtered_backshape_keypoints_[ridge_index].size() -1;
+        if(last_polys_type_ == lastPolyIdentify::POLY_FOUR_AND_FOUR &&
+           ridge_index == ridges_counts -2){
+            num = num -1 ;
+        }
         for(int i = 1;i <=num;i++){
             //点位弯道处理
             auto temp_point =  ordered_points[i];
@@ -814,7 +1032,599 @@ std::vector<pathInterface::pathPoint> pathPolygonPlan::computeRidgeRoutingpts(in
                 //不倒车处理
             }
         }
+        if(last_polys_type_ == lastPolyIdentify::POLY_FOUR_AND_FOUR &&
+           ridge_index == ridges_counts -2) {
+                point_1.x = ordered_points[num+1].x;
+                point_1.y = ordered_points[num+1].y;
+                point_1.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                point_1.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                point_1.ridge_number = ridge_index;
+                storageAllPath.push_back(point_1);
+            //计算此点的heading
+            polygonPoint vector_p;
+            vector_p.x = ordered_points[num +1].x - ordered_points[num].x;
+            vector_p.y = ordered_points[num +1].y - ordered_points[num].y;
+            double heading = common::commonMath::calculateHeading(vector_p);
+            if(heading < 0){
+                heading += 2 * M_PI;
+            }
+            filtered_backshape_keypoints_[ridge_index][num+1].heading = heading;
+        }
         return storageAllPath;
+}
+
+void pathPolygonPlan::computeLastRidgeRoutingFour(std::vector<pathInterface::pathPoint> &storageAllPath,
+                                                  int ridge_index){
+    ReedsSheppStateSpace   *p=new ReedsSheppStateSpace;
+    std::vector<std::vector<double>> finalpath;
+    double startPoint[3],endPoint[3];
+    int num = filtered_backshape_keypoints_[ridge_index].size() ;
+    //四边形分为三类处理，一类是四边形，一类是长边进入的四边形，一类是短边进的四边形
+    //从短边进与从长边进入
+    double distance_1 =
+            common::commonMath::distance2(filtered_backshape_keypoints_[ridge_index][1],
+                                          filtered_backshape_keypoints_[ridge_index][0]);
+    double distance_2 =
+            common::commonMath::distance2(filtered_backshape_keypoints_[ridge_index][2],
+                                          filtered_backshape_keypoints_[ridge_index][1]);
+    if(num == 5){
+        LOG(INFO) << "the last bridge belong to four shape !";
+        if(fabs(distance_1) < fabs(distance_2)){
+            LOG(INFO) << "the last bridge belong to four shape ,from short bridge enter !";
+            polygonPoint vector_m;
+            vector_m.x = filtered_backshape_keypoints_[ridge_index][2].x - filtered_backshape_keypoints_[ridge_index][1].x;
+            vector_m.y = filtered_backshape_keypoints_[ridge_index][2].y - filtered_backshape_keypoints_[ridge_index][1].y;
+            double heading_1 = common::commonMath::calculateHeading(vector_m);
+            polygonPoint vector_n;
+            vector_n.x = filtered_backshape_keypoints_[ridge_index][4].x - filtered_backshape_keypoints_[ridge_index][3].x;
+            vector_n.y = filtered_backshape_keypoints_[ridge_index][4].y - filtered_backshape_keypoints_[ridge_index][3].y;
+            double heading_2 = common::commonMath::calculateHeading(vector_n);
+
+            if(heading_1 < 0){
+                heading_1 += 2 *M_PI;
+            }
+            if(heading_2 < 0){
+                heading_2 += 2* M_PI;
+            }
+            auto curve_A_end_pt = common::commonMath::findPointOnSegment(
+                    filtered_backshape_keypoints_[ridge_index][1],
+                    filtered_backshape_keypoints_[ridge_index][2],
+                    6,
+                    true);
+
+            startPoint[0] = filtered_backshape_keypoints_[ridge_index][0].x;
+            startPoint[1] = filtered_backshape_keypoints_[ridge_index][0].y;
+            startPoint[2] = heading_1;
+            endPoint[0] = curve_A_end_pt.x;
+            endPoint[1] = curve_A_end_pt.y;
+            endPoint[2] = heading_2;
+            p->reedsShepp(startPoint,endPoint);
+            finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int j = 0; j < finalpath.size();j++){
+                pathInterface::pathPoint pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+            //暂时没有设置倒车处理，后续可在此处添加
+            startPoint[0] = filtered_backshape_keypoints_[ridge_index][2].x;
+            startPoint[1] = filtered_backshape_keypoints_[ridge_index][2].y;
+            startPoint[2] = heading_1;
+            endPoint[0] = filtered_backshape_keypoints_[ridge_index][3].x;
+            endPoint[1] = filtered_backshape_keypoints_[ridge_index][3].y;
+            endPoint[2] = heading_2;
+            p->reedsShepp(startPoint,endPoint);
+            finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int j = 0; j < finalpath.size();j++){
+                pathInterface::pathPoint pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+
+            pathInterface::pathPoint point_n;
+            point_n.x = filtered_backshape_keypoints_[ridge_index][4].x;
+            point_n.y = filtered_backshape_keypoints_[ridge_index][4].y;
+            point_n.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+            point_n.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            point_n.ridge_number = ridge_index;
+            storageAllPath.push_back(point_n);
+            return ;
+        }else{
+            LOG(INFO) << "the last bridge belong to four shape ,from long bridge enter !";
+            polygonPoint vector_m;
+            vector_m.x = filtered_backshape_keypoints_[ridge_index][1].x - filtered_backshape_keypoints_[ridge_index][0].x;
+            vector_m.y = filtered_backshape_keypoints_[ridge_index][1].y - filtered_backshape_keypoints_[ridge_index][0].y;
+            double heading_1 = common::commonMath::calculateHeading(vector_m);
+            polygonPoint vector_n;
+            vector_n.x = filtered_backshape_keypoints_[ridge_index][3].x - filtered_backshape_keypoints_[ridge_index][2].x;
+            vector_n.y = filtered_backshape_keypoints_[ridge_index][3].y - filtered_backshape_keypoints_[ridge_index][2].y;
+            double heading_2 = common::commonMath::calculateHeading(vector_n);
+
+            if(heading_1 < 0){
+                heading_1 += 2 *M_PI;
+            }
+            if(heading_2 < 0){
+                heading_2 += 2* M_PI;
+            }
+            startPoint[0] = filtered_backshape_keypoints_[ridge_index][1].x;
+            startPoint[1] = filtered_backshape_keypoints_[ridge_index][1].y;
+            startPoint[2] = heading_1;
+            endPoint[0] = filtered_backshape_keypoints_[ridge_index][2].x;
+            endPoint[1] = filtered_backshape_keypoints_[ridge_index][2].y;
+            endPoint[2] = heading_2;
+            p->reedsShepp(startPoint,endPoint);
+            finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int j = 0; j < finalpath.size();j++){
+                pathInterface::pathPoint pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+
+            pathInterface::pathPoint point_n;
+            point_n.x = filtered_backshape_keypoints_[ridge_index][3].x;
+            point_n.y = filtered_backshape_keypoints_[ridge_index][3].y;
+            point_n.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+            point_n.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            point_n.ridge_number = ridge_index;
+            storageAllPath.push_back(point_n);
+            polygonPoint vector_f;
+            vector_f.x = filtered_backshape_keypoints_[ridge_index][4].x - filtered_backshape_keypoints_[ridge_index][3].x;
+            vector_f.y = filtered_backshape_keypoints_[ridge_index][4].y - filtered_backshape_keypoints_[ridge_index][3].y;
+            double heading_3 = common::commonMath::calculateHeading(vector_f);
+
+            startPoint[0] = filtered_backshape_keypoints_[ridge_index][3].x;
+            startPoint[1] = filtered_backshape_keypoints_[ridge_index][3].y;
+            startPoint[2] = heading_2;
+            endPoint[0] = filtered_backshape_keypoints_[ridge_index][4].x;
+            endPoint[1] = filtered_backshape_keypoints_[ridge_index][4].y;
+            endPoint[2] = heading_3;
+            p->reedsShepp(startPoint,endPoint);
+            finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int j = 0; j < finalpath.size();j++){
+                pathInterface::pathPoint pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+            return ;
+        }
+    }
+
+    if(fabs(distance_1) < fabs(distance_2)){ //从短边进入
+        LOG(INFO) << "the last ridge add middle line,from  short bridge enter !";
+        int num_upper = filtered_backshape_keypoints_[ridge_index-1].size();
+        auto first_point  = filtered_backshape_keypoints_[ridge_index-1][num_upper-1];
+        auto second_point = filtered_backshape_keypoints_[ridge_index][1];
+        auto third_point  = filtered_backshape_keypoints_[ridge_index][2];
+        auto fourth_point = filtered_backshape_keypoints_[ridge_index][3];
+        auto ordered_point = common::commonMath::findPointOnSegment(
+                second_point,
+                third_point,
+                6,
+                true);
+        polygonPoint vector_p;
+        vector_p.x = third_point.x - second_point.x;
+        vector_p.y = third_point.y - second_point.y;
+        double heading_oredered_second = common::commonMath::calculateHeading(vector_p);
+        polygonPoint vector_t;
+        vector_t.x = second_point.x - first_point.x;
+        vector_t.y = second_point.y - first_point.y;
+        double heading_ordered_first = common::commonMath::calculateHeading(vector_t);
+        if(heading_ordered_first < 0){
+            heading_ordered_first += 2 * M_PI;
+        }
+        if(heading_oredered_second < 0){
+            heading_oredered_second += 2 * M_PI;
+        }
+        startPoint[0] = first_point.x;
+        startPoint[1] = first_point.y;
+        startPoint[2] = heading_ordered_first;
+        endPoint[0] = ordered_point.x;
+        endPoint[1] = ordered_point.y;
+        endPoint[2] = heading_oredered_second;
+        p->reedsShepp(startPoint,endPoint);
+        finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+        for(int j = 0; j < finalpath.size();j++){
+            pathInterface::pathPoint pathPointCurve;
+            pathPointCurve.x = finalpath[j][0];
+            pathPointCurve.y = finalpath[j][1];
+            pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            pathPointCurve.ridge_number = ridge_index;
+            storageAllPath.push_back(pathPointCurve);
+        }
+        //判断是否增加弯道处理
+        if(SET_REVERSING_FLAG){
+            //弯道结束需要增加3个点位信息
+            auto increase_points3 =
+                    common::commonMath::findPointExtendSegment(second_point,
+                                                               ordered_point,
+                                                               SET_CONVERTDIRECTION_DIST,
+                                                               true,
+                                                               SET_CONVERTDIRECTION_COUNT);
+            for(auto it : increase_points3){
+                it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+                it.ridge_number = ridge_index;
+                storageAllPath.push_back(it);
+            }
+            //增加倒车点位信息
+            std::vector<polygonPoint> lineInfo;
+            lineInfo.push_back(ordered_point);
+            lineInfo.push_back(second_point);
+            auto back_points =
+                    common::commonMath::densify(
+                            lineInfo,
+                            SET_BACK_DIS);
+            for(auto it : back_points){
+                pathInterface::pathPoint temp_point;
+                temp_point.x = it.x;
+                temp_point.y = it.y;
+                temp_point.path_point_mode1 =  pathInterface::pathPointMode1::WORK_AREA;
+                temp_point.path_point_mode2 =  pathInterface::pathPointMode2::BACK;
+                temp_point.ridge_number = ridge_index;
+                storageAllPath.push_back(temp_point);
+            }
+            //结束倒车增加3个点位信息
+            auto ending_back_points =
+                    common::commonMath::findPointExtendSegment(ordered_point,
+                                                               second_point,
+                                                               SET_CONVERTDIRECTION_DIST,
+                                                               true,
+                                                               SET_CONVERTDIRECTION_COUNT);
+            for(auto it : ending_back_points){
+                it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+                it.ridge_number = ridge_index;
+                storageAllPath.push_back(it);
+            }
+            //处理下一个弯道
+            polygonPoint p4;
+            p4.x = filtered_backshape_keypoints_[ridge_index][4].x - fourth_point.x;
+            p4.y = filtered_backshape_keypoints_[ridge_index][4].y - fourth_point.y;
+            double heading_four =
+                    common::commonMath::calculateHeading(p4);
+            double heading_four1 = heading_four;
+            if( heading_four < 0 ){
+                heading_four += 2*M_PI;
+            }
+            if(heading_oredered_second < 0){
+                heading_oredered_second += 2 *M_PI;
+            }
+            startPoint[0] = third_point.x;
+            startPoint[1] = third_point.y;
+            startPoint[2] = heading_oredered_second;
+            endPoint[0] = filtered_backshape_keypoints_[ridge_index][3].x;
+            endPoint[1] = filtered_backshape_keypoints_[ridge_index][3].y;
+            endPoint[2] = heading_four;
+            p->reedsShepp(startPoint,endPoint);
+            finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int j = 0; j < finalpath.size();j++){
+                pathInterface::pathPoint pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+            //处理下一个弯道
+            polygonPoint p6;
+            p6.x =  filtered_backshape_keypoints_[ridge_index][6].x -
+                    filtered_backshape_keypoints_[ridge_index][5].x;
+            p6.y = filtered_backshape_keypoints_[ridge_index][6].y -
+                   filtered_backshape_keypoints_[ridge_index][5].y;
+            double heading_six =
+                    common::commonMath::calculateHeading(p6);
+            if(heading_six < 0){
+                heading_six += M_PI;
+            }
+            startPoint[0] =  filtered_backshape_keypoints_[ridge_index][4].x;
+            startPoint[1] =  filtered_backshape_keypoints_[ridge_index][4].y;
+            startPoint[2] = heading_four1;
+            endPoint[0] = filtered_backshape_keypoints_[ridge_index][5].x;
+            endPoint[1] = filtered_backshape_keypoints_[ridge_index][5].y;
+            endPoint[2] = heading_six;
+            p->reedsShepp(startPoint,endPoint);
+            finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for( int j = 0; j < finalpath.size();j++ ){
+                pathInterface::pathPoint pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+            //添加最后终点
+            pathInterface::pathPoint point_m;
+            point_m.x = filtered_backshape_keypoints_[ridge_index][6].x;
+            point_m.y = filtered_backshape_keypoints_[ridge_index][6].y;
+            point_m.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+            point_m.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            point_m.ridge_number = ridge_index;
+            storageAllPath.push_back(point_m);
+        }
+    }else{
+        LOG(INFO) << "the last ridge add middle line, from long bridge enter !";
+        auto curve_A_StartPt = common::commonMath::findPointOnSegment(
+                filtered_backshape_keypoints_[ridge_index][0],
+                filtered_backshape_keypoints_[ridge_index][1],
+                6,
+                false);
+        auto curve_A_endPt = common::commonMath::findPointOnSegment(
+                filtered_backshape_keypoints_[ridge_index][1],
+                filtered_backshape_keypoints_[ridge_index][2],
+                6,
+                true);
+        polygonPoint vector_A_start ;
+        vector_A_start.x = filtered_backshape_keypoints_[ridge_index][1].x - filtered_backshape_keypoints_[ridge_index][0].x;
+        vector_A_start.y = filtered_backshape_keypoints_[ridge_index][1].y - filtered_backshape_keypoints_[ridge_index][0].y;
+        polygonPoint vector_A_end;
+        vector_A_end.x = filtered_backshape_keypoints_[ridge_index][2].x - filtered_backshape_keypoints_[ridge_index][1].x;
+        vector_A_end.y = filtered_backshape_keypoints_[ridge_index][2].y - filtered_backshape_keypoints_[ridge_index][1].y;
+        double heading_A_start = common::commonMath::calculateHeading(vector_A_start);
+        double heading_A_end = common::commonMath::calculateHeading(vector_A_end);
+
+        startPoint[0] = curve_A_StartPt.x;
+        startPoint[1] = curve_A_StartPt.y;
+        startPoint[2] = heading_A_start;
+        endPoint[0] = curve_A_endPt.x;
+        endPoint[1] = curve_A_endPt.y;
+        endPoint[2] = heading_A_end;
+        p->reedsShepp(startPoint,endPoint);
+        finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+        for(int j = 0; j < finalpath.size();j++){
+            pathInterface::pathPoint pathPointCurve;
+            pathPointCurve.x = finalpath[j][0];
+            pathPointCurve.y = finalpath[j][1];
+            pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            pathPointCurve.ridge_number = ridge_index;
+            storageAllPath.push_back(pathPointCurve);
+        }
+        if(SET_REVERSING_FLAG){
+               // 弯道结束需要增加3个点位信息
+            auto increase_points3 =
+                    common::commonMath::findPointExtendSegment( filtered_backshape_keypoints_[ridge_index][1],
+                                                                curve_A_endPt,
+                                                               SET_CONVERTDIRECTION_DIST,
+                                                               true,
+                                                               SET_CONVERTDIRECTION_COUNT);
+            for(auto it : increase_points3){
+                it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+                it.ridge_number = ridge_index;
+                storageAllPath.push_back(it);
+            }
+            //增加倒车点位信息
+            std::vector<polygonPoint> lineInfo;
+            lineInfo.push_back(curve_A_endPt);
+            lineInfo.push_back(filtered_backshape_keypoints_[ridge_index][1]);
+            auto back_points =
+                    common::commonMath::densify(
+                            lineInfo,
+                            SET_BACK_DIS);
+            for(auto it : back_points){
+                pathInterface::pathPoint temp_point;
+                temp_point.x = it.x;
+                temp_point.y = it.y;
+                temp_point.path_point_mode1 =  pathInterface::pathPointMode1::WORK_AREA;
+                temp_point.path_point_mode2 =  pathInterface::pathPointMode2::BACK;
+                temp_point.ridge_number = ridge_index;
+                storageAllPath.push_back(temp_point);
+            }
+            //结束倒车增加3个点位信息
+            auto ending_back_points =
+                    common::commonMath::findPointExtendSegment(curve_A_endPt,
+                                                               filtered_backshape_keypoints_[ridge_index][1],
+                                                               SET_CONVERTDIRECTION_DIST,
+                                                               true,
+                                                               SET_CONVERTDIRECTION_COUNT);
+            for(auto it : ending_back_points){
+                it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+                it.ridge_number = ridge_index;
+                storageAllPath.push_back(it);
+            }
+            //B点处理
+            auto curve_B_end_pt = common::commonMath::findPointOnSegment(
+                           filtered_backshape_keypoints_[ridge_index][2],
+                           filtered_backshape_keypoints_[ridge_index][3],
+                           6,
+                           true);
+            polygonPoint vector_B_end;
+            vector_B_end.x = filtered_backshape_keypoints_[ridge_index][3].x - filtered_backshape_keypoints_[ridge_index][2].x;
+            vector_B_end.y = filtered_backshape_keypoints_[ridge_index][3].y - filtered_backshape_keypoints_[ridge_index][2].y;
+            double heading_B_end = common::commonMath::calculateHeading(vector_B_end);
+            startPoint[0] = filtered_backshape_keypoints_[ridge_index][1].x;
+            startPoint[1] = filtered_backshape_keypoints_[ridge_index][1].y;
+            startPoint[2] = heading_A_end;
+            endPoint[0] = curve_B_end_pt.x;
+            endPoint[1] = curve_B_end_pt.y;
+            endPoint[2] = heading_B_end;
+            p->reedsShepp(startPoint,endPoint);
+            finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int j = 0; j < finalpath.size();j++){
+                pathInterface::pathPoint pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+            // 弯道结束需要增加3个点位信息
+            auto increase_points3_B =
+                    common::commonMath::findPointExtendSegment( filtered_backshape_keypoints_[ridge_index][2],
+                                                                curve_B_end_pt,
+                                                                SET_CONVERTDIRECTION_DIST,
+                                                                true,
+                                                                SET_CONVERTDIRECTION_COUNT);
+            for(auto it : increase_points3_B){
+                it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+                it.ridge_number = ridge_index;
+                storageAllPath.push_back(it);
+            }
+            //增加倒车点位信息
+            std::vector<polygonPoint> lineInfo_B;
+            lineInfo_B.push_back(curve_B_end_pt);
+            lineInfo_B.push_back(filtered_backshape_keypoints_[ridge_index][2]);
+            auto back_points_B =
+                    common::commonMath::densify(
+                            lineInfo_B,
+                            SET_BACK_DIS);
+            for(auto it : back_points_B){
+                pathInterface::pathPoint temp_point;
+                temp_point.x = it.x;
+                temp_point.y = it.y;
+                temp_point.path_point_mode1 =  pathInterface::pathPointMode1::WORK_AREA;
+                temp_point.path_point_mode2 =  pathInterface::pathPointMode2::BACK;
+                temp_point.ridge_number = ridge_index;
+                storageAllPath.push_back(temp_point);
+            }
+            //结束倒车增加3个点位信息
+            auto ending_back_points_B =
+                    common::commonMath::findPointExtendSegment(curve_B_end_pt,
+                                                               filtered_backshape_keypoints_[ridge_index][2],
+                                                               SET_CONVERTDIRECTION_DIST,
+                                                               true,
+                                                               SET_CONVERTDIRECTION_COUNT);
+            for(auto it : ending_back_points_B){
+                it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+                it.ridge_number = ridge_index;
+                storageAllPath.push_back(it);
+            }
+
+            //添加最后一个弯道
+            polygonPoint  vector_E_pt;
+            vector_E_pt.x = filtered_backshape_keypoints_[ridge_index][6].x - filtered_backshape_keypoints_[ridge_index][5].x;
+            vector_E_pt.y = filtered_backshape_keypoints_[ridge_index][6].y - filtered_backshape_keypoints_[ridge_index][5].y;
+            double heading_E = common::commonMath::calculateHeading(vector_E_pt);
+            startPoint[0] = filtered_backshape_keypoints_[ridge_index][3].x;
+            startPoint[1] = filtered_backshape_keypoints_[ridge_index][3].y;
+            startPoint[2] = heading_B_end;
+            endPoint[0] = filtered_backshape_keypoints_[ridge_index][5].x;
+            endPoint[1] = filtered_backshape_keypoints_[ridge_index][5].y;
+            endPoint[2] = heading_E;
+            p->reedsShepp(startPoint,endPoint);
+            finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int j = 0; j < finalpath.size();j++){
+                pathInterface::pathPoint pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+
+            //增加最后一个点
+            pathInterface::pathPoint point_f;
+            point_f.x = filtered_backshape_keypoints_[ridge_index][6].x;
+            point_f.y = filtered_backshape_keypoints_[ridge_index][6].y;
+            point_f.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+            point_f.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            point_f.ridge_number = ridge_index;
+            storageAllPath.push_back(point_f);
+        }
+    }
+
+}
+
+void   pathPolygonPlan::computeLastRidgeRoutingFourAndFour(std::vector<pathInterface::pathPoint> &storageAllPath,
+                                                           int ridge_index){
+    ReedsSheppStateSpace   *p=new ReedsSheppStateSpace;
+    std::vector<std::vector<double>> finalpath;
+    double startPoint[3],endPoint[3];
+    int num = filtered_backshape_keypoints_[ridge_index].size() ;
+    auto ordered_pts = filtered_backshape_keypoints_[ridge_index];
+    int num_upper = filtered_backshape_keypoints_[ridge_index-1].size();
+    pathInterface::pathPoint  point_1;
+    //计算点位的heading
+    computeKeypointsHeading();
+    //得到对应的path
+    auto spec_point = filtered_backshape_keypoints_[ridge_index-1][num_upper-1];
+    //计算第一个弯道
+    startPoint[0] = spec_point.x;
+    startPoint[1] = spec_point.y;
+    startPoint[2] = spec_point.heading;
+    endPoint[0] = filtered_backshape_keypoints_[ridge_index][0].x;
+    endPoint[1] = filtered_backshape_keypoints_[ridge_index][0].y;
+    endPoint[2] = filtered_backshape_keypoints_[ridge_index][0].heading;
+    p->reedsShepp(startPoint,endPoint);
+    finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+    for(int j = 0; j < finalpath.size();j++){
+        pathInterface::pathPoint pathPointCurve;
+        pathPointCurve.x = finalpath[j][0];
+        pathPointCurve.y = finalpath[j][1];
+        pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+        pathPointCurve.ridge_number = ridge_index;
+        storageAllPath.push_back(pathPointCurve);
+    }
+    //计算剩余弯道
+    for(int i = 1;i < num ;i++){
+        if(i >= num-1){
+            point_1.x = filtered_backshape_keypoints_[ridge_index][num-1].x;
+            point_1.y = filtered_backshape_keypoints_[ridge_index][num -1].y;
+            point_1.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+            point_1.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            point_1.ridge_number = ridge_index;
+            storageAllPath.push_back(point_1);
+            return;
+        }
+        startPoint[0] = filtered_backshape_keypoints_[ridge_index][i].x;
+        startPoint[1] = filtered_backshape_keypoints_[ridge_index][i].y;
+        startPoint[2] = filtered_backshape_keypoints_[ridge_index][i].heading;
+        endPoint[0] = filtered_backshape_keypoints_[ridge_index][i+1].x;
+        endPoint[1] = filtered_backshape_keypoints_[ridge_index][i+1].y;
+        endPoint[2] = filtered_backshape_keypoints_[ridge_index][i+1].heading;
+        p->reedsShepp(startPoint,endPoint);
+        finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+        for(int j = 0; j < finalpath.size();j++){
+            pathInterface::pathPoint pathPointCurve;
+            pathPointCurve.x = finalpath[j][0];
+            pathPointCurve.y = finalpath[j][1];
+            pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            pathPointCurve.ridge_number = ridge_index;
+            storageAllPath.push_back(pathPointCurve);
+        }
+        i++;
+    }
+}
+
+void pathPolygonPlan::computeKeypointsHeading(){
+    int num = filtered_backshape_keypoints_.size();
+    auto ridge_last_pts = filtered_backshape_keypoints_[num-1];
+    double heading;
+    for(int i = 0;i < ridge_last_pts.size();i++){
+            polygonPoint vector_p;
+            vector_p.x = ridge_last_pts[i+1].x - ridge_last_pts[i].x;
+            vector_p.y = ridge_last_pts[i+1].y - ridge_last_pts[i].y;
+            heading = common::commonMath::calculateHeading(vector_p);
+            LOG(INFO) <<"the last ridge  compute heading is : " << heading;
+            filtered_backshape_keypoints_[num - 1][i].heading = heading;
+            filtered_backshape_keypoints_[num - 1][i + 1].heading = heading;
+            i++;
+    }
 }
 
 const std::vector<std::vector<polygonPoint>> pathPolygonPlan::getFilteredBackShapeKeyPoints()  const{
@@ -957,8 +1767,6 @@ void pathPolygonPlan::findSuitableEntrance(std::vector<Point> points ){
             }
 
             //求一个足够长的线段与原始多边形相交的点
-//            double k_value = i.k;
-//            double b = i.b;
             double temp_x = 0,temp_y = 0;
 //            if(i.points[i.points.size()-1].x > i.points[i.points.size()-2].x){ //x在增大
                 temp_x = i.points[i.points.size()-1].x  - i.dx * SET_VIRTUAL_LINE_LENGTH;
@@ -1101,28 +1909,7 @@ void pathPolygonPlan::updatePolygonPointsIncrease(){
 const std::vector<std::vector<polygonPoint>>  pathPolygonPlan::getInsertedPolygonPointsIncrease() const{
     return  insertedPtToNarrowPolygon_;
 }
-//
-//void pathPolygonPlan::updatePolygonPointsSequencem(){
-//      std::vector<std::vector<Point>> temp_points;
-//      for(auto i : storageNarrowPolygonPoints_){
-//          std::vector<Point> temp;
-//          for(auto j : i){
-//              Point point_m;
-//              point_m.x = j.x;
-//              point_m.y = j.y;
-//              temp.push_back(point_m);
-//          }
-//          temp_points.push_back(temp);
-//      }
-//      for(auto it : temp_points){
-//        auto polygonPts = common::commonMath::updatePolygonPointsSequence(it);
-//        updatedPolygonPointsSequence_.push_back(polygonPts);
-//      }
-//}
 
-// const  std::vector<std::vector<Point>> pathPolygonPlan::getUpdatedPolygonPointsSequence() const {
-//    return updatedPolygonPointsSequence_;
-//}
 
 void pathPolygonPlan::computebackShapeKeypoints(){
     std::vector<polygonPoint>  temp_points;
@@ -1136,28 +1923,6 @@ void pathPolygonPlan::computebackShapeKeypoints(){
        fabs(diff_narrow_and_intsPts) == 0 ||
        fabs(diff_narrow_and_intsPts) == 2){
         LOG(INFO) << "the situation + the last ridge can finish plan !";
-//        //未包含最后一垄
-//        for(int i = 0;i < count_narrow_polygon_numbers_ -1;i++){
-//            if(i == 0){
-//                for(int  it = 1 ; it < middle_points_polygon_[i].size() ;it ++){
-//                    temp_points.push_back(middle_points_polygon_[i][it]);
-//                }
-//                temp_points.push_back(middle_points_polygon_[i][0]);
-//            }else{
-//                for(int  it = 1 ; it < middle_points_polygon_[i].size();it ++){
-//                    temp_points.push_back(middle_points_polygon_[i][it]);
-//                }
-//                temp_points.push_back(middle_points_polygon_[i][0]);
-//            }
-////        for(int  it = 0 ; it < storageNarrowPolygonPoints_[i].size() -1;it ++){
-////               temp_points.push_back(storageNarrowPolygonPoints_[i][it]);
-////        }
-//            backShape_keypoints_.push_back(temp_points);
-//            temp_points.clear();
-//        }
-//        //添加最后一笼
-//        backShape_keypoints_.push_back(middle_points_polygon_[count_narrow_polygon_numbers_-1]);
-
         //分类处理
         switch(last_polys_type_){
             case aiforce::Route_Planning::lastPolyIdentify::POLY_FOUR_AND_THREE:{
@@ -1361,7 +2126,7 @@ void  pathPolygonPlan::computeLastRidgeKeyPoints4and3(){
             temp_points.push_back(filtered_points[i]);
       }
       //这里这样处理是为了后续过滤时不将此点删除
-      temp_points.push_back(polygonPoint(filtered_points[1].x +0.1,filtered_points[1].y));
+      temp_points.push_back(polygonPoint(filtered_points[1].x + 0.1 ,filtered_points[1].y));
       // backShape_keypoints_.push_back(temp_points);
       //将倒数第一笼存储到关键点位中
       //根据指定点计算最后一笼的关键点信息
@@ -1495,28 +2260,32 @@ void pathPolygonPlan::computeLastRidgeKeyPoints4and4(int count_flag){
     std::vector<polygonPoint> filtered_points = deleteRepeatPolyPts(middle_points_polygon_[number-1]);
 
     if(count_flag == 2){
-        int number_m = backShape_keypoints_[backShape_keypoints_.size()-1].size();
-        specify_point = backShape_keypoints_[backShape_keypoints_.size()-1][number_m-1];
+        int number_m  =  backShape_keypoints_[backShape_keypoints_.size()-1].size();
+        specify_point =  backShape_keypoints_[backShape_keypoints_.size()-1][number_m-1];
     }else{
             specify_point = filtered_points[1];
     }
     LOG(INFO) << "the last ridege entrance point is : (" << specify_point.x << "," << specify_point.y << ")";
     specify_point.heading = atan2(filtered_points[1].y - filtered_points[0].y,
                                   filtered_points[1].x - filtered_points[0].x);
-    //根据指定点计算距离其最近的点位信息A\B\D\C
-    double distance1 = common::commonMath::distance2(line_rec_short_AB_[0],specify_point);
-    double distance2 = common::commonMath::distance2(line_rec_short_AB_[1],specify_point);
-    double distance3 = common::commonMath::distance2(line_rec_short_DC_[0],specify_point);
-    double distance4 = common::commonMath::distance2(line_rec_short_DC_[1],specify_point);
-    LOG(INFO) << "A distance is ： "  <<  distance1;
-    LOG(INFO) << "B distance is :  "  <<  distance2;
-    LOG(INFO) << "D distance is ： "  <<  distance3;
-    LOG(INFO) << "C distance is :  "  <<  distance4;
+
+    //根据line1和line2 确定哪个距离最近
+    double distance1 = common::commonMath::distance2(specify_point,move_pts_line_1_[0]);
+    double distance2 = common::commonMath::distance2(specify_point,move_pts_line_2_[0]);
+    double distance3 = common::commonMath::distance2(specify_point,move_pts_line_1_[move_pts_line_1_.size()-1]);
+    double distance4 = common::commonMath::distance2(specify_point,move_pts_line_2_[move_pts_line_2_.size()-1]);
+
     std::vector<double> stor_distance;
     stor_distance.push_back(distance1);
     stor_distance.push_back(distance2);
     stor_distance.push_back(distance3);
     stor_distance.push_back(distance4);
+
+    LOG(INFO) << "move pts line1 distance is ： "  <<  distance1;
+    LOG(INFO) << "move pts line2 distance is :  "  <<  distance2;
+    LOG(INFO) << "move pts line1 end distance is ： "  <<  distance3;
+    LOG(INFO) << "move pts line2 end distance is :  "  <<  distance4;
+
     double min_dis = DBL_MAX;
     int spec_number;
     for(int i = 0;i < 4;i++){
@@ -1526,67 +2295,69 @@ void pathPolygonPlan::computeLastRidgeKeyPoints4and4(int count_flag){
         }
     }
     spec_number +=1;
-    LOG(INFO) << "the specical number is : " << spec_number;
+    LOG(INFO) <<"the spec number is : " << spec_number;
     std::vector<polygonPoint> storage_last_keypts;
     switch(spec_number){
-        case 1:{
-            LOG(INFO) << "the last ridge A entrance is Minimum distance !";
-            std::reverse(line_rec_short_BA_.begin(),line_rec_short_BA_.end());
-            std::reverse(line_rec_short_CD_.begin(),line_rec_short_CD_.end());
-            for(int i = 0;i < line_rec_short_BA_.size();i++){
-                if(i % 2 == 0){
-                    storage_last_keypts.push_back(line_rec_short_BA_[i]);
-                    storage_last_keypts.push_back(line_rec_short_CD_[i]);
-                }else{
-                    storage_last_keypts.push_back(line_rec_short_CD_[i]);
-                    storage_last_keypts.push_back(line_rec_short_BA_[i]);
+        case 1: {
+            LOG(INFO) << "the situation belong to minimum distance to line1 front !";
+            for (int i = 0; i < move_pts_line_1_.size(); i++) {
+                if (i % 2 == 0) {
+                    storage_last_keypts.push_back(move_pts_line_1_[i]);
+                    storage_last_keypts.push_back(move_pts_line_2_[i]);
+                } else {
+                    storage_last_keypts.push_back(move_pts_line_2_[i]);
+                    storage_last_keypts.push_back(move_pts_line_1_[i]);
                 }
             }
             break;
         }
         case 2:{
-            LOG(INFO) << "the last ridge B entrance is Minimum distance !";
-            for(int i = 0;i < line_rec_short_BA_.size();i++){
+            LOG(INFO) << "the situation belong to minimum distance to line2 front !";
+            for(int i = 0;i < move_pts_line_1_.size();i++){
                 if(i % 2 == 0){
-                    storage_last_keypts.push_back(line_rec_short_BA_[i]);
-                    storage_last_keypts.push_back(line_rec_short_CD_[i]);
+                    storage_last_keypts.push_back(move_pts_line_2_[i]);
+                    storage_last_keypts.push_back(move_pts_line_1_[i]);
                 }else{
-                    storage_last_keypts.push_back(line_rec_short_CD_[i]);
-                    storage_last_keypts.push_back(line_rec_short_BA_[i]);
+                    storage_last_keypts.push_back(move_pts_line_1_[i]);
+                    storage_last_keypts.push_back(move_pts_line_2_[i]);
                 }
             }
             break;
         }
         case 3:{
-            LOG(INFO) << "the last ridge D entrance is Mininum distance !";
-            std::reverse(line_rec_short_BA_.begin(),line_rec_short_BA_.end());
-            std::reverse(line_rec_short_CD_.begin(),line_rec_short_CD_.end());
-            for(int i = 0;i < line_rec_short_BA_.size();i++){
-                if(i % 2 == 0){
-                    storage_last_keypts.push_back(line_rec_short_CD_[i]);
-                    storage_last_keypts.push_back(line_rec_short_BA_[i]);
+            std::reverse(move_pts_line_1_.begin(),move_pts_line_1_.end());
+            std::reverse(move_pts_line_2_.begin(),move_pts_line_2_.end());
+            LOG(INFO) << "the situation belong to minimum distance to line1 back !";
+            for(int i = 0;i < move_pts_line_1_.size();i++){
+                if( i % 2 == 0){
+                    storage_last_keypts.push_back(move_pts_line_1_[i]);
+                    storage_last_keypts.push_back(move_pts_line_2_[i]);
                 }else{
-                    storage_last_keypts.push_back(line_rec_short_BA_[i]);
-                    storage_last_keypts.push_back(line_rec_short_CD_[i]);
+                    storage_last_keypts.push_back(move_pts_line_2_[i]);
+                    storage_last_keypts.push_back(move_pts_line_1_[i]);
                 }
             }
             break;
         }
         case 4:{
-            LOG(INFO) << "the last ridge C entrance is Mininum distance !";
-            for(int i = 0;i < line_rec_short_BA_.size();i++){
+            std::reverse(move_pts_line_1_.begin(),move_pts_line_1_.end());
+            std::reverse(move_pts_line_2_.begin(),move_pts_line_2_.end());
+            LOG(INFO) << "the situation belong to minimum distance to line2 back!";
+            for(int i = 0;i < move_pts_line_1_.size();i++){
                 if(i % 2 == 0){
-                    storage_last_keypts.push_back(line_rec_short_CD_[i]);
-                    storage_last_keypts.push_back(line_rec_short_BA_[i]);
+                    storage_last_keypts.push_back(move_pts_line_2_[i]);
+                    storage_last_keypts.push_back(move_pts_line_1_[i]);
                 }else{
-                    storage_last_keypts.push_back(line_rec_short_BA_[i]);
-                    storage_last_keypts.push_back(line_rec_short_CD_[i]);
+                    storage_last_keypts.push_back(move_pts_line_1_[i]);
+                    storage_last_keypts.push_back(move_pts_line_2_[i]);
                 }
             }
             break;
         }
-        default:
+        default:{
+            LOG(INFO) << "the situation no  considered !";
             break;
+        }
     }
     backShape_keypoints_.push_back(storage_last_keypts);
 }
@@ -1659,6 +2430,5 @@ std::vector<polygonPoint> pathPolygonPlan::insertPointToPolygon(polygonPoint ins
     }
     return storage_points;
 }
-
 }
 }
