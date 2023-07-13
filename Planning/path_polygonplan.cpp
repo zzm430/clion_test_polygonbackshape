@@ -1730,7 +1730,7 @@ void pathPolygonPlan::judgePointPosition(int i ,
                                                         ((*j).y() - im.points[num-1].y) *
                                                                 ((*j).y() - im.points[num-1].y));
                     if ((fabs(angle)< 5) &&
-                            (fabs(distancePts_near_2 - im.distance) < 0.5)){
+                            (fabs(distancePts_near_2 - im.distance) < 0.1)){
                         im.count += 1;
                         polygonPoint temp;
                         temp.x = (*j).x();
@@ -1768,13 +1768,9 @@ void pathPolygonPlan::findSuitableEntrance(std::vector<Point> points ){
 
             //求一个足够长的线段与原始多边形相交的点
             double temp_x = 0,temp_y = 0;
-//            if(i.points[i.points.size()-1].x > i.points[i.points.size()-2].x){ //x在增大
-                temp_x = i.points[i.points.size()-1].x  - i.dx * SET_VIRTUAL_LINE_LENGTH;
-                temp_y = i.points[i.points.size()-1].y  - i.dy * SET_VIRTUAL_LINE_LENGTH;
-//            }else{ //x在减小
-//                temp_x = i.points[i.points.size()-1].x - i.dx * SET_VIRTUAL_LINE_LENGTH;
-//                temp_y = i.points[i.points.size()-1].y - i.dy * SET_VIRTUAL_LINE_LENGTH;
-//            }
+            temp_x = i.points[i.points.size()-1].x  - i.dx * SET_VIRTUAL_LINE_LENGTH;
+            temp_y = i.points[i.points.size()-1].y  - i.dy * SET_VIRTUAL_LINE_LENGTH;
+
            LOG(INFO) << "the last point is :" << i.points[i.points.size()-1].x << " " << i.points[i.points.size()-1].y;
             //计算该线段与原始多边形的交点
             polygon  poly;
