@@ -146,7 +146,7 @@ namespace Route_Planning
      virtual std::vector<pathInterface::pathPoint> computeRidgeRoutingpts(int ridge_index); //根据垄号计算routingpath信息
      virtual void dealWithLastSeveralPolygons();   //根据最后几垄的情况分类处理
      virtual void computeLastRidgePoints4and3();     //提供用于处理最后几垄的关键点4边行内嵌3角形信息
-     virtual void computeLastRidgeKeyPoints4and3();  //计算得到最后几垄的关键点4边行内嵌3角形信息
+     virtual void computeLastRidgeKeyPoints4and3(int count_flag);  //计算得到最后几垄的关键点4边行内嵌3角形信息
      virtual void computeLastRidgePoints4and4();     //提供用于处理最后的4边形内嵌4边形信息
      virtual void computeLastRidgeSituation();       //处理最后几垄信息
      virtual void computeLastRidgeKeyPoints4and4(int count_flag);   //计算得到最后几垄的关键点4边行内嵌4边行信息
@@ -157,6 +157,8 @@ namespace Route_Planning
      virtual  void   computeLastRidgeRoutingFourAndFour(std::vector<pathInterface::pathPoint> &storageAllPath,
                                                         int ridge_index);
      virtual void  computeKeypointsHeading();        //计算最后一笼点位的heading
+     virtual void computeLastRidgeRoutingFourAndThree(std::vector<pathInterface::pathPoint> &storageAllPath,
+                                                      int ridge_index); //计算最后一笼属于四边形内嵌三角形的情况path生成
 
 
 
@@ -199,6 +201,8 @@ namespace Route_Planning
      std::vector<polygonPoint>      move_last_ridge_AC_pts_;  //平移后的最后一笼的AC点位信息
      std::vector<polygonPoint>      move_last_ridge_BC_pts_;  //平移后的最后一笼的BC点位信息
      std::vector<polygonPoint>      line_long_AB_;            //三角形对应的最长边
+     std::vector<polygonPoint>      move_pts_tangle_line_1_;  //线段的交点1
+     std::vector<polygonPoint>      move_pts_tangle_line_2_;  //线段的交点2
 
  private:                                                     //用于4边形内嵌4边形
      std::vector<polygonPoint>       line_rec_short_BA_;      //矩形短边BA上的关键点

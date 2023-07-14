@@ -27,6 +27,7 @@ namespace common{
 //11.针对给定的多边形的点位信息，找到x最小的点作为起始点，开始逆时针排序存储
 //12.针对给定点，插入到多边形的指定边上，前提是插入的点在多边形的边上
 //13.给出一个三角形，求三角形对应的最短边，及其对角的顶点
+//14.给定一个点和一个多边形(闭环)的点位，更新多边形的存储顺序，第一个点距离该点距离最近
 
 //1.计算两点之间的距离
 //2.找到线段上固定端点固定距离的点
@@ -230,6 +231,32 @@ namespace common{
 //
 //               return storage_pts;
 //        }
+        //14.给定一个点和一个多边形(闭环)的点位，更新多边形的存储顺序，第一个点距离该点距离最近
+        static std::vector<aiforce::Route_Planning::polygonPoint>  updatePolySequenceOrdered(
+                aiforce::Route_Planning::polygonPoint point_A,
+                std::vector<aiforce::Route_Planning::polygonPoint>  pts){
+            double min_dis = DBL_MAX;
+            aiforce::Route_Planning::polygonPoint min_pt;
+            int ordered_number;
+            for(int it = 0; it  < pts.size();it++){
+                double temp_dis = distance2(pts[it],point_A);
+                if(temp_dis < min_dis){
+                    min_dis = temp_dis;
+                    min_pt.x = pts[it].x;
+                    min_pt.y = pts[it].y;
+                    ordered_number = it;
+                }
+            }
+            int num = pts.size();
+            int temp_m = ordered_number;
+            std::vector<aiforce::Route_Planning::polygonPoint> stro_pts;
+            for(int i = 0;i < num-1;i++){
+                stro_pts.push_back(pts[ordered_number % num]);
+                ordered_number +=1;
+            }
+            stro_pts.push_back(pts[temp_m % num]);
+            return stro_pts;
+        }
         //计算两向量之间的点积
         static double dot_product(Point line_1,
                            Point line_2){

@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     Point temp_point;
     temp_point.x = (narrowingPolygonPoints[0].x + narrowingPolygonPoints[1].x)/2;
     temp_point.y = (narrowingPolygonPoints[0].y + narrowingPolygonPoints[1].y)/2;
-//    instance_pathPolygonPlan.computePolygonsAndLineNode(temp_point);
+
     auto points = instance_pathPolygonPlan.getNarrowPolygonPoints();
     std::ofstream  polyps;
     polyps.open("/home/zzm/Desktop/test_path_figure-main/src/narrow_points.txt",std::ios::out);
@@ -179,32 +179,20 @@ int main(int argc, char **argv) {
     std::ofstream keypoints;
     keypoints.open("/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt",std::ios::out);
     int all_size = keypoints_m.size();
-    for(auto i  = 0;i < all_size;i++){
+    for(auto i  = 0;i < all_size ;i++){
          for(auto j : keypoints_m[i]){
              keypoints << " " << j.x;
          }
     }
     keypoints << std::endl;
-    for(auto i = 0;i < all_size;i++){
+    for(auto i = 0 ;i < all_size;i++){
         for(auto j : keypoints_m[i]){
             keypoints << " " << j.y;
         }
     }
     keypoints << std::endl;
     keypoints.close();
-//    for(auto it : keypoints_m){
-//        for(auto j : it){
-//            keypoints << " " << j.x;
-//        }
-//    }
-//    keypoints << std::endl;
-//    for(auto it : keypoints_m){
-//        for(auto j : it){
-//            keypoints << " " << j.y;
-//        }
-//    }
-//    keypoints << std::endl;
-//    keypoints.close();
+
 
    LOG(INFO) << "the program can enter here !";
     //获取routing信息
@@ -214,7 +202,7 @@ int main(int argc, char **argv) {
     auto ridges = keypoints_m.size();
     std::vector<pathInterface::pathPoint> routing_pts;
     std::vector<std::vector<pathInterface::pathPoint>>  all_path;
-    for(auto i  = 0;i < ridges;i++){
+    for(auto i  = 0; i< ridges ;i++){
          routing_pts =
                 instance_pathPolygonPlan.computeRidgeRoutingpts(i);
         for (int i = 0; i < (int)routing_pts.size(); i++) {
