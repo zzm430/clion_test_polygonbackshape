@@ -53,11 +53,11 @@ void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
                                 join_strategy, end_strategy, circle_strategy);
         std::vector<polygonPoint>  tempPolygon;
         //遇到矩形的内缩的截止条件，做筛选处理
-        if(result.empty()) {
-            dealWithLastSeveralPolygons();
-            computeLastRidgeSituation();
-            break;
-        }
+//        if(result.empty()) {
+////            dealWithLastSeveralPolygons();
+////            computeLastRidgeSituation();
+//            break;
+//        }
         minPolygon = result;
         storageNarrowPolygonPoints2_.push_back(result);
         count_narrow_polygon_numbers_ += 1;
@@ -70,23 +70,22 @@ void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
             }
         }
         storageNarrowPolygonPoints_.push_back(tempPolygon);
-
-        //由于后续判断回字形入口model
-        if(i == 1){
-            count_first_ridge = result.begin()->outer().size();
-        }else if(i == 2){
-            count_second_ridge = result.begin()->outer().size();
-            if(count_first_ridge ==
-               count_second_ridge){
-                //计算出各个斜率直线并保存
-                LOG(INFO) << "the count_first_ridge == count_second_ridge !";
-                computeEveryKbLine();
-            }else{
-                LOG(ERROR) << "the count_firsg_ridge != count_second_ridge !";
-            }
-        }else {
-            judgePointPosition(i,result);  //为找到最长的内缩边提供count
-        }
+//        //由于后续判断回字形入口model
+//        if(i == 1){
+//            count_first_ridge = result.begin()->outer().size();
+//        }else if(i == 2){
+//            count_second_ridge = result.begin()->outer().size();
+//            if(count_first_ridge ==
+//               count_second_ridge){
+//                //计算出各个斜率直线并保存
+//                LOG(INFO) << "the count_first_ridge == count_second_ridge !";
+//                computeEveryKbLine();
+//            }else{
+//                LOG(ERROR) << "the count_firsg_ridge != count_second_ridge !";
+//            }
+//        }else {
+//            judgePointPosition(i,result);  //为找到最长的内缩边提供count
+//        }
     }
     LOG(INFO) << "the narrow polygon_number size is :"<< count_narrow_polygon_numbers_;
 
@@ -103,6 +102,120 @@ void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
 //              << "]";
 //    LOG(INFO) << "the count narrow polygon nubmers is : "
 //              << count_narrow_polygon_numbers_;
+}
+
+void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
+    int num_size = points.size();
+    //去掉最后一个闭环点
+    cgal_Polygon_2 poly;
+    for(int i = 0;i < num_size-1; i++){
+        poly.push_back(cgal_Point(points[i].x,points[i].y));
+    }
+
+
+    cgal_SsPtr  iss =
+            CGAL::create_interior_straight_skeleton_2(
+                                poly.vertices_begin(),
+                                poly.vertices_end());
+    std::vector<polygonPoint>  storage_polypts;
+    std::cout << "---------------------------------------------------------------" << iss.get()->size_of_vertices() << std::endl;
+    for(auto i = iss.get()->halfedges_begin();
+             i != iss.get()->halfedges_end();
+             i++){
+        print_point(i->opposite()->vertex()->point()) ;
+        polygonPoint temp;
+        temp.x = i->opposite()->vertex()->point()[0];
+        temp.y = i->opposite()->vertex()->point()[1];
+        std::cout << "->" ;
+        print_point(i->vertex()->point());
+        std::cout << " " << ( i->is_bisector() ? "bisector" : "contour" ) << std::endl;
+        polygonPoint temdd;
+        temdd.x = i->vertex()->point()[0];
+        temdd.y = i->vertex()->point()[1];
+        storage_polypts.push_back(temp);
+        storage_polypts.push_back(temdd);
+    }
+    std::ofstream   test_skeleton_2;
+    test_skeleton_2.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_2.txt",
+                   std::ios::out);
+    for(auto it : storage_polypts){
+        test_skeleton_2 << " " << it.x ;
+    }
+    test_skeleton_2 << std::endl;
+    for(auto it : storage_polypts){
+        test_skeleton_2 << " " << it.y;
+    }
+    test_skeleton_2 << std::endl;
+    test_skeleton_2.close();
+    std::vector<polygonPoint> storage_poinm;
+    for(auto i = iss.get()->vertices_begin();
+            i != iss.get()->vertices_end();
+             i++){
+        if(i->is_skeleton()){
+            polygonPoint temp;
+            temp.x = i->point()[0];
+            temp.y = i->point()[1];
+            storage_poinm.push_back(temp);
+        }
+    }
+    std::ofstream test_skeleton_3;
+    test_skeleton_3.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_3.txt",
+                         std::ios::out);
+    for(auto it : storage_poinm){
+        test_skeleton_3 << " " << it.x ;
+    }
+    test_skeleton_3 << std::endl;
+    for(auto it : storage_poinm){
+        test_skeleton_3 << " " << it.y;
+    }
+    test_skeleton_3 << std::endl;
+    test_skeleton_3.close();
+    //计算内缩多边形
+    double  buffer_distance = DBL_MAX;
+
+    for(auto i = 1;i <= MAX_TRAVERSALS_NUMBERS;i++){
+        if(i == 1){
+            buffer_distance =  RIDGE_WIDTH_LENGTH/2;
+        }else{
+            buffer_distance = i * RIDGE_WIDTH_LENGTH - RIDGE_WIDTH_LENGTH/2;
+        }
+        cgal_PolygonPtrVector offset_polygon =
+                CGAL::create_interior_skeleton_and_offset_polygons_2(buffer_distance,poly);
+        if(offset_polygon.size() == 0){
+            LOG(INFO) << "already narrow to last ,the narrow poly size is " << i - 1 ;
+            break;
+        }
+        std::vector<polygonPoint>   poly_pts;
+        for(auto it : offset_polygon){
+          for(auto j : *it){
+              polygonPoint temppt;
+              temppt.x = j.x();
+              temppt.y = j.y();
+              poly_pts.push_back(temppt);
+          }
+        }
+        LOG(INFO) << "the i is : " << i << std::endl;
+        poly_pts.push_back(poly_pts[0]);
+        cgalPolypts_.push_back(poly_pts);
+    }
+
+    std::ofstream test_skeleton_4;
+    test_skeleton_4.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_4.txt",
+                         std::ios::out);
+    for(auto it : cgalPolypts_){
+        for(auto j: it){
+            test_skeleton_4 << " " << j.x ;
+        }
+    }
+    test_skeleton_4 << std::endl;
+    for(auto it : cgalPolypts_){
+        for(auto j: it){
+            test_skeleton_4 << " " << j.y ;
+        }
+    }
+    test_skeleton_4 << std::endl;
+    test_skeleton_4.close();
+    LOG(INFO) <<"the enter here ---------------------------------------!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
 }
 
 void pathPolygonPlan::dealWithLastSeveralPolygons(){

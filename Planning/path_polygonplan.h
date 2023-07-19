@@ -22,6 +22,12 @@
 #include "path_baseplan.h"
 #include "common/common_parameters.h"
 #include <common/plotter.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/create_straight_skeleton_2.h>
+#include <CGAL/create_offset_polygons_2.h>
+#include <boost/shared_ptr.hpp>
+#include <common/print.h>
+
 namespace aiforce{
 namespace Route_Planning
 {
@@ -37,10 +43,16 @@ namespace Route_Planning
     typedef Kernel::Line_2                            Line_2;
     typedef Kernel::Segment_2                         Segment_2;
     typedef CGAL::Polygon_2<Kernel>                   Polygon_2;
-//
-//    typedef CGAL::Exact_predicates_exact_constructions_kernel K;
-//
-//    typedef K::Point_2                           Point1__2;
+
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel K ;
+    typedef K::Point_2                        cgal_Point ;
+    typedef CGAL::Polygon_2<K>                cgal_Polygon_2 ;
+    typedef CGAL::Straight_skeleton_2<K>      cgal_Ss ;
+    typedef boost::shared_ptr<cgal_Ss>        cgal_SsPtr ;
+
+    typedef boost::shared_ptr<cgal_Polygon_2> cgal_PolygonPtr ;
+    typedef std::vector<cgal_PolygonPtr>      cgal_PolygonPtrVector ;
+
 
     class  polygonPoint: public Point{
     public:
@@ -217,6 +229,13 @@ namespace Route_Planning
  private:                                                    //用于四边形内嵌四边形
      std::vector<polygonPoint>  move_pts_line_1_;            //线段的交点1
      std::vector<polygonPoint>  move_pts_line_2_;            //线段的交点2
+
+
+ public:
+     void cgalNarrowPolygons(std::vector<Point> &points);
+
+ private:
+     std::vector<std::vector<polygonPoint>>   cgalPolypts_;
  };
 }
 }

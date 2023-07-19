@@ -60,8 +60,11 @@ int main(int argc, char **argv) {
     origin_polygon.close();
 
     aiforce::Route_Planning::pathPolygonPlan   instance_pathPolygonPlan;
-    instance_pathPolygonPlan.computeNarrowPolygons(narrowingPolygonPoints);
+//    instance_pathPolygonPlan.computeNarrowPolygons(narrowingPolygonPoints);
+//    std::reverse(narrowingPolygonPoints.begin(),narrowingPolygonPoints.end());
+    instance_pathPolygonPlan.cgalNarrowPolygons(narrowingPolygonPoints);
 
+    return 0;
     //temp point;
     Point temp_point;
     temp_point.x = (narrowingPolygonPoints[0].x + narrowingPolygonPoints[1].x)/2;

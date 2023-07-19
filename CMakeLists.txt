@@ -3,6 +3,14 @@ project(polygonbackshape)
 find_package(Boost REQUIRED COMPONENTS )
 find_package(OpenCV REQUIRED)
 find_package(CGAL REQUIRED)
+find_package(Matlab REQUIRED)
+#find_package(PythonLibs REQUIRED)
+
+
+
+
+
+
 if(CGAL_FOUND)
     message(STATUS "Found CGAL library")
 else()
@@ -16,6 +24,8 @@ set(CMAKE_CXX_STANDARD 11)
 include_directories(${CGAL_INCLUDE_DIRS})
 include_directories(.)
 include_directories(${OpenCV_INCLUDE_DIRS})
+#include_directories(${PYTHON_INCLUDE_DIRS})
+
 
 add_executable(polygonbackshape
               main.cpp
@@ -29,5 +39,9 @@ add_executable(polygonbackshape
               Geometry/reeds_shepp.h
               common/plotter.h
               easylogging++.cc Planning/path_polygonplan.cpp common/math/common_math.h)
+target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
 target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})
+target_link_libraries(polygonbackshape ${Matlab_LIBRARIES})
+#target_link_libraries(polygonbackshape ${PYTHON_LIBRARIES})
+
