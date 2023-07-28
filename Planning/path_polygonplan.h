@@ -19,15 +19,19 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <Planning/path_interface.h>
 #include <Geometry/reeds_shepp.h>
-#include "path_baseplan.h"
+//#include "path_baseplan.h"
 #include "common/common_parameters.h"
 #include <common/plotter.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/create_straight_skeleton_2.h>
 #include <CGAL/create_offset_polygons_2.h>
+#include <CGAL/partition_2.h>
+#include <CGAL/Partition_traits_2.h>
+#include <CGAL/property_map.h>
+#include <list>
 #include <boost/shared_ptr.hpp>
 #include <common/print.h>
-
+#include <unordered_set>
 namespace aiforce{
 namespace Route_Planning
 {
@@ -49,10 +53,24 @@ namespace Route_Planning
     typedef CGAL::Polygon_2<K>                cgal_Polygon_2 ;
     typedef CGAL::Straight_skeleton_2<K>      cgal_Ss ;
     typedef boost::shared_ptr<cgal_Ss>        cgal_SsPtr ;
+    typedef K::Segment_2                      cgal_Segment_2;
 
     typedef boost::shared_ptr<cgal_Polygon_2> cgal_PolygonPtr ;
     typedef std::vector<cgal_PolygonPtr>      cgal_PolygonPtrVector ;
 
+
+    typedef CGAL::Partition_traits_2<K>                         Traits;
+    typedef Traits::Point_2                               partition_Point_2;
+    typedef Traits::Polygon_2                             partition_Polygon_2;      // a polygon of indices
+    typedef std::list<partition_Polygon_2>                partition_Polygon_list;
+    //半边数据结构
+    typedef CGAL::HalfedgeDS_default<K> cgal_HalfedgeDS;
+
+    enum  class sideBisector :uint8_t{
+         CONTOUR  = 0 ,   //轮廓边
+         BISECTOR = 1,    //平分线
+         INNER_BISECTOR = 2   //内部骨架边
+    };
 
     class  polygonPoint: public Point{
     public:
@@ -82,8 +100,9 @@ namespace Route_Planning
                 return y < other.y;
             }
         }
+        sideBisector judge_bisector_;              //判断是轮廓还是平分线
     private:
-        int origin_polygon_point_index_;   //对应多边形起始点的索引号
+        int origin_polygon_point_index_;           //对应多边形起始点的索引号
     public:
         bool entrance_ = false;                    //回字形入口点
     };
@@ -185,7 +204,7 @@ namespace Route_Planning
      const std::vector<std::vector<polygonPoint>> getInsertedPolygonPointsIncrease() const;  //得到包含回字形入口的多边形
      const std::vector<std::vector<polygonPoint>> getMiddlePointsPolygon() const;             //得到关键点之前的中间结果
      static bool pointOnSegment(polygonPoint p, polygonPoint a, polygonPoint b);              //判断点p是否在线段ab上
-     static std::vector<polygonPoint> insertPointToPolygon(polygonPoint insertPoint,          //将点插入到多边形上，前提是该点在这个多边形上
+     static  std::vector<polygonPoint> insertPointToPolygon(polygonPoint insertPoint,          //将点插入到多边形上，前提是该点在这个多边形上
                                               std::vector<polygonPoint> polygonPoints);
  private:
      std::vector<std::vector<polygonPoint>>   storageNarrowPolygonPoints_;                   //存储缩小的多边形点位
@@ -233,9 +252,37 @@ namespace Route_Planning
 
  public:
      void cgalNarrowPolygons(std::vector<Point> &points);
-
+     void computeLastRidgeInnerPoints( std::vector<polygonPoint> & points);
+     void cgalUpdatePolygonPointsINcrease();
+     void cgalUpatePolygonPointsSequence();
+     void cgalComputebackShapeKeypoints();
+     std::vector<std::vector<polygonPoint>>  cgalGetBackShapeKeyPoints();
+     void computeEntranceLines(std::vector<Point> &points);
+     void judgePolysSample(int* record_spilt_index,bool&  have_spilt_poly);
+     void spiltPolyTo2(
+             bool have_spilt_poly,
+             std::vector<polygonPoint>  &spilt_origin_poly,
+             polygon& spilt_ori,
+             double&  buffer_distance,
+             std::vector<std::vector<polygonPoint>>&  storage_spilt_first_polys,
+             std::vector<std::vector<polygonPoint>>& storage_spilt_second_polys,
+             point&                            spilt_first_poly_center);
  private:
-     std::vector<std::vector<polygonPoint>>   cgalPolypts_;
+     std::vector<std::vector<polygonPoint>>   cgalPolypts_;  //内缩多边形的存储
+     std::vector<std::vector<polygonPoint>>   cgalandboostPolypts_; //cgal和boost混合的内缩多边形存储
+     std::vector<std::vector<polygonPoint>>   bufferspiltPolys1_;   //buffer裂变出的第一个多边形
+     std::vector<std::vector<polygonPoint>>   bufferspiltPolys2_;   //buffer裂变出的第二个多边形
+
+     int cgal_narrow_size_;
+     std::vector<polygonPoint>        lastPoly_innerpts_;    //从顶点到直骨架最内部的关键点
+     std::vector<polygonPoint>        entrance_lines_;      //回字形的入口线段信息
+     std::vector<polygonPoint>        entrance_pts_;        //回字形的入口点位信息
+     std::vector<std::vector<polygonPoint>>      cgalIncreaseptPolypts_;  //增加入口点的内缩多边形
+     std::vector<std::vector<polygonPoint>>      cgalSequencedPolypts_;   //增加入口点并已入口点为起点存储的内缩多边形
+     std::vector<std::vector<polygonPoint>>      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]
+     std::map<polygonPoint,std::vector<polygonPoint>>    cgalPtMaping_; //直骨架点位映射
+     int mode_choose_;                                      //分裂多边形分裂 mode_choose_ = 1 ,2
+
  };
 }
 }

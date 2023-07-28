@@ -64,120 +64,72 @@ int main(int argc, char **argv) {
 //    std::reverse(narrowingPolygonPoints.begin(),narrowingPolygonPoints.end());
     instance_pathPolygonPlan.cgalNarrowPolygons(narrowingPolygonPoints);
 
-    return 0;
-    //temp point;
+
+
     Point temp_point;
     temp_point.x = (narrowingPolygonPoints[0].x + narrowingPolygonPoints[1].x)/2;
     temp_point.y = (narrowingPolygonPoints[0].y + narrowingPolygonPoints[1].y)/2;
 
-    auto points = instance_pathPolygonPlan.getNarrowPolygonPoints();
-    std::ofstream  polyps;
-    polyps.open("/home/zzm/Desktop/test_path_figure-main/src/narrow_points.txt",std::ios::out);
-    for(auto it : points ){
-       for(auto j : it){
-           polyps << " " << j.x ;
-       }
-    }
-    polyps << std::endl;
-    for(auto it : points){
-        for(auto j : it){
-            polyps << " " << j.y;
-        }
-    }
-    polyps << std::endl;
-    polyps.close();
+//    auto points = instance_pathPolygonPlan.getNarrowPolygonPoints();
+//    std::ofstream  polyps;
+//    polyps.open("/home/zzm/Desktop/test_path_figure-main/src/narrow_points.txt",std::ios::out);
+//    int pt_number = points.size();
+//    for(int i  = 0;i < pt_number;i++){
+//        for(auto j : points[i]){
+//            polyps << " " << j.x;
+//        }
+//    }
+//    polyps << std::endl;
+//    for(int i = 0; i < pt_number;i++){
+//        for(auto j : points[i]){
+//            polyps << " " << j.y;
+//        }
+//    }
+//    polyps << std::endl;
+//    polyps.close();
 
-    //找到顶点和对应的kbline
-    instance_pathPolygonPlan.findSuitableEntrance(narrowingPolygonPoints);
 
-    auto temp_line = instance_pathPolygonPlan.getLineOriginEntrance();
 
-    //得到对应的边[0]:最小的内缩点 [1]:多边形顶点
-    std::vector<Point>  storageForwardAndBack =
-            common::commonMath::computeForwardAndBackPoints(narrowingPolygonPoints,
-                                                            temp_line[1]);
-    //another_line direction
-    std::vector<Point>  another_line;
-#ifdef  JUDGE_CLOCKWISE
-        another_line.push_back(temp_line[1]);
-        another_line.push_back(storageForwardAndBack[1]);
-#else
-        another_line.push_back(temp_line[1]);
-        another_line.push_back(storageForwardAndBack[0]);
-#endif
-    //计算平移后的向量
-    //计算需要平移的距离
-    Point vector_1((storageForwardAndBack[0].x - temp_line[1].x),
-                    storageForwardAndBack[0].y - temp_line[1].y);
-    Point vector_2((storageForwardAndBack[1].x - temp_line[1].x),
-                   (storageForwardAndBack[1].y - temp_line[1].y));
 
-    double move_angle = common::commonMath::computeTwoLineAngle(vector_1,vector_2);
-    double move_distance ;
-    if(fabs(move_angle) < PI/2){
-        move_distance = RIDGE_WIDTH_LENGTH/sin(move_angle);
-    }else{
-        move_distance = RIDGE_WIDTH_LENGTH;
-    }
-    LOG(INFO) << "chosen point angle is :" << move_angle * (180 /PI);
-    std::vector<Point> real_line =
-            common::commonMath::computeLineTranslationPoints(temp_line,
-                                                             another_line,
-                                                             move_distance);
-    std::ofstream  realline;
-    realline.open("/home/zzm/Desktop/test_path_figure-main/src/realline.txt",std::ios::out);
-    for(auto i : real_line){
-        realline << " " << i.x;
-    }
-    realline << std::endl;
-    for(auto j : real_line){
-        realline << " " << j.y;
-    }
-    realline << std::endl;
-    realline.close();
+
     //将计算得到的回字形入口线段延长一段距离
     //auto real_line_extend = common::commonMath::extendLineLength(real_line,0.5);
     //计算平移后的向量和内缩多边形们的交点
-    instance_pathPolygonPlan.computePolygonsAndLineNode(real_line);
-    auto nodes = instance_pathPolygonPlan.getPolygonAndLineNodes();
 
-    //根据生成的交点和内缩多边形们生成回字形关键点
-    std::ofstream interNodes;
-    interNodes.open("/home/zzm/Desktop/test_path_figure-main/src/inter_nodes.txt",std::ios::out);
-    for(auto node : nodes){
-        interNodes << " " << node.x;
-    }
-    interNodes << std::endl;
-    for(auto node : nodes){
-        interNodes << " " << node.y;
-    }
-    interNodes << std::endl;
-    interNodes.close();
 
-    instance_pathPolygonPlan.updatePolygonPointsIncrease();
-    instance_pathPolygonPlan.updatePolygonPointsSequence1();
-    auto m = instance_pathPolygonPlan.getMiddlePointsPolygon();
-    std::ofstream  increaseNodes;
-    increaseNodes.open("/home/zzm/Desktop/test_path_figure-main/src/increaseNodes.txt",std::ios::out);
-    for(auto it : m ){
-        for(auto j : it){
-            increaseNodes << " " << j.x ;
-        }
-    }
-    increaseNodes << std::endl;
-    for(auto it : m){
-        for(auto j : it){
-            increaseNodes << " " << j.y;
-        }
-    }
-    increaseNodes << std::endl;
-    increaseNodes.close();
 
-    instance_pathPolygonPlan.computebackShapeKeypoints();
-    instance_pathPolygonPlan.filteredBackShapeKeyPoints();
-    instance_pathPolygonPlan.computeKeypointsRelativeInfo();
 
-    auto keypoints_m = instance_pathPolygonPlan.getFilteredBackShapeKeyPoints();
+
+//    instance_pathPolygonPlan.updatePolygonPointsIncrease();
+//    instance_pathPolygonPlan.updatePolygonPointsSequence1();
+//    auto m = instance_pathPolygonPlan.getMiddlePointsPolygon();
+
+    instance_pathPolygonPlan.cgalUpdatePolygonPointsINcrease();
+    instance_pathPolygonPlan.cgalUpatePolygonPointsSequence();
+    instance_pathPolygonPlan.cgalComputebackShapeKeypoints();
+
+//    std::ofstream  increaseNodes;
+//    increaseNodes.open("/home/zzm/Desktop/test_path_figure-main/src/increaseNodes.txt",std::ios::out);
+//    for(auto it : m ){
+//        for(auto j : it){
+//            increaseNodes << " " << j.x ;
+//        }
+//    }
+//    increaseNodes << std::endl;
+//    for(auto it : m){
+//        for(auto j : it){
+//            increaseNodes << " " << j.y;
+//        }
+//    }
+//    increaseNodes << std::endl;
+//    increaseNodes.close();
+
+
+//    instance_pathPolygonPlan.computebackShapeKeypoints();
+//    instance_pathPolygonPlan.filteredBackShapeKeyPoints();
+//    instance_pathPolygonPlan.computeKeypointsRelativeInfo();
+
+    auto keypoints_m = instance_pathPolygonPlan.cgalGetBackShapeKeyPoints();
     LOG(INFO) << "the all ridge number is : " << keypoints_m.size();
     std::ofstream keypoints;
     keypoints.open("/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt",std::ios::out);
@@ -198,6 +150,7 @@ int main(int argc, char **argv) {
 
 
    LOG(INFO) << "the program can enter here !";
+   return 0;
     //获取routing信息
     std::ofstream  show_ridge_path;
     show_ridge_path.open("/home/zzm/Desktop/reeds_shepp-master/RS_Lib/show_ridge_path12.txt",

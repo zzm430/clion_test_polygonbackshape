@@ -7,11 +7,6 @@
 namespace aiforce{
 namespace Route_Planning{
 
-//void pathPolygonPlan::initiate() {
-//
-//}
-
-
 void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
     double buffer_distance = -DBL_MAX;
     //按照垄宽得到缩小后的各个多边形
@@ -118,7 +113,11 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                                 poly.vertices_begin(),
                                 poly.vertices_end());
     std::vector<polygonPoint>  storage_polypts;
-    std::cout << "---------------------------------------------------------------" << iss.get()->size_of_vertices() << std::endl;
+    std::vector<polygonPoint>   inner_polypts;
+    std::cout << "---------------------------------------------------------------"
+              << iss.get()->size_of_vertices()
+              << std::endl;
+
     for(auto i = iss.get()->halfedges_begin();
              i != iss.get()->halfedges_end();
              i++){
@@ -126,6 +125,14 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         polygonPoint temp;
         temp.x = i->opposite()->vertex()->point()[0];
         temp.y = i->opposite()->vertex()->point()[1];
+        if(i->is_bisector()){
+            temp.judge_bisector_ = sideBisector::BISECTOR;
+        }else {
+            temp.judge_bisector_ = sideBisector::CONTOUR;
+        }
+        if(i->is_inner_bisector()){
+            temp.judge_bisector_ = sideBisector::INNER_BISECTOR;
+        }
         std::cout << "->" ;
         print_point(i->vertex()->point());
         std::cout << " " << ( i->is_bisector() ? "bisector" : "contour" ) << std::endl;
@@ -134,7 +141,228 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         temdd.y = i->vertex()->point()[1];
         storage_polypts.push_back(temp);
         storage_polypts.push_back(temdd);
+        if(i->is_inner_bisector()){
+            std::cout << "------------------------start---------------------" << std::endl;
+            print_point(i->opposite()->vertex()->point());
+            polygonPoint temp_m;
+            temp_m.x = i->opposite()->vertex()->point()[0];
+            temp_m.y = i->opposite()->vertex()->point()[1];
+            std::cout << "->";
+            print_point(i->vertex()->point());
+            polygonPoint temp_n;
+            temp_n.x = i->vertex()->point()[0];
+            temp_n.y = i->vertex()->point()[1];
+            inner_polypts.push_back(temp_m);
+            inner_polypts.push_back(temp_n);
+            std::cout <<"------------------------end---------------------" << std::endl;
+        }
+        cgalPtMaping_[temdd].push_back(temp) ;
     }
+    //根据指定的顶点找到对应的骨架路径
+    polygonPoint entrance_point(points[4].x,points[4].y);
+    std::vector<polygonPoint>  storagePoints;
+    int num_inner = inner_polypts.size();
+    //根据指定的点找到对应的直骨架入口路径信息
+    //存储第一个点为对应的边的顶点
+    lastPoly_innerpts_.push_back(entrance_point);
+    //存储第二个点为对应的骨架点
+    polygonPoint transPt;
+    for(auto it : cgalPtMaping_[entrance_point]){
+        if(it.judge_bisector_ == sideBisector::BISECTOR){
+            lastPoly_innerpts_.push_back(it);
+            transPt = it;
+        }
+    }
+    //存储剩余点内骨架点位
+    int all_sken_pts = storage_polypts.size();
+    while(transPt != storage_polypts[all_sken_pts-1] &&
+          transPt != storage_polypts[all_sken_pts-2]){
+          auto temp_pts = cgalPtMaping_[transPt];
+          std::vector<polygonPoint> storageTemppt;
+          for(auto it : temp_pts) {
+              if (it.judge_bisector_ == sideBisector::INNER_BISECTOR) {
+                  storageTemppt.push_back(it);
+              }
+          }
+              if(storageTemppt.size() == 1){
+                  lastPoly_innerpts_.push_back(storageTemppt[0]);
+                  transPt = storageTemppt[0];
+              }else{
+                  double min_distance  = DBL_MAX;
+                  polygonPoint min_pt;
+                  for(auto it : storageTemppt){
+                      auto dis = common::commonMath::distance2(it,storage_polypts[all_sken_pts-1]);
+                      if(dis < min_distance){
+                          min_distance = dis;
+                          min_pt = it;
+                      }
+                  }
+                  lastPoly_innerpts_.push_back(min_pt);
+                  transPt = min_pt;
+              }
+    }
+
+    //计算内缩多边形
+    double  buffer_distance = DBL_MAX;
+    std::vector<cgal_PolygonPtrVector> offset_polys;  //专门用于cgal
+    for(auto i = 1;i <= MAX_TRAVERSALS_NUMBERS;i++){
+        if(i == 1){
+            buffer_distance =  RIDGE_WIDTH_LENGTH/2;
+        }else{
+            buffer_distance = i * RIDGE_WIDTH_LENGTH - RIDGE_WIDTH_LENGTH/2;
+        }
+
+//        cgal_PolygonPtrVector offset_polygon =
+//                CGAL::create_interior_skeleton_and_offset_polygons_2(buffer_distance,poly);
+        cgal_PolygonPtrVector offset_polygons =  CGAL::create_offset_polygons_2<cgal_Polygon_2>(
+                                                             buffer_distance,*iss);
+        if(offset_polygons.size() == 0){
+            LOG(INFO) << "already narrow to last ,the narrow poly size is " << i - 1 ;
+            cgal_narrow_size_  = i - 1;
+            break;
+        }
+        std::vector<polygonPoint>   poly_pts;
+        for(auto it : offset_polygons){
+            auto m = *it;
+            auto temp = CGAL::is_simple_2(m.vertices_begin(), m.vertices_end());
+            LOG(INFO) << "the narrow poly judge  sample is : " << temp << " " ;
+            for(auto j : *it){
+                polygonPoint temppt;
+                temppt.x = j.x();
+                temppt.y = j.y();
+                poly_pts.push_back(temppt);
+            }
+        }
+        poly_pts.push_back(poly_pts[0]);//这个点可以看做是多边形的最后一个点也可以后续计算下个路口的入口点
+        cgalPolypts_.push_back(poly_pts);
+    }
+
+
+    std::vector<std::vector<polygonPoint>>  storage_spilt_first_polys;
+    std::vector<std::vector<polygonPoint>>  storage_spilt_second_polys;
+    point                            spilt_first_poly_center;
+
+    bool have_spilt_poly = false;
+    int  record_spilt_index ;
+    //对cgal库中做的内缩多边形做是否是简单多边形的判断
+    judgePolysSample(&record_spilt_index, have_spilt_poly);
+    std::vector<polygonPoint>  spilt_origin_poly ;
+    if(!record_spilt_index){
+        for(auto it : cgalPolypts_){
+            cgalandboostPolypts_.push_back(it);
+        }
+    }else{
+        spilt_origin_poly = cgalPolypts_[record_spilt_index-1];
+        for(int i = 0;i <= record_spilt_index-1;i++){
+            cgalandboostPolypts_.push_back(cgalPolypts_[i]);
+        }
+    }
+
+    polygon spilt_ori;
+    //假如遇到多边形分裂,则使用boost中的buffer做剩余多边形内缩
+    //如果分裂则分别存储到storage_spilt_first_polys、storage_spilt_second_polys
+    spiltPolyTo2(have_spilt_poly,
+                spilt_origin_poly,
+                spilt_ori,
+                buffer_distance,
+                storage_spilt_first_polys,
+                storage_spilt_second_polys,
+                spilt_first_poly_center);
+    //将分好类的多边形存储
+    for(auto it : storage_spilt_first_polys){
+        bufferspiltPolys1_.push_back(it);
+    }
+    for(auto it : storage_spilt_second_polys){
+        bufferspiltPolys2_.push_back(it);
+    }
+    //计算回字形入口需要的线段们
+    computeEntranceLines(points);
+
+    int mode_choose;
+    //选择分裂多边形哪个作为入口
+    if(have_spilt_poly){
+        for(int i = 0;i < bufferspiltPolys1_.size();i++){
+            for(int j = 0; j < entrance_lines_.size();j++){
+                polygon  poly;
+                for(auto it :bufferspiltPolys1_[i]){
+                    poly.outer().push_back(point(it.x,it.y));
+                }
+                linestring_type  line;
+                line.push_back(point(entrance_lines_[j].x,entrance_lines_[j].y));
+                line.push_back(point(entrance_lines_[j + 1].x,entrance_lines_[j + 1].y));
+                std::vector<point> output;
+                boost::geometry::intersection(line,poly,output);
+                if(!output.size()){
+                    mode_choose = 2;
+                }
+            }
+        }
+        if(mode_choose != 2){
+            mode_choose = 1;
+        }
+    }
+    if(mode_choose == 1){
+        for(auto it :bufferspiltPolys1_){
+            cgalandboostPolypts_.push_back(it);
+        }
+    }else if(mode_choose ==2){
+        for(auto it : bufferspiltPolys2_){
+            cgalandboostPolypts_.push_back(it);
+        }
+    }
+    mode_choose_ = mode_choose;
+
+    //求回字形的入口点位信息
+    if(JUDGE_CLOCKWISE){
+        //求回字形的内缩多边形和各个线段的交点信息
+        int polys_size = cgalandboostPolypts_.size();
+        std::map<int,std::vector<polygonPoint>>   find_entrance_pts;
+        for(int i = 0;i < polys_size;i++){
+            std::vector<point> output;
+            std::vector<polygonPoint> trans_output;
+            for(int j = 0;j < entrance_lines_.size();j++){
+                  if( j % 2 == 0){
+                      polygon  poly;
+                      for(auto it :cgalandboostPolypts_[i]){
+                          poly.outer().push_back(point(it.x,it.y));
+                      }
+                      linestring_type  line;
+                      line.push_back(point(entrance_lines_[j].x,entrance_lines_[j].y));
+                      line.push_back(point(entrance_lines_[j + 1].x,entrance_lines_[j + 1].y));
+                      boost::geometry::intersection(line,poly,output);
+                      if(output.size() == 0){
+                          LOG(INFO) << "the point is zero !";
+                          continue;
+                      }else{
+                          for(auto it : output){
+                              polygonPoint temp_pt;
+                              temp_pt.x = it.x();
+                              temp_pt.y = it.y();
+                              find_entrance_pts[i].push_back(temp_pt);
+                          }
+                          LOG(INFO) << "the point is  No zero !";
+                      }
+                  }
+            }
+        }
+        for(int i = 0;i < find_entrance_pts.size();i++){
+            entrance_pts_.push_back(find_entrance_pts[i][find_entrance_pts[i].size()-1]);
+        }
+
+        std::ofstream  cgal_pts_entrance;
+        cgal_pts_entrance.open("/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt",
+                std::ios::out);
+        for(auto it : entrance_lines_){
+            cgal_pts_entrance << " " << it.x ;
+        }
+        cgal_pts_entrance << std::endl;
+        for(auto it : entrance_lines_){
+            cgal_pts_entrance << " " << it.y;
+        }
+        cgal_pts_entrance << std::endl;
+        cgal_pts_entrance.close();
+    }
+
     std::ofstream   test_skeleton_2;
     test_skeleton_2.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_2.txt",
                    std::ios::out);
@@ -147,76 +375,295 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     }
     test_skeleton_2 << std::endl;
     test_skeleton_2.close();
+
     std::vector<polygonPoint> storage_poinm;
+    int judge_j = iss.get()->size_of_vertices();
+    int j = 0;
     for(auto i = iss.get()->vertices_begin();
-            i != iss.get()->vertices_end();
-             i++){
-        if(i->is_skeleton()){
-            polygonPoint temp;
-            temp.x = i->point()[0];
-            temp.y = i->point()[1];
-            storage_poinm.push_back(temp);
-        }
+        i != iss.get()->vertices_end();
+        i++){
+           j++;
+           if(i->is_skeleton()){
+                   polygonPoint temp;
+                   temp.x = i->point()[0];
+                   temp.y = i->point()[1];
+                   storage_poinm.push_back(temp);
+           }
     }
+
+    std::ofstream test_skeleton_5;
+    test_skeleton_5.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_5.txt",
+                         std::ios::out);
+    for(auto it : storage_polypts){
+        test_skeleton_5 << " " << it.x ;
+    }
+    test_skeleton_5 << std::endl;
+    for(auto it : storage_polypts){
+        test_skeleton_5 << " " << it.y;
+    }
+    test_skeleton_5 << std::endl;
+    test_skeleton_5.close();
+
+
     std::ofstream test_skeleton_3;
     test_skeleton_3.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_3.txt",
                          std::ios::out);
-    for(auto it : storage_poinm){
+    for(auto it : inner_polypts){
         test_skeleton_3 << " " << it.x ;
     }
     test_skeleton_3 << std::endl;
-    for(auto it : storage_poinm){
+    for(auto it : inner_polypts){
         test_skeleton_3 << " " << it.y;
     }
     test_skeleton_3 << std::endl;
     test_skeleton_3.close();
-    //计算内缩多边形
-    double  buffer_distance = DBL_MAX;
-
-    for(auto i = 1;i <= MAX_TRAVERSALS_NUMBERS;i++){
-        if(i == 1){
-            buffer_distance =  RIDGE_WIDTH_LENGTH/2;
-        }else{
-            buffer_distance = i * RIDGE_WIDTH_LENGTH - RIDGE_WIDTH_LENGTH/2;
-        }
-        cgal_PolygonPtrVector offset_polygon =
-                CGAL::create_interior_skeleton_and_offset_polygons_2(buffer_distance,poly);
-        if(offset_polygon.size() == 0){
-            LOG(INFO) << "already narrow to last ,the narrow poly size is " << i - 1 ;
-            break;
-        }
-        std::vector<polygonPoint>   poly_pts;
-        for(auto it : offset_polygon){
-          for(auto j : *it){
-              polygonPoint temppt;
-              temppt.x = j.x();
-              temppt.y = j.y();
-              poly_pts.push_back(temppt);
-          }
-        }
-        LOG(INFO) << "the i is : " << i << std::endl;
-        poly_pts.push_back(poly_pts[0]);
-        cgalPolypts_.push_back(poly_pts);
-    }
 
     std::ofstream test_skeleton_4;
     test_skeleton_4.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_4.txt",
                          std::ios::out);
-    for(auto it : cgalPolypts_){
-        for(auto j: it){
-            test_skeleton_4 << " " << j.x ;
+    for(int i  = 0;i < cgalPolypts_.size() ;i++){
+        for(auto j : cgalPolypts_[i]){
+            test_skeleton_4 << " " << j.x;
         }
     }
     test_skeleton_4 << std::endl;
-    for(auto it : cgalPolypts_){
-        for(auto j: it){
-            test_skeleton_4 << " " << j.y ;
+    for(int i = 0; i < cgalPolypts_.size() ;i++){
+        for(auto j : cgalPolypts_[i]){
+            test_skeleton_4 << " " << j.y;
         }
     }
     test_skeleton_4 << std::endl;
     test_skeleton_4.close();
     LOG(INFO) <<"the enter here ---------------------------------------!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+
+    std::ofstream   test_111_poly;
+    test_111_poly.open("/home/zzm/Desktop/test_path_figure-main/src/test_111_poly.txt",std::ios::out);
+    for(auto it : cgalandboostPolypts_){
+        for(auto j : it){
+            test_111_poly << " " << j.x;
+        }
+    }
+    test_111_poly << std::endl;
+    for(auto m : cgalandboostPolypts_){
+        for(auto j :m){
+            test_111_poly << " " << j.y;
+        }
+    }
+    test_111_poly <<std::endl;
+    test_111_poly.close();
 }
+
+void pathPolygonPlan::judgePolysSample(int* record_spilt_index,bool&  have_spilt_poly){
+    int pt_number = cgalPolypts_.size();
+    for(int i = 0;i < pt_number ;i++){
+        polygon temp;
+        for(auto it = cgalPolypts_[i].rbegin()  ;it != cgalPolypts_[i].rend();it++){
+            temp.outer().push_back(point(it->x,it->y));
+        }
+        bool issample =  boost::geometry::is_valid(temp);
+        LOG(INFO) << "the poly issample 111 is : " << issample;
+        temp.outer().clear();
+        if(!issample){
+            double buffer_distance = -DBL_MAX;
+            *record_spilt_index = i ;
+            LOG(INFO) << "record spilt index is : " << *record_spilt_index;
+            have_spilt_poly = true;
+            break;
+        }
+    }
+}
+
+void pathPolygonPlan::spiltPolyTo2(
+        bool have_spilt_poly,
+        std::vector<polygonPoint>  &spilt_origin_poly,
+        polygon& spilt_ori,
+        double&  buffer_distance,
+        std::vector<std::vector<polygonPoint>>&  storage_spilt_first_polys,
+        std::vector<std::vector<polygonPoint>>& storage_spilt_second_polys,
+        point&                            spilt_first_poly_center){
+    if(have_spilt_poly){
+        for(auto f = spilt_origin_poly.rbegin();f != spilt_origin_poly.rend();f++){
+            spilt_ori.outer().push_back(point(f->x,f->y));
+        }
+        for(int i = 1; i <= MAX_TRAVERSALS_NUMBERS;i++){
+            buffer_distance = i * -RIDGE_WIDTH_LENGTH ;
+            boost::geometry::strategy::buffer::distance_symmetric<coordinate_type>
+                    distance_strategy(buffer_distance);
+            boost::geometry::strategy::buffer::join_round join_strategy(0.01);
+            boost::geometry::strategy::buffer::end_round end_strategy;
+            boost::geometry::strategy::buffer::point_circle circle_strategy;
+            boost::geometry::strategy::buffer::side_straight side_strategy;
+            boost::geometry::model::multi_polygon<polygon> result;
+            boost::geometry::model::multi_polygon<polygon> mpol;
+            mpol.push_back(spilt_ori);
+            boost::geometry::buffer(mpol, result,
+                                    distance_strategy, side_strategy,
+                                    join_strategy, end_strategy, circle_strategy);
+            std::vector<polygonPoint>  tempPolygon;
+            for(auto it = result.begin();it != result.end(); it++){
+                for(auto j = it->outer().rbegin();j != it->outer().rend();j++){
+                    polygonPoint tempPoint;
+                    tempPoint.x = (*j).x();
+                    tempPoint.y = (*j).y();
+                    tempPolygon.push_back(tempPoint);
+                }
+            }
+            if(tempPolygon.size() == 0){
+                LOG(INFO) << "already narrow to last !";
+                break;
+            }
+            //对tempPolygon构成的内缩多边形进行拆分
+            auto first_poly_pt = tempPolygon[0];
+            int  first_poly_end;
+            for(int i = 1;i < tempPolygon.size();i++){
+                if(first_poly_pt == tempPolygon[i]){
+                    first_poly_end = i;
+                    break;
+                }
+            }
+            std::vector<polygonPoint>   spilt_first_poly_pts;
+            std::vector<polygonPoint>   spilt_second_poly_pts;
+            for(int i = 0;i <= first_poly_end; i++){
+                spilt_first_poly_pts.push_back(tempPolygon[i]);
+            }
+            for(int i = first_poly_end +1;i < tempPolygon.size();i++){
+                spilt_second_poly_pts.push_back(tempPolygon[i]);
+            }
+            //增加判断是否属于同类多边形
+            if(!storage_spilt_first_polys.empty() ||
+               !storage_spilt_second_polys.empty()){
+                if(!spilt_first_poly_pts.empty() &&
+                   !spilt_second_poly_pts.empty()){
+                    polygon pt_poly;
+                    for(auto it : spilt_first_poly_pts){
+                        pt_poly.outer().push_back(point(it.x,it.y));
+                    }
+                    bool flag =  boost::geometry::within(spilt_first_poly_center, pt_poly);
+                    if(flag){
+                        storage_spilt_first_polys.push_back(spilt_first_poly_pts);
+                        storage_spilt_second_polys.push_back(spilt_second_poly_pts);
+                    }else{
+                        storage_spilt_first_polys.push_back(spilt_second_poly_pts);
+                        storage_spilt_second_polys.push_back(spilt_first_poly_pts);
+                    }
+                }else if(!spilt_first_poly_pts.empty() &&
+                         spilt_second_poly_pts.empty()){
+                    polygon pt_poly;
+                    for(auto it : spilt_first_poly_pts){
+                        pt_poly.outer().push_back(point(it.x,it.y));
+                    }
+                    bool flag =  boost::geometry::within(spilt_first_poly_center, pt_poly);
+                    if(flag){
+                        storage_spilt_first_polys.push_back(spilt_first_poly_pts);
+                    }else{
+                        storage_spilt_second_polys.push_back(spilt_first_poly_pts);
+                    }
+                }else if(!spilt_second_poly_pts.empty() &&
+                         spilt_first_poly_pts.empty()){
+                    polygon pt_poly;
+                    for(auto it : spilt_second_poly_pts){
+                        pt_poly.outer().push_back(point(it.x,it.y));
+                    }
+                    bool flag =  boost::geometry::within(spilt_first_poly_center, pt_poly);
+                    if(flag){
+                        storage_spilt_first_polys.push_back(spilt_second_poly_pts);
+                    }else{
+                        storage_spilt_second_polys.push_back(spilt_second_poly_pts);
+                    }
+                }
+            }else{
+                storage_spilt_first_polys.push_back(spilt_first_poly_pts);
+                storage_spilt_second_polys.push_back(spilt_second_poly_pts);
+                //分别计算出两个poly的质心
+                point centroid;
+                polygon  sp_first_poly;
+                polygon  sp_second_poly;
+                for(auto it : spilt_first_poly_pts){
+                    sp_first_poly.outer().push_back(point(it.x,it.y));
+                }
+                boost::geometry::centroid(sp_first_poly, centroid);
+                spilt_first_poly_center = point(centroid.x(),centroid.y());
+            }
+        }
+    }
+}
+
+void pathPolygonPlan::computeEntranceLines(std::vector<Point> &points){
+    //将最起点的点位延长一段距离,用来找该点对应的多边形的前后点
+    auto vector_1 = common::commonMath::findPointExtendSegment(
+            lastPoly_innerpts_[1],
+            lastPoly_innerpts_[0],
+            10,
+            true,
+            1);
+    //找到延伸的线段与地块的交点
+    polygon  poly;
+    for(auto it : points){
+        poly.outer().push_back(point(it.x,it.y));
+    }
+    linestring_type  line;
+    line.push_back(point(
+            vector_1[0].x,
+            vector_1[0].y));
+    line.push_back(point(
+            lastPoly_innerpts_[1].x,
+            lastPoly_innerpts_[1].y));
+    std::vector<point> output;
+    boost::geometry::intersection(line,poly,output);
+    polygonPoint orderd_pt(output[0].x(),output[0].y());
+    //找到对应该点的前后点位
+    std::vector<Point> forwardAndBack =
+            common::commonMath::computeForwardAndBackPoints(
+                    points,
+                    orderd_pt);
+    std::vector<polygonPoint>  direction_line;
+    direction_line.push_back(polygonPoint(output[0].x(),output[0].y()));
+    direction_line.push_back(polygonPoint(forwardAndBack[0].x,forwardAndBack[0].y));
+    //回字形的顶点线段们往direction_line平移 RIDGE_WIDTH/2;
+    //将入口线段第一个点更新为虚构的延长点并存储为线段集
+    std::vector<polygonPoint> vecPoints;
+    vecPoints.push_back(polygonPoint(vector_1[0].x,vector_1[0].y));
+    for(int i = 1;i < lastPoly_innerpts_.size();i++){
+        vecPoints.push_back(lastPoly_innerpts_[i]);
+    }
+    int num = vecPoints.size();
+    std::vector<polygonPoint> vecMovePoints;
+    for(int i = 0;i < num - 1;i++){
+        //将生成的线段按照指定的方向平移
+        std::vector<polygonPoint> lineOrigin;
+        lineOrigin.push_back(vecPoints[i]);
+        lineOrigin.push_back(vecPoints[i + 1]);
+        auto movedpts = common::commonMath::computeLineTranslationPoints(
+                lineOrigin,
+                direction_line,
+                RIDGE_WIDTH_LENGTH);
+        for(auto it : movedpts){
+            entrance_lines_.push_back(it);
+        }
+    }
+    LOG(INFO) << "entrance_lines size is :" << entrance_lines_.size();
+}
+
+void pathPolygonPlan::computeLastRidgeInnerPoints(std::vector<polygonPoint> & points){
+      auto polygon_last = cgalPolypts_[cgal_narrow_size_-1];
+      cgal_Polygon_2 poly;
+     for(int i = 0;i < polygon_last.size(); i++){
+        poly.push_back(cgal_Point(polygon_last[i].x,polygon_last[i].y));
+      }
+     for(auto it : points){
+         auto result = CGAL::bounded_side_2(poly.vertices_begin(),
+                               poly.vertices_end(),
+                               cgal_Point(it.x,it.y));
+          if (result == -1){
+              polygonPoint temp;
+              temp.x = it.x;
+              temp.y = it.y;
+              lastPoly_innerpts_.push_back(temp);
+          }
+     }
+}
+
+
 
 void pathPolygonPlan::dealWithLastSeveralPolygons(){
       auto num = storageNarrowPolygonPoints_.size();
@@ -283,7 +730,6 @@ void pathPolygonPlan::dealWithLastSeveralPolygons(){
                       record_poly_index_ = i;
                   }
                   LOG(INFO) << "the record poly index is : " << record_poly_index_;
-
                   last_several_polygons_.push_back(poly_res);
               }
           }
@@ -328,7 +774,6 @@ void pathPolygonPlan::computeLastRidgeSituation(){
             LOG(INFO) << "the last bridge has not been considered yet !";
             break;
         }
-
     }
 }
 
@@ -1614,7 +2059,6 @@ void pathPolygonPlan::computeLastRidgeRoutingFour(std::vector<pathInterface::pat
             storageAllPath.push_back(point_f);
         }
     }
-
 }
 
 void   pathPolygonPlan::computeLastRidgeRoutingFourAndFour(std::vector<pathInterface::pathPoint> &storageAllPath,
@@ -1984,6 +2428,89 @@ void pathPolygonPlan::updatePolygonPointsIncrease(){
     }
     insertedPtToNarrowPolygon_.push_back(tempPolygon);
 }
+
+void pathPolygonPlan::cgalUpdatePolygonPointsINcrease(){
+    int num  = cgalandboostPolypts_.size();
+    if(entrance_pts_.size() == num -1){
+        LOG(INFO) << "the last polygon has no intersection with the entrance_lines";
+        for(int i = 0;i < num - 1;i++ ){
+            auto poly_pts = insertPointToPolygon(
+                    entrance_pts_[i],
+                    cgalandboostPolypts_[i]);
+            cgalIncreaseptPolypts_.push_back(poly_pts);
+        }
+        //最后一笼单独添加
+        auto tempPolygon = cgalandboostPolypts_[num - 1];
+        cgalIncreaseptPolypts_.push_back(tempPolygon);
+    }else{
+        for(int i = 0;i < num ;i++ ){
+            auto poly_pts = insertPointToPolygon(
+                    entrance_pts_[i],
+                    cgalandboostPolypts_[i]);
+         cgalIncreaseptPolypts_.push_back(poly_pts);
+        }
+    }
+}
+
+void pathPolygonPlan::cgalUpatePolygonPointsSequence(){
+     int num = cgalIncreaseptPolypts_.size();
+     int number;
+     std::vector<polygonPoint> storage_points;
+     for(int i = 0;i < num -1;i++){
+         for(auto it : cgalIncreaseptPolypts_[i]){
+             if(it.entrance_){
+                 int num_1 = cgalIncreaseptPolypts_[i].size();
+                 for(int j = 0; j < num_1;j++){
+                     if(fabs(cgalIncreaseptPolypts_[i][j].x - it.x) < 0.1 &&
+                        fabs(cgalIncreaseptPolypts_[i][j].y - it.y) < 0.1){
+                         number = j;
+                     }
+                 }
+                 polygonPoint next;
+                 storage_points.push_back(it);
+                 for(int f = 1;f <= num_1-1 ;f++){
+                     next = cgalIncreaseptPolypts_[i][(number+1)%num_1];
+                     storage_points.push_back(next);
+                     number = number + 1;
+                 }
+                 cgalSequencedPolypts_.push_back(storage_points);
+                 number = 0;
+                 storage_points.clear();
+                 break;
+             }
+         }
+     }
+     cgalSequencedPolypts_.push_back(cgalIncreaseptPolypts_[num - 1]);
+}
+
+void pathPolygonPlan::cgalComputebackShapeKeypoints(){
+    int num = cgalSequencedPolypts_.size();
+    std::vector<polygonPoint>  temp_points;
+    for(int i = 0;i < num - 1;i++) {
+        for(int  it = 1 ; it < cgalSequencedPolypts_[i].size();it ++){
+            temp_points.push_back(cgalSequencedPolypts_[i][it]);
+        }
+        temp_points.push_back(cgalSequencedPolypts_[i][0]);
+        cgalbackShape_keypoints_.push_back(temp_points);
+        temp_points.clear();
+    }
+    cgalbackShape_keypoints_.push_back(cgalSequencedPolypts_[num - 1]);
+    LOG(INFO) << "the mode is : " << mode_choose_;
+    if(mode_choose_ == 2){
+        for(auto it : bufferspiltPolys1_){
+            cgalbackShape_keypoints_.push_back(it);
+        }
+    }else if(mode_choose_ == 1){
+        for(auto it : bufferspiltPolys2_){
+            cgalbackShape_keypoints_.push_back(it);
+        }
+    }
+}
+
+std::vector<std::vector<polygonPoint>>  pathPolygonPlan::cgalGetBackShapeKeyPoints(){
+    return cgalbackShape_keypoints_;
+}
+
 
 const std::vector<std::vector<polygonPoint>>  pathPolygonPlan::getInsertedPolygonPointsIncrease() const{
     return  insertedPtToNarrowPolygon_;
@@ -2477,7 +3004,15 @@ std::vector<polygonPoint> pathPolygonPlan::insertPointToPolygon(polygonPoint ins
     }else{
         storage_points.push_back(polygonPoints[num-1]);
     }
-    return storage_points;
+    //删除重复点位
+    std::vector<polygonPoint>  storate_allpts;
+    for(const auto & p : storage_points){
+        if(std::find(storate_allpts.begin(),storate_allpts.end(),p)
+           == storate_allpts.end()){
+            storate_allpts.push_back(p);
+        }
+    }
+    return storate_allpts;
 }
 }
 }

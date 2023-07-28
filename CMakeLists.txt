@@ -7,10 +7,6 @@ find_package(Matlab REQUIRED)
 #find_package(PythonLibs REQUIRED)
 
 
-
-
-
-
 if(CGAL_FOUND)
     message(STATUS "Found CGAL library")
 else()
@@ -37,8 +33,14 @@ add_executable(polygonbackshape
               Planning/path_baseplan.cpp
               Geometry/reeds_shepp.cpp
               Geometry/reeds_shepp.h
+              Geometry/dubins.cpp
+              Geometry/dubins.h
               common/plotter.h
-              easylogging++.cc Planning/path_polygonplan.cpp common/math/common_math.h)
+              easylogging++.cc
+              Planning/path_polygonplan.cpp
+              Planning/path_polygonplan.h
+              common/math/common_math.h
+        )
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
 target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})
