@@ -32,6 +32,7 @@
 #include <boost/shared_ptr.hpp>
 #include <common/print.h>
 #include <unordered_set>
+#include <unordered_map>
 namespace aiforce{
 namespace Route_Planning
 {
@@ -82,12 +83,13 @@ namespace Route_Planning
 
         polygonPoint(long double f, long double g,double heading):Point(f,g,heading){}
 
-        bool operator == (const polygonPoint& other) const{
+        bool operator == ( const polygonPoint& other) const{
             return (fabs(x - other.x) < 0.001 &&
                     fabs(y -other.y) < 0.001);
+//               return (x == other.x && y == other.y);
         }
 
-        bool operator != (const polygonPoint& other) const {
+        bool operator != ( const polygonPoint& other) const {
             return !(*this == other);
         }
 
@@ -119,6 +121,12 @@ namespace Route_Planning
        POLY_FOUR_AND_FOUR,       //四边形内嵌四边形
        POLY_FOUR,                //四边形
        POLY_FIVE                 //五边形
+    };
+
+    enum class cgalLastPolyIdentify:uint8_t {
+        POLY_NONE = 0,   //标志着入口线段们与最后一笼相交
+        POLY_ONLY_ONE = 1,  //标志着入口线段们未与最后一笼相交
+        POLY_LEAVE          //标志着入口线段们至少有两笼未相交
     };
 
  class pathPolygonPlan  {
@@ -267,6 +275,8 @@ namespace Route_Planning
              std::vector<std::vector<polygonPoint>>&  storage_spilt_first_polys,
              std::vector<std::vector<polygonPoint>>& storage_spilt_second_polys,
              point&                            spilt_first_poly_center);
+     void computeLeaveSituation(int last_ordered_poly_index);
+     void cgalComputeRidgeKeyPointsLeave();               //计算剩余未相交的按照弓字型处理的关键点
  private:
      std::vector<std::vector<polygonPoint>>   cgalPolypts_;  //内缩多边形的存储
      std::vector<std::vector<polygonPoint>>   cgalandboostPolypts_; //cgal和boost混合的内缩多边形存储
@@ -282,6 +292,8 @@ namespace Route_Planning
      std::vector<std::vector<polygonPoint>>      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]
      std::map<polygonPoint,std::vector<polygonPoint>>    cgalPtMaping_; //直骨架点位映射
      int mode_choose_;                                      //分裂多边形分裂 mode_choose_ = 1 ,2
+     cgalLastPolyIdentify             cgalLastPolyType_;
+     int find_entrance_pts_size_ = 0;                        //入口点数
 
  };
 }

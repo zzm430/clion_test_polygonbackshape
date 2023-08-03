@@ -13,8 +13,6 @@
 #include "Geometry/innerRect.h"
 namespace bg = boost::geometry;
 
-
-
 INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char **argv) {
@@ -38,8 +36,8 @@ int main(int argc, char **argv) {
 
     std::vector<Point>  narrowingPolygonPoints;
 
-    unsigned long long  value_x = common::commonMath::get_point_min_x(originalPoints);
-    unsigned long long  value_y = common::commonMath::get_point_min_y(originalPoints);
+    double  value_x = common::commonMath::get_point_min_x(originalPoints);
+    double  value_y = common::commonMath::get_point_min_y(originalPoints);
 
     for(auto i : originalPoints){
         Point  tempPoint;
