@@ -31,11 +31,11 @@ NN_y = NN[1]
 # test_x = test[0]
 # test_y = test[1]
 
-ax.plot(ff_x,ff_y,color='b',markerfacecolor='green',marker='o',label='narrow_points data')
+# ax.plot(ff_x,ff_y,color='b',markerfacecolor='green',marker='o',label='narrow_points data')
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
 # ax.plot(DD_x,DD_y,color='y',markerfacecolor='green',marker='o',label='inter_nodes data')
-ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_polygon data')
+# ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_polygon data')
 # ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
 # ax.plot(test_x,test_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
 # ax.plot(NN_x,NN_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
@@ -47,14 +47,14 @@ ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_pol
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # #
 # #
-for a, b in zip(BB_x,BB_y):
-        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+# for a, b in zip(BB_x,BB_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 #
 
 # for a, b in zip(NN_x, NN_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
-for a, b in zip(ff_x, ff_y):
-        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+# for a, b in zip(ff_x, ff_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
 ax.set_xlabel('x label')
 ax.set_ylabel('y label')
