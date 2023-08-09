@@ -241,17 +241,17 @@ bool CBSpline::ThreeOrderBSplineInterpolatePt(vector<PointF> pts,vector<PointF> 
     PointF temp_pt;
     final_pts.clear();
     int Num=pts.size();
-    vector<PointF> temp_pts; //  二次B样条不需要增加点数，需要将首尾点替换掉
+    vector<PointF> temp_pts;                                   //二次B样条不需要增加点数，需要将首尾点替换掉
     temp_pts=pts;
     //final_pts=pts;
     temp_pts.insert(temp_pts.begin(),temp_pt);
     temp_pts.push_back(temp_pt);
 
-    int InsertNumSum=0;                               //  计算需要插入的点总数
+    int InsertNumSum=0;                                        //计算需要插入的点总数
     for(int i=0;i<Num-1;i++)  InsertNumSum+=InsertNum[i];
 
 
-    temp_pts[0].x=2*temp_pts[1].x-temp_pts[2].x;                  //  将折线延长线上两点加入作为首点和尾点
+    temp_pts[0].x=2*temp_pts[1].x-temp_pts[2].x;               //将折线延长线上两点加入作为首点和尾点
     temp_pts[0].y=2*temp_pts[1].y-temp_pts[2].y;
 
     temp_pts[Num+1].x=2*temp_pts[Num].x-temp_pts[Num-1].x;
@@ -259,7 +259,7 @@ bool CBSpline::ThreeOrderBSplineInterpolatePt(vector<PointF> pts,vector<PointF> 
 
     PointF NodePt1,NodePt2,NodePt3,NodePt4;
     double t;
-    for(int i=0;i<Num-1;i++)                          //  每条线段均匀插入点
+    for(int i=0;i<Num-1;i++)                          //每条线段均匀插入点
     {
         NodePt1=temp_pts[i]; NodePt2=temp_pts[i+1]; NodePt3=temp_pts[i+2]; NodePt4=temp_pts[i+3];
         double dt=1.0/(InsertNum[i]+1);
