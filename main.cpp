@@ -62,8 +62,6 @@ int main(int argc, char **argv) {
 //    std::reverse(narrowingPolygonPoints.begin(),narrowingPolygonPoints.end());
     instance_pathPolygonPlan.cgalNarrowPolygons(narrowingPolygonPoints);
 
-
-
     Point temp_point;
     temp_point.x = (narrowingPolygonPoints[0].x + narrowingPolygonPoints[1].x)/2;
     temp_point.y = (narrowingPolygonPoints[0].y + narrowingPolygonPoints[1].y)/2;
@@ -86,17 +84,9 @@ int main(int argc, char **argv) {
 //    polyps << std::endl;
 //    polyps.close();
 
-
-
-
-
     //将计算得到的回字形入口线段延长一段距离
     //auto real_line_extend = common::commonMath::extendLineLength(real_line,0.5);
     //计算平移后的向量和内缩多边形们的交点
-
-
-
-
 
 //    instance_pathPolygonPlan.updatePolygonPointsIncrease();
 //    instance_pathPolygonPlan.updatePolygonPointsSequence1();
@@ -121,7 +111,6 @@ int main(int argc, char **argv) {
 //    }
 //    increaseNodes << std::endl;
 //    increaseNodes.close();
-
 
 //    instance_pathPolygonPlan.computebackShapeKeypoints();
 //    instance_pathPolygonPlan.filteredBackShapeKeyPoints();

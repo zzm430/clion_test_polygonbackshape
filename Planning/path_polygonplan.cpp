@@ -182,7 +182,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         }
     }
     //存储剩余点内骨架点位
-    int all_sken_pts = storage_polypts.size();
+    auto all_sken_pts = storage_polypts.size();
     while(transPt != storage_polypts[all_sken_pts-1] &&
           transPt != storage_polypts[all_sken_pts-2]){
           auto temp_pts = cgalPtMaping_[transPt];
@@ -310,7 +310,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         }
     }
     if(mode_choose == 1){
-        for(auto it :bufferspiltPolys1_){
+        for(auto it : bufferspiltPolys1_){
             cgalandboostPolypts_.push_back(it);
         }
     }else if(mode_choose ==2){
@@ -364,14 +364,21 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         LOG(INFO) << "the find entrance pts size is : " << judge_number;
         if(!mode_choose_){
            auto temp =  cgalandboostPolypts_.size() - judge_number;
-           if(temp >= 2){
+           if(temp > SET_POLY_TRANSFER_THR){
                cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LEAVE;
                find_entrance_pts_size_ = judge_number;
                computeLeaveSituation(judge_number-1);
-           }else if(temp == 1){
-               cgalLastPolyType_ = cgalLastPolyIdentify::POLY_ONLY_ONE;
-           }else if(temp == 0){
-               cgalLastPolyType_ = cgalLastPolyIdentify::POLY_NONE;
+           }else{
+               //当最后一笼是四边形并且temp == 0时
+               int polySize = cgalandboostPolypts_.size();
+               if(temp == 0  &&
+                   cgalandboostPolypts_[polySize-1].size() == 5 ){
+                   cgalLastPolyType_ = cgalLastPolyIdentify::POLY_NONE;
+               }else{
+                   cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LESS_THR;
+                   int countSize = cgalandboostPolypts_.size();
+                   computeLeaveSituation(countSize-1-SET_POLY_TRANSFER_THR);
+               }
            }
          }
 
@@ -2673,35 +2680,72 @@ void pathPolygonPlan::updatePolygonPointsIncrease(){
 
 void pathPolygonPlan::cgalUpdatePolygonPointsINcrease(){
     int num  = entrance_pts_.size();
-    if(entrance_pts_.size() == num -1){
-        LOG(INFO) << "the last polygon has no intersection with the entrance_lines";
-        for(int i = 0;i < num - 1;i++ ){
-            auto poly_pts = insertPointToPolygon(
-                    entrance_pts_[i],
-                    cgalandboostPolypts_[i]);
-            cgalIncreaseptPolypts_.push_back(poly_pts);
+    switch (cgalLastPolyType_) {
+        case cgalLastPolyIdentify::POLY_LEAVE:{
+            LOG(INFO) << "the difference  between the polygon and the entrance >=2";
+            for(int i = 0;i < num - 1;i++ ){
+                auto poly_pts = insertPointToPolygon(
+                        entrance_pts_[i],
+                        cgalandboostPolypts_[i]);
+                cgalIncreaseptPolypts_.push_back(poly_pts);
+            }
+            break;
         }
-        //最后一笼单独添加
-        auto tempPolygon = cgalandboostPolypts_[num - 1];
-        cgalIncreaseptPolypts_.push_back(tempPolygon);
-    }else{
-        for(int i = 0;i < num ;i++ ){
-            auto poly_pts = insertPointToPolygon(
-                    entrance_pts_[i],
-                    cgalandboostPolypts_[i]);
-         cgalIncreaseptPolypts_.push_back(poly_pts);
+        case cgalLastPolyIdentify::POLY_NONE:{
+            LOG(INFO) << "the difference  between the polygon and the entrance == 0";
+            for(int i = 0;i < num ;i++ ){
+                auto poly_pts = insertPointToPolygon(
+                        entrance_pts_[i],
+                        cgalandboostPolypts_[i]);
+                cgalIncreaseptPolypts_.push_back(poly_pts);
+            }
+            break;
         }
-        for(int i = num ;i < cgalandboostPolypts_.size();i++){
-            cgalIncreaseptPolypts_.push_back(cgalandboostPolypts_[i]);
+        case cgalLastPolyIdentify::POLY_LESS_THR:{
+            LOG(INFO) << "the difference  between the polygon and the entrance <= 2";
+            int countSize = cgalandboostPolypts_.size();
+            for(int i = 0;i < countSize - SET_POLY_TRANSFER_THR ;i++ ){
+                auto poly_pts = insertPointToPolygon(
+                        entrance_pts_[i],
+                        cgalandboostPolypts_[i]);
+                cgalIncreaseptPolypts_.push_back(poly_pts);
+            }
+            break;
+        }
+        default:{
+            LOG(INFO) << "no considered situation happen !";
+            break;
         }
     }
+//    if(entrance_pts_.size() == num -1){
+//        LOG(INFO) << "the last polygon has no intersection with the entrance_lines";
+//        for(int i = 0;i < num - 1;i++ ){
+//            auto poly_pts = insertPointToPolygon(
+//                    entrance_pts_[i],
+//                    cgalandboostPolypts_[i]);
+//            cgalIncreaseptPolypts_.push_back(poly_pts);
+//        }
+//        //最后一笼单独添加
+//        auto tempPolygon = cgalandboostPolypts_[num - 1];
+//        cgalIncreaseptPolypts_.push_back(tempPolygon);
+//    }else{
+//        for(int i = 0;i < num ;i++ ){
+//            auto poly_pts = insertPointToPolygon(
+//                    entrance_pts_[i],
+//                    cgalandboostPolypts_[i]);
+//         cgalIncreaseptPolypts_.push_back(poly_pts);
+//        }
+//        for(int i = num ;i < cgalandboostPolypts_.size();i++){
+//            cgalIncreaseptPolypts_.push_back(cgalandboostPolypts_[i]);
+//        }
+//    }
 }
 
 void pathPolygonPlan::cgalUpatePolygonPointsSequence(){
      int num = cgalIncreaseptPolypts_.size();
      int number;
      std::vector<polygonPoint> storage_points;
-     for(int i = 0;i < num -1;i++){
+     for(int i = 0;i <= num -1;i++){
          for(auto it : cgalIncreaseptPolypts_[i]){
              if(it.entrance_){
                  int num_1 = cgalIncreaseptPolypts_[i].size();
@@ -2725,7 +2769,7 @@ void pathPolygonPlan::cgalUpatePolygonPointsSequence(){
              }
          }
      }
-     cgalSequencedPolypts_.push_back(cgalIncreaseptPolypts_[num - 1]);
+//     cgalSequencedPolypts_.push_back(cgalIncreaseptPolypts_[num - 1]);
 }
 
 void pathPolygonPlan::cgalComputebackShapeKeypoints(){
@@ -2733,11 +2777,11 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
     std::vector<polygonPoint>  temp_points;
 
     //当处于POLY_LEAVE时需要重新更新num
-    if(find_entrance_pts_size_){
-        num = find_entrance_pts_size_ + 1;
-    }
+//    if(find_entrance_pts_size_){
+//        num = find_entrance_pts_size_ + 1;
+//    }
 
-    for(int i = 0;i < num - 1;i++) {
+    for(int i = 0;i < num ;i++) {
         for(int  it = 1 ; it < cgalSequencedPolypts_[i].size();it ++){
             temp_points.push_back(cgalSequencedPolypts_[i][it]);
         }
@@ -2754,13 +2798,14 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
         }
         case aiforce::Route_Planning::cgalLastPolyIdentify::POLY_NONE:{
             LOG(INFO) << "keypoint type is poly_none !";
-            cgalbackShape_keypoints_.push_back(cgalSequencedPolypts_[num - 1]);
+//            cgalbackShape_keypoints_.push_back(cgalSequencedPolypts_[num - 1]);
             break;
         }
-        case aiforce::Route_Planning::cgalLastPolyIdentify::POLY_ONLY_ONE:{
-            LOG(INFO) << "keypoint type is poly_only_one !";
+        case aiforce::Route_Planning::cgalLastPolyIdentify::POLY_LESS_THR:{
+            LOG(INFO) << "keypoint type is poly_less_Thr !";
             //添加最后一笼
-            cgalbackShape_keypoints_.push_back(cgalSequencedPolypts_[num - 1]);
+            cgalComputeRidgeKeyPointsLeave();
+//            cgalbackShape_keypoints_.push_back(cgalSequencedPolypts_[num - 1]);
             break;
         }
         default:{

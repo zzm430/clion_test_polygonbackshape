@@ -8,9 +8,9 @@ getMapData::~getMapData() {
 
 }
 void getMapData::loadMapOuter(){
-//     std::ifstream infile( "/home/zzm/Downloads/middle/026.txt");
-     std::ifstream infile("/home/zzm/Downloads/map_0511/hard/021.txt");
-//    std::ifstream infile("/home/zzm/Downloads/map_0801/Outermap9.txt");
+//     std::ifstream infile( "/home/zzm/Downloads/middle/023.txt");
+     std::ifstream infile("/home/zzm/Downloads/map_0511/hard/012.txt");
+//    std::ifstream infile("/home/zzm/Downloads/map_0801/Outermap26.txt");
      // 检查文件是否成功打
       if (!infile) {
           LOG(INFO) << "Failed to open  load map outter file.";

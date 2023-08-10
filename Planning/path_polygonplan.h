@@ -124,9 +124,10 @@ namespace Route_Planning
     };
 
     enum class cgalLastPolyIdentify:uint8_t {
-        POLY_NONE = 0,   //标志着入口线段们与最后一笼相交
+        POLY_NONE = 0,      //标志着入口线段们与最后一笼相交
         POLY_ONLY_ONE = 1,  //标志着入口线段们未与最后一笼相交
-        POLY_LEAVE          //标志着入口线段们至少有两笼未相交
+        POLY_LEAVE  = 2,        //标志着入口线段们至少有两笼未相交
+        POLY_LESS_THR       //入口交点小于最后阈值内无交点
     };
 
  class pathPolygonPlan  {

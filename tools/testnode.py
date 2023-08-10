@@ -31,12 +31,18 @@ CC_y = CC[1]
 # test_x = test[0]
 # test_y = test[1]
 
+test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly.txt')
+test_virtual_origin_poly_x = test_virtual_origin_poly[0]
+test_virtual_origin_poly_y = test_virtual_origin_poly[1]
+
 # ax.plot(ff_x,ff_y,color='b',markerfacecolor='green',marker='o',label='narrow_points data')
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
 # ax.plot(DD_x,DD_y,color='y',markerfacecolor='green',marker='o',label='inter_nodes data')
 # ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_polygon data')
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(test_virtual_origin_poly_x,test_virtual_origin_poly_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
+
 # ax.plot(test_x,test_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
 # ax.plot(NN_x,NN_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
 #
