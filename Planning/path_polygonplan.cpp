@@ -594,12 +594,18 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
     vector_1 = common::commonMath::construceVector(max_dis_pt,middle_point);
     vector_2 = common::commonMath::construceVector(longest_line[0],middle_point);
     double judge_direction = common::commonMath::pointLocation(vector_1,vector_2);
+
+    //将最长边往最远点移动一定距离
+    auto longest_pts = common::commonMath::computeLineTranslationPoints(
+            longest_line,
+            foot_line,
+            RIDGE_WIDTH_LENGTH/2);
     if(judge_direction == 1){
-        move_pts_line_1_.push_back(longest_line[0]);
-        move_pts_line_2_.push_back(longest_line[1]);
+        move_pts_line_1_.push_back(longest_pts[0]);
+        move_pts_line_2_.push_back(longest_pts[1]);
     }else{
-        move_pts_line_1_.push_back(longest_line[1]);
-        move_pts_line_2_.push_back(longest_line[0]);
+        move_pts_line_1_.push_back(longest_pts[1]);
+        move_pts_line_2_.push_back(longest_pts[0]);
     }
 
     //这里需要对这个longest_line进行延伸一下防止与四边形没有交点
@@ -619,18 +625,19 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
     longest_line.push_back(polygonPoint(temp_pt1[0].x,temp_pt1[0].y));
     longest_line.push_back(polygonPoint(temp_pt2[0].x,temp_pt2[0].y));
 
+    std::vector<polygonPoint>   tempStorage;
     for(int i = 1;i <= integer_number;i++){
         std::vector<polygonPoint> points;
         if(i == 1){
             points = common::commonMath::computeLineTranslationPoints(
                     longest_line,
                     foot_line,
-                    RIDGE_WIDTH_LENGTH/2);
+                    RIDGE_WIDTH_LENGTH);
         }else{
             points = common::commonMath::computeLineTranslationPoints(
                     longest_line,
                     foot_line,
-                    RIDGE_WIDTH_LENGTH/2 + RIDGE_WIDTH_LENGTH *(i-1));
+                    RIDGE_WIDTH_LENGTH + RIDGE_WIDTH_LENGTH *(i-1));
         }
 
         //计算平移后的线段与四边形的交点
@@ -665,6 +672,8 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
                     RIDGE_WIDTH_LENGTH/2);
             move_pts_line_1_.push_back(polygonPoint(result_pts[0].x,result_pts[0].y));
             move_pts_line_2_.push_back(polygonPoint(result_pts[1].x,result_pts[1].y));
+            tempStorage.push_back(origin_line[0]);
+            tempStorage.push_back(origin_line[1]);
         }else{
             origin_line.push_back(polygonPoint(output[0].x(),output[0].y()));
             origin_line.push_back(polygonPoint(output[1].x(),output[1].y()));
@@ -674,6 +683,8 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
                     RIDGE_WIDTH_LENGTH/2);
             move_pts_line_1_.push_back(polygonPoint(res_pts[1].x,res_pts[1].y));
             move_pts_line_2_.push_back(polygonPoint(res_pts[0].x,res_pts[0].y));
+            tempStorage.push_back(origin_line[0]);
+            tempStorage.push_back(origin_line[1]);
         }
     }
 
@@ -2683,7 +2694,7 @@ void pathPolygonPlan::cgalUpdatePolygonPointsINcrease(){
     switch (cgalLastPolyType_) {
         case cgalLastPolyIdentify::POLY_LEAVE:{
             LOG(INFO) << "the difference  between the polygon and the entrance >=2";
-            for(int i = 0;i < num - 1;i++ ){
+            for(int i = 0;i < num ;i++ ){
                 auto poly_pts = insertPointToPolygon(
                         entrance_pts_[i],
                         cgalandboostPolypts_[i]);
