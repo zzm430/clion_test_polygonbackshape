@@ -114,10 +114,9 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                                 poly.vertices_end());
     std::vector<polygonPoint>  storage_polypts;
     std::vector<polygonPoint>   inner_polypts;
-    LOG(INFO) << "---------------------------------------------------------------" << std::endl;
+    LOG(INFO) << "---------------------------------------------------------------";
     LOG(INFO) << "the straight skeleton vertices is : "
-              << iss.get()->size_of_vertices()
-              << std::endl;
+              << iss.get()->size_of_vertices();
 
     for(auto i = iss.get()->halfedges_begin();
              i != iss.get()->halfedges_end();
@@ -170,7 +169,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     lastPoly_innerpts_.push_back(entrance_point);
     //存储第二个点为对应的骨架点
     polygonPoint transPt;
-
     for(auto it :cgalPtMaping_){
         if(it.first == entrance_point){
             for(auto f : it.second){
@@ -233,7 +231,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         for(auto it : offset_polygons){
             auto m = *it;
             auto temp = CGAL::is_simple_2(m.vertices_begin(), m.vertices_end());
-            LOG(INFO) << "the narrow poly judge  sample is : " << temp << " " ;
             for(auto j : *it){
                 polygonPoint temppt;
                 temppt.x = j.x();
@@ -244,7 +241,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         poly_pts.push_back(poly_pts[0]); //这个点可以看做是多边形的最后一个点也可以后续计算下个路口的入口点
         cgalPolypts_.push_back(poly_pts);
     }
-
 
     std::vector<std::vector<polygonPoint>>  storage_spilt_first_polys;
     std::vector<std::vector<polygonPoint>>  storage_spilt_second_polys;
@@ -339,7 +335,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                       line.push_back(point(entrance_lines_[j + 1].x,entrance_lines_[j + 1].y));
                       boost::geometry::intersection(line,poly,output);
                       if(output.size() == 0){
-                          LOG(INFO) << "the point is zero !";
                           continue;
                       }else{
                           for(auto it : output){
@@ -348,7 +343,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                               temp_pt.y = it.y();
                               find_entrance_pts[i].push_back(temp_pt);
                           }
-                          LOG(INFO) << "the point is  No zero !";
                       }
                   }
             }
@@ -467,17 +461,17 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     }
     test_skeleton_4 << std::endl;
     test_skeleton_4.close();
-    LOG(INFO) <<"the enter here ---------------------------------------!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+    LOG(INFO) <<"the enter here ---------------------------------------!!!!!!!!!!!!!!!!!!!!!!";
 
     std::ofstream   test_111_poly;
     test_111_poly.open("/home/zzm/Desktop/test_path_figure-main/src/test_111_poly.txt",std::ios::out);
-    for(auto it : cgalandboostPolypts_){
+    for(auto it : bufferspiltPolys2_){
         for(auto j : it){
             test_111_poly << " " << j.x;
         }
     }
     test_111_poly << std::endl;
-    for(auto m : cgalandboostPolypts_){
+    for(auto m : bufferspiltPolys2_){
         for(auto j :m){
             test_111_poly << " " << j.y;
         }
@@ -588,7 +582,6 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
     std::vector<polygonPoint> middle_line;
     middle_line.push_back(middle_point);
     middle_line.push_back(max_dis_pt);
-
 
     polygonPoint  vector_1,vector_2;
     vector_1 = common::commonMath::construceVector(max_dis_pt,middle_point);
@@ -717,7 +710,6 @@ void pathPolygonPlan::judgePolysSample(int* record_spilt_index,bool&  have_spilt
             temp.outer().push_back(point(it->x,it->y));
         }
         bool issample =  boost::geometry::is_valid(temp);
-        LOG(INFO) << "the poly issample 111 is : " << issample;
         temp.outer().clear();
         if(!issample){
             double buffer_distance = -DBL_MAX;

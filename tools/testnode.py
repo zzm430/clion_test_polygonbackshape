@@ -31,6 +31,11 @@ CC_y = CC[1]
 # test_x = test[0]
 # test_y = test[1]
 
+
+test_111_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_111_poly.txt')
+test_111_poly_x = test_111_poly[0]
+test_111_poly_y = test_111_poly[1]
+
 test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly.txt')
 test_virtual_origin_poly_x = test_virtual_origin_poly[0]
 test_virtual_origin_poly_y = test_virtual_origin_poly[1]
@@ -48,6 +53,7 @@ test_move_pts_y = test_move_pts[1]
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(test_virtual_origin_poly_x,test_virtual_origin_poly_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
 # ax.plot(test_move_pts_x,test_move_pts_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
+ax.plot(test_111_poly_x,test_111_poly_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
 
 # ax.plot(test_x,test_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
 # ax.plot(NN_x,NN_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')

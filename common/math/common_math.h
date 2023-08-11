@@ -480,7 +480,7 @@ namespace common{
             vector_C.y = A.y - B.y;
             return vector_C;
         }
-        //
+
 
     };
 }
