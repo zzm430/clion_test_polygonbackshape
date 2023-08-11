@@ -385,7 +385,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         int judge_number  = find_entrance_pts.size();
 
         LOG(INFO) << "the find entrance pts size is : " << judge_number;
-        if(!mode_choose_){
+//        if(!mode_choose_){
            auto temp =  cgalandboostPolypts_.size() - judge_number;
            if(temp > SET_POLY_TRANSFER_THR){
                cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LEAVE;
@@ -403,7 +403,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                    computeLeaveSituation(countSize-1-SET_POLY_TRANSFER_THR);
                }
            }
-         }
+//         }
 
         std::ofstream  cgal_pts_entrance;
         cgal_pts_entrance.open("/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt",
@@ -494,13 +494,13 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 
     std::ofstream   test_111_poly;
     test_111_poly.open("/home/zzm/Desktop/test_path_figure-main/src/test_111_poly.txt",std::ios::out);
-    for(auto it : bufferspiltPolys2_){
+    for(auto it : cgalandboostPolypts_){
         for(auto j : it){
             test_111_poly << " " << j.x;
         }
     }
     test_111_poly << std::endl;
-    for(auto m : bufferspiltPolys2_){
+    for(auto m : cgalandboostPolypts_){
         for(auto j :m){
             test_111_poly << " " << j.y;
         }
@@ -634,13 +634,13 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
     auto temp_pt1 = common::commonMath::findPointExtendSegment(
             longest_line[0],
             longest_line[1],
-            20,
+            500,
             true,
             1);
     auto temp_pt2 = common::commonMath::findPointExtendSegment(
             longest_line[0],
             longest_line[1],
-            20,
+            500,
             false,
             1);
     longest_line.clear();

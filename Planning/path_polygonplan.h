@@ -292,7 +292,7 @@ namespace Route_Planning
      std::vector<std::vector<polygonPoint>>      cgalSequencedPolypts_;   //增加入口点并已入口点为起点存储的内缩多边形
      std::vector<std::vector<polygonPoint>>      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]
      std::map<polygonPoint,std::vector<polygonPoint>>    cgalPtMaping_; //直骨架点位映射
-     int mode_choose_;                                      //分裂多边形分裂 mode_choose_ = 1 ,2
+     int mode_choose_ = 0;                                      //分裂多边形分裂 mode_choose_ = 1 ,2
      cgalLastPolyIdentify             cgalLastPolyType_;
      int find_entrance_pts_size_ = 0;                        //入口点数
 
