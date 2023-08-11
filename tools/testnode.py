@@ -45,6 +45,15 @@ test_move_pts = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_mov
 test_move_pts_x = test_move_pts[0]
 test_move_pts_y = test_move_pts[1]
 
+cgal_pts_entrance = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt')
+cgal_pts_entrance_x = cgal_pts_entrance[0]
+cgal_pts_entrance_y = cgal_pts_entrance[1]
+
+
+test_skeleton_2 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_3.txt')
+test_skeleton_2_x = test_skeleton_2[0]
+test_skeleton_2_y = test_skeleton_2[1]
+
 # ax.plot(ff_x,ff_y,color='b',markerfacecolor='green',marker='o',label='narrow_points data')
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
@@ -54,6 +63,8 @@ ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints 
 # ax.plot(test_virtual_origin_poly_x,test_virtual_origin_poly_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
 # ax.plot(test_move_pts_x,test_move_pts_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
 ax.plot(test_111_poly_x,test_111_poly_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
+# ax.plot(cgal_pts_entrance_x,cgal_pts_entrance_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
+
 
 # ax.plot(test_x,test_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
 # ax.plot(NN_x,NN_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
@@ -73,6 +84,13 @@ ax.plot(test_111_poly_x,test_111_poly_y,color='blue',markerfacecolor='green',mar
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # for a, b in zip(ff_x, ff_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+
+
+# 绘制线段
+# for i in range(len(test_skeleton_2[0])-1):
+#     x = [test_skeleton_2[0][i], test_skeleton_2[0][i+1]]
+#     y = [test_skeleton_2[1][i], test_skeleton_2[1][i+1]]
+#     plt.plot(x, y)
 
 ax.set_xlabel('x label')
 ax.set_ylabel('y label')

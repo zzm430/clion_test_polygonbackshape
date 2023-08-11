@@ -379,11 +379,11 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         std::ofstream  cgal_pts_entrance;
         cgal_pts_entrance.open("/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt",
                 std::ios::out);
-        for(auto it : entrance_pts_){
+        for(auto it : entrance_lines_){
             cgal_pts_entrance << " " << it.x ;
         }
         cgal_pts_entrance << std::endl;
-        for(auto it : entrance_pts_){
+        for(auto it : entrance_lines_){
             cgal_pts_entrance << " " << it.y;
         }
         cgal_pts_entrance << std::endl;
@@ -783,25 +783,27 @@ void pathPolygonPlan::spiltPolyTo2(
                 if(!spilt_second_poly_pts.empty()){
                     storage_spilt_second_polys.push_back(spilt_second_poly_pts);
                 }
-                //分别计算出两个poly的质心
-                point centroid;
-                polygon  sp_first_poly;
-                polygon  sp_second_poly;
-                for(auto it : spilt_first_poly_pts){
-                    sp_first_poly.outer().push_back(point(it.x,it.y));
-                }
-                boost::geometry::centroid(sp_first_poly, centroid);
-                spilt_first_poly_center = point(centroid.x(),centroid.y());
+//                //分别计算出两个poly的质心
+//                point centroid;
+//                polygon  sp_first_poly;
+//                polygon  sp_second_poly;
+//                for(auto it : spilt_first_poly_pts){
+//                    sp_first_poly.outer().push_back(point(it.x,it.y));
+//                }
+//                boost::geometry::centroid(sp_first_poly, centroid);
+//                spilt_first_poly_center = point(centroid.x(),centroid.y());
             }else{
                 if(!storage_spilt_first_polys.empty() ||
                    !storage_spilt_second_polys.empty()){
                     if(!spilt_first_poly_pts.empty() &&
                        !spilt_second_poly_pts.empty()){
                         polygon pt_poly;
-                        for(auto it : spilt_first_poly_pts){
+                        for(auto it : storage_spilt_first_polys[0]){
                             pt_poly.outer().push_back(point(it.x,it.y));
                         }
-                        bool flag =  boost::geometry::within(spilt_first_poly_center, pt_poly);
+
+                        bool flag =  boost::geometry::within(point(spilt_first_poly_pts[0].x,
+                                                                   spilt_first_poly_pts[0].y), pt_poly);
                         if(flag){
                             storage_spilt_first_polys.push_back(spilt_first_poly_pts);
                             storage_spilt_second_polys.push_back(spilt_second_poly_pts);
@@ -812,10 +814,12 @@ void pathPolygonPlan::spiltPolyTo2(
                     }else if(!spilt_first_poly_pts.empty() &&
                              spilt_second_poly_pts.empty()){
                         polygon pt_poly;
-                        for(auto it : spilt_first_poly_pts){
+                        for(auto it : storage_spilt_first_polys[0]){
                             pt_poly.outer().push_back(point(it.x,it.y));
                         }
-                        bool flag =  boost::geometry::within(spilt_first_poly_center, pt_poly);
+
+                        bool flag =  boost::geometry::within(point(spilt_first_poly_pts[0].x,
+                                                                   spilt_first_poly_pts[0].y), pt_poly);
                         if(flag){
                             storage_spilt_first_polys.push_back(spilt_first_poly_pts);
                         }else{
@@ -824,10 +828,12 @@ void pathPolygonPlan::spiltPolyTo2(
                     }else if(!spilt_second_poly_pts.empty() &&
                              spilt_first_poly_pts.empty()){
                         polygon pt_poly;
-                        for(auto it : spilt_second_poly_pts){
+                        for(auto it : storage_spilt_first_polys[0]){
                             pt_poly.outer().push_back(point(it.x,it.y));
                         }
-                        bool flag =  boost::geometry::within(spilt_first_poly_center, pt_poly);
+
+                        bool flag =  boost::geometry::within(point(spilt_first_poly_pts[0].x,
+                                                                   spilt_first_poly_pts[0].y), pt_poly);
                         if(flag){
                             storage_spilt_first_polys.push_back(spilt_second_poly_pts);
                         }else{
