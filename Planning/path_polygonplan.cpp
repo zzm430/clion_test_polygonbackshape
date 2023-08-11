@@ -285,36 +285,63 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     int mode_choose;
     //选择分裂多边形哪个作为入口
     if(have_spilt_poly){
-        for(int i = 0;i < bufferspiltPolys1_.size();i++){
-            for(int j = 0; j < entrance_lines_.size();j++){
-                polygon  poly;
-                for(auto it :bufferspiltPolys1_[i]){
-                    poly.outer().push_back(point(it.x,it.y));
-                }
-                linestring_type  line;
-                line.push_back(point(entrance_lines_[j].x,entrance_lines_[j].y));
-                line.push_back(point(entrance_lines_[j + 1].x,entrance_lines_[j + 1].y));
-                std::vector<point> output;
-                boost::geometry::intersection(line,poly,output);
-                if(!output.size()){
-                    mode_choose = 2;
-                }
+        //将线段入口的起始点分别与这两个分裂内缩多边形进行距离计算
+        polygon   poly1,poly2;
+        for(auto it : bufferspiltPolys1_[0]){
+              poly1.outer().push_back(point(it.x,it.y));
+        }
+        for(auto it : bufferspiltPolys2_[0]){
+              poly2.outer().push_back(point(it.x,it.y));
+        }
+        auto distance1 = boost::geometry::distance(
+                                     point(entrance_lines_[0].x,entrance_lines_[0].y),
+                                     poly1);
+        auto distance2 = boost::geometry::distance(
+                                     point(entrance_lines_[0].x,entrance_lines_[0].y),
+                                     poly2);
+        if(fabs(distance1) < fabs(distance2)){
+            mode_choose_ = 1;
+            for(auto it : bufferspiltPolys1_){
+                cgalandboostPolypts_.push_back(it);
+            }
+        }else{
+            mode_choose_ = 2;
+            for(auto it : bufferspiltPolys2_){
+                cgalandboostPolypts_.push_back(it);
             }
         }
-        if(mode_choose != 2){
-            mode_choose = 1;
-        }
     }
-    if(mode_choose == 1){
-        for(auto it : bufferspiltPolys1_){
-            cgalandboostPolypts_.push_back(it);
-        }
-    }else if(mode_choose ==2){
-        for(auto it : bufferspiltPolys2_){
-            cgalandboostPolypts_.push_back(it);
-        }
-    }
-    mode_choose_ = mode_choose;
+//    if(have_spilt_poly){
+//        for(int i = 0;i < bufferspiltPolys1_.size();i++){
+//            for(int j = 0; j < entrance_lines_.size();j++){
+//                polygon  poly;
+//                for(auto it :bufferspiltPolys1_[i]){
+//                    poly.outer().push_back(point(it.x,it.y));
+//                }
+//                linestring_type  line;
+//                line.push_back(point(entrance_lines_[j].x,entrance_lines_[j].y));
+//                line.push_back(point(entrance_lines_[j + 1].x,entrance_lines_[j + 1].y));
+//                std::vector<point> output;
+//                boost::geometry::intersection(line,poly,output);
+//                if(!output.size()){
+//                    mode_choose = 2;
+//                }
+//            }
+//        }
+//        if(mode_choose != 2){
+//            mode_choose = 1;
+//        }
+//    }
+//    if(mode_choose == 1){
+//        for(auto it : bufferspiltPolys1_){
+//            cgalandboostPolypts_.push_back(it);
+//        }
+//    }else if(mode_choose ==2){
+//        for(auto it : bufferspiltPolys2_){
+//            cgalandboostPolypts_.push_back(it);
+//        }
+//    }
+//    mode_choose_ = mode_choose;
 
     //求回字形的入口点位信息
     if(JUDGE_CLOCKWISE){
@@ -348,8 +375,10 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
             }
         }
         for(int i = 0;i < find_entrance_pts.size();i++){
-            if(find_entrance_pts[i].size()){
+            if(find_entrance_pts[i].size() && !mode_choose_){
                 entrance_pts_.push_back(find_entrance_pts[i][find_entrance_pts[i].size()-1]);
+            }else{
+                entrance_pts_.push_back(find_entrance_pts[i][0]);
             }
         }
         //将未与入口线段们相交的多边形统一处理
@@ -379,11 +408,11 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         std::ofstream  cgal_pts_entrance;
         cgal_pts_entrance.open("/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt",
                 std::ios::out);
-        for(auto it : entrance_lines_){
+        for(auto it : entrance_pts_){
             cgal_pts_entrance << " " << it.x ;
         }
         cgal_pts_entrance << std::endl;
-        for(auto it : entrance_lines_){
+        for(auto it : entrance_pts_){
             cgal_pts_entrance << " " << it.y;
         }
         cgal_pts_entrance << std::endl;
