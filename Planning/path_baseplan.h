@@ -65,7 +65,6 @@ namespace Route_Planning
                                               int ridge_number)  = 0;
      virtual  std::vector<Point>  getDiff3Points(Point&m,Point&n) = 0;
 
-
      public:
         std::vector<Point>   key_points_;                 //关键点
         int      ridge_numbers_;                          //垄数
@@ -90,7 +89,6 @@ namespace Route_Planning
         baskShapeType    backShapeMode_;                    //回字形规划方式
         bool    backShapeFlag_;                             //决定从外侧添加1垄还是从内部添加1垄 false = 从外部添加
         bool    useGCSPoints_;                              //判断是否将其转换为大地坐标系下的坐标点 FALSE = 不转   TRUE = 转
-
      };
 }
 }

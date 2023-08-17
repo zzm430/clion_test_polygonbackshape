@@ -375,10 +375,12 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
             }
         }
         for(int i = 0;i < find_entrance_pts.size();i++){
-            if(find_entrance_pts[i].size() && !mode_choose_){
-                entrance_pts_.push_back(find_entrance_pts[i][find_entrance_pts[i].size()-1]);
-            }else{
-                entrance_pts_.push_back(find_entrance_pts[i][0]);
+            if(!find_entrance_pts[i].empty()){
+                if(find_entrance_pts[i].size() && !mode_choose_){
+                    entrance_pts_.push_back(find_entrance_pts[i][find_entrance_pts[i].size()-1]);
+                }else{
+                    entrance_pts_.push_back(find_entrance_pts[i][0]);
+                }
             }
         }
         //将未与入口线段们相交的多边形统一处理
@@ -494,13 +496,13 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 
     std::ofstream   test_111_poly;
     test_111_poly.open("/home/zzm/Desktop/test_path_figure-main/src/test_111_poly.txt",std::ios::out);
-    for(auto it : cgalandboostPolypts_){
+    for(auto it : bufferspiltPolys1_){
         for(auto j : it){
             test_111_poly << " " << j.x;
         }
     }
     test_111_poly << std::endl;
-    for(auto m : cgalandboostPolypts_){
+    for(auto m : bufferspiltPolys1_){
         for(auto j :m){
             test_111_poly << " " << j.y;
         }
@@ -612,23 +614,6 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
     middle_line.push_back(middle_point);
     middle_line.push_back(max_dis_pt);
 
-    polygonPoint  vector_1,vector_2;
-    vector_1 = common::commonMath::construceVector(max_dis_pt,middle_point);
-    vector_2 = common::commonMath::construceVector(longest_line[0],middle_point);
-    double judge_direction = common::commonMath::pointLocation(vector_1,vector_2);
-
-    //将最长边往最远点移动一定距离
-    auto longest_pts = common::commonMath::computeLineTranslationPoints(
-            longest_line,
-            foot_line,
-            RIDGE_WIDTH_LENGTH/2);
-    if(judge_direction == 1){
-        move_pts_line_1_.push_back(longest_pts[0]);
-        move_pts_line_2_.push_back(longest_pts[1]);
-    }else{
-        move_pts_line_1_.push_back(longest_pts[1]);
-        move_pts_line_2_.push_back(longest_pts[0]);
-    }
 
     //这里需要对这个longest_line进行延伸一下防止与四边形没有交点
     auto temp_pt1 = common::commonMath::findPointExtendSegment(
@@ -646,6 +631,40 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
     longest_line.clear();
     longest_line.push_back(polygonPoint(temp_pt1[0].x,temp_pt1[0].y));
     longest_line.push_back(polygonPoint(temp_pt2[0].x,temp_pt2[0].y));
+
+    //求内缩多边形与最长的线段的一个线段交点
+    polygon  poly_f;
+    std::reverse(stor_poly.begin(),stor_poly.end());
+    for(auto it : stor_poly){
+        poly_f.outer().push_back(point(it.x,it.y));
+    }
+    //将最长边往最远点移动一定距离
+    auto longest_pts = common::commonMath::computeLineTranslationPoints(
+            longest_line,
+            foot_line,
+            RIDGE_WIDTH_LENGTH/2);
+
+    linestring_type  line;
+    line.push_back(point(longest_pts[0].x,
+                         longest_pts[0].y));
+    line.push_back(point(longest_pts[1].x,longest_pts[1].y));
+    std::vector<point> output;
+    boost::geometry::intersection(line,poly_f,output);
+    polygonPoint  vector_1,vector_2;
+    polygonPoint  judgeDirection;
+    judgeDirection.x = output[0].x();
+    judgeDirection.y = output[0].y();
+    vector_1 = common::commonMath::construceVector(max_dis_pt,middle_point);
+    vector_2 = common::commonMath::construceVector(judgeDirection,middle_point);
+    double judge_direction = common::commonMath::pointLocation(vector_1,vector_2);
+    if(judge_direction == 1){
+        move_pts_line_1_.push_back(polygonPoint(output[0].x(),output[0].y()));
+        move_pts_line_2_.push_back(polygonPoint(output[1].x(),output[1].y()));
+    }else{
+        move_pts_line_1_.push_back(polygonPoint(output[1].x(),output[1].y()));
+        move_pts_line_2_.push_back(polygonPoint(output[0].x(),output[0].y()));
+    }
+
 
     std::vector<polygonPoint>   tempStorage;
     for(int i = 1;i <= integer_number;i++){
@@ -1261,11 +1280,11 @@ void pathPolygonPlan::computeLastRidgePoints4and4(){
     }
     std::ofstream test_rect;
     test_rect.open("/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt",std::ios::out);
-    for(auto it = longest_line.begin(); it != longest_line.end();it++){
+    for(auto it = temp.begin(); it != temp.end();it++){
         test_rect << " " << (*it).x;
     }
     test_rect << std::endl;
-    for(auto it = longest_line.begin(); it != longest_line.end();it++){
+    for(auto it = temp.begin(); it != temp.end();it++){
         test_rect << " " << (*it).y;
     }
     test_rect<< std::endl;

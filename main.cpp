@@ -121,20 +121,22 @@ int main(int argc, char **argv) {
     std::ofstream keypoints;
     keypoints.open("/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt",std::ios::out);
     int all_size = keypoints_m.size();
-    for(auto i  = 0;i < all_size ;i++){
+    int m ;
+    m = 0;
+//    m = all_size - 2;
+    for(auto i  = m  ;i < all_size ;i++){
          for(auto j : keypoints_m[i]){
              keypoints << " " << j.x;
          }
     }
     keypoints << std::endl;
-    for(auto i = 0 ;i < all_size;i++){
+    for(auto i = m ;i < all_size;i++){
         for(auto j : keypoints_m[i]){
             keypoints << " " << j.y;
         }
     }
     keypoints << std::endl;
     keypoints.close();
-
 
    LOG(INFO) << "the program can enter here !";
    return 0;
