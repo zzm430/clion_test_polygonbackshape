@@ -265,7 +265,11 @@ namespace Route_Planning
      void cgalUpdatePolygonPointsINcrease();
      void cgalUpatePolygonPointsSequence();
      void cgalComputebackShapeKeypoints();
+     void cgalComputeAKeyptsMapping();        //只针对回字形的关键点位的映射处理
+     void cgalComputeParallelLinesHeading(std::vector<polygonPoint> & lastRidgePts);  //计算平行线的点位的heading
      std::vector<std::vector<polygonPoint>>  cgalGetBackShapeKeyPoints();
+     std::vector<pathInterface::pathPoint> cgalComputeRidgeRoutingpts(int ridge_index);  //根据垄号获取routing
+     void cgalComputeLastRidgeRoutingParallelLines(std::vector<pathInterface::pathPoint> &storageAllPath);
      void computeEntranceLines(std::vector<Point> &points);
      void judgePolysSample(int* record_spilt_index,bool&  have_spilt_poly);
      void spiltPolyTo2(

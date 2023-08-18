@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     instance_pathPolygonPlan.cgalUpdatePolygonPointsINcrease();
     instance_pathPolygonPlan.cgalUpatePolygonPointsSequence();
     instance_pathPolygonPlan.cgalComputebackShapeKeypoints();
-
+//
 //    std::ofstream  increaseNodes;
 //    increaseNodes.open("/home/zzm/Desktop/test_path_figure-main/src/increaseNodes.txt",std::ios::out);
 //    for(auto it : m ){
@@ -139,7 +139,24 @@ int main(int argc, char **argv) {
     keypoints.close();
 
    LOG(INFO) << "the program can enter here !";
-   return 0;
+
+    //获取cgal版本的routing信息
+    std::ofstream  cgal_show_ridge_path;
+    cgal_show_ridge_path.open("/home/zzm/Desktop/test_path_figure-main/src/cgal_show_ridge_path.txt",
+                         std::ios::out);
+    std::vector<pathInterface::pathPoint> cgal_routing_pts;
+    std::vector<std::vector<pathInterface::pathPoint>>  cgal_all_path;
+    for(auto i  = 0; i < all_size ;i++){
+        cgal_routing_pts =
+                instance_pathPolygonPlan.cgalComputeRidgeRoutingpts(i);
+        for (int i = 0; i < (int)cgal_routing_pts.size(); i++) {
+            cgal_show_ridge_path << cgal_routing_pts[i].x << " " << cgal_routing_pts[i].y  << std::endl;
+        }
+        cgal_all_path.push_back(cgal_routing_pts);
+    }
+    LOG(INFO) << "the program can enter here　2 !";
+    return 0;
+
     //获取routing信息
     std::ofstream  show_ridge_path;
     show_ridge_path.open("/home/zzm/Desktop/reeds_shepp-master/RS_Lib/show_ridge_path12.txt",
