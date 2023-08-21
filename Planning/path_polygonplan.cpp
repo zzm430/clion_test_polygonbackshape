@@ -1672,15 +1672,16 @@ std::vector<pathInterface::pathPoint>  pathPolygonPlan::cgalComputeRidgeRoutingp
     int ridges_counts  = cgalbackShape_keypoints_.size();
 
     //分情况处理最后一垄
-    if(ridge_index == cgalbackShape_keypoints_.size() - 1) {
+    if(ridge_index == cgalbackShape_keypoints_.size() - 1  &&
+            cgalLastPolyType_ !=  cgalLastPolyIdentify::POLY_NONE) {
         switch (cgalLastPolyType_) {
             case cgalLastPolyIdentify::POLY_LEAVE: {
                 cgalComputeLastRidgeRoutingParallelLines(storageAllPath);
                 break;
             }
-            case cgalLastPolyIdentify::POLY_NONE: {
-                break;
-            }
+//            case cgalLastPolyIdentify::POLY_NONE: {
+//                break;
+//            }
             case cgalLastPolyIdentify::POLY_LESS_THR: {
                 cgalComputeLastRidgeRoutingParallelLines(storageAllPath);
                 break;

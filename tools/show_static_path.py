@@ -13,7 +13,6 @@ a=np.loadtxt("/home/zzm/Desktop/test_path_figure-main/src/cgal_show_ridge_path.t
 # B_x = B[0]
 # B_y = B[1]
 
-
 f=plt.figure();                                                      #创建一个Figure对象，并向其中添加一个包含子图的Axes对象
 ax=f.add_subplot(111)                                                
 # ax.set(xlim=[523300, 523900],ylim=[4897000,4897900 ])                                   #设置x轴和y轴的范围限制为[0,10]
