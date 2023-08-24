@@ -14,7 +14,7 @@ fig, ax = plt.subplots()
 # AA = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/inter_nodes.txt')
 # AA_x = AA[0]
 # AA_y = AA[1]
-#
+
 CC = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt')
 CC_x = CC[0]
 CC_y = CC[1]
@@ -31,7 +31,6 @@ CC_y = CC[1]
 # test_x = test[0]
 # test_y = test[1]
 
-
 # test_111_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_111_poly.txt')
 # test_111_poly_x = test_111_poly[0]
 # test_111_poly_y = test_111_poly[1]
@@ -39,7 +38,6 @@ CC_y = CC[1]
 test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly.txt')
 test_virtual_origin_poly_x = test_virtual_origin_poly[0]
 test_virtual_origin_poly_y = test_virtual_origin_poly[1]
-
 
 # test_move_pts = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt')
 # test_move_pts_x = test_move_pts[0]
@@ -49,21 +47,25 @@ cgal_pts_entrance = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal
 cgal_pts_entrance_x = cgal_pts_entrance[0]
 cgal_pts_entrance_y = cgal_pts_entrance[1]
 
-
 test_skeleton_2 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_3.txt')
 test_skeleton_2_x = test_skeleton_2[0]
 test_skeleton_2_y = test_skeleton_2[1]
 
+test_skeleton_4 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_4.txt')
+test_skeleton_4_x = test_skeleton_4[0]
+test_skeleton_4_y = test_skeleton_4[1]
 
 test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly.txt')
 test_virtual_origin_poly_x = test_virtual_origin_poly[0]
 test_virtual_origin_poly_y = test_virtual_origin_poly[1]
 
-
 test_move_pts = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt')
 test_move_pts_x = test_move_pts[0]
 test_move_pts_y = test_move_pts[1]
 
+inner_skeleton_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/inner_skeleton_path.txt')
+inner_skeleton_path_x = inner_skeleton_path[0]
+inner_skeleton_path_y = inner_skeleton_path[1]
 
 # cgal_show_ridge_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_show_ridge_path.txt')
 # cgal_show_ridge_path_x = cgal_show_ridge_path[0]
@@ -74,6 +76,9 @@ test_move_pts_y = test_move_pts[1]
 # ax.plot(DD_x,DD_y,color='y',markerfacecolor='green',marker='o',label='inter_nodes data')
 # ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_polygon data')
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(test_skeleton_4_x,test_skeleton_4_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(inner_skeleton_path_x,inner_skeleton_path_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+
 # ax.plot(cgal_show_ridge_path_x,cgal_show_ridge_path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.5,markersize=1)
 
 # ax.plot(test_virtual_origin_poly_x,test_virtual_origin_poly_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.5,markersize=1)
@@ -84,34 +89,30 @@ ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints 
 # ax.plot(test_111_poly_x,test_111_poly_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
 # ax.plot(cgal_pts_entrance_x,cgal_pts_entrance_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
 
-
 # ax.plot(test_x,test_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
 # ax.plot(NN_x,NN_y,color='g',markerfacecolor='green',marker='o',label='keypoints data')
 #
-#
 # ax.plot(DD_x,DD_y,color='r',markerfacecolor='green',marker='o',label='realline data')
-#
-for a, b in zip(CC_x,CC_y):
-        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+
+# for a, b in zip(CC_x,CC_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # #
 # #
 # for a, b in zip(BB_x,BB_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # for a, b in zip(test_virtual_origin_poly_x,test_virtual_origin_poly_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
-#
 
-# for a, b in zip(NN_x, NN_y):
+# for a, b in zip(test_skeleton_4_x, test_skeleton_4_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # for a, b in zip(ff_x, ff_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
-
-
 # 绘制线段
 # for i in range(0, len(test_skeleton_2[0])-1, 2):
 #     x = [test_skeleton_2[0][i], test_skeleton_2[0][i+1]]
 #     y = [test_skeleton_2[1][i], test_skeleton_2[1][i+1]]
 #     plt.plot(x, y)
+#     plt.text(test_skeleton_2[0][i], test_skeleton_2[1][i], f"({test_skeleton_2[0][i]}, {test_skeleton_2[1][i]})")
 
 ax.set_xlabel('x label')
 ax.set_ylabel('y label')

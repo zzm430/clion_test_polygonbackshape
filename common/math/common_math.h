@@ -480,6 +480,21 @@ namespace common{
             vector_C.y = A.y - B.y;
             return vector_C;
         }
+        //6.判断一个点是否在线段AB上
+        static bool isPointOnSegment(
+                aiforce::Route_Planning::polygonPoint A,
+                aiforce::Route_Planning::polygonPoint B,
+                aiforce::Route_Planning::polygonPoint P){
+            // 计算向量AP、BP和AB的长度
+            double AP_length = distance2(A, P);
+            double BP_length = distance2(B, P);
+            double AB_length = distance2(A, B);
+            // 如果AP + BP = AB，则表明点P在线段AB上
+            if (fabs(AP_length + BP_length - AB_length) < 1e-6) {
+                return true;
+            }
+            return false;
+        }
 
 
     };

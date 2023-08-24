@@ -55,6 +55,7 @@ namespace Route_Planning
     typedef CGAL::Straight_skeleton_2<K>      cgal_Ss ;
     typedef boost::shared_ptr<cgal_Ss>        cgal_SsPtr ;
     typedef K::Segment_2                      cgal_Segment_2;
+    typedef Kernel::Bounded_side              cgal_Bounded_side;
 
     typedef boost::shared_ptr<cgal_Polygon_2> cgal_PolygonPtr ;
     typedef std::vector<cgal_PolygonPtr>      cgal_PolygonPtrVector ;
@@ -253,11 +254,9 @@ namespace Route_Planning
  private:                                                    //用于4边行
      std::vector<polygonPoint>       line_middle_;           //四边形中线
 
-
  private:                                                    //用于四边形内嵌四边形
      std::vector<polygonPoint>  move_pts_line_1_;            //线段的交点1
      std::vector<polygonPoint>  move_pts_line_2_;            //线段的交点2
-
 
  public:
      void cgalNarrowPolygons(std::vector<Point> &points);
@@ -267,6 +266,7 @@ namespace Route_Planning
      void cgalComputebackShapeKeypoints();
      void cgalComputeAKeyptsMapping();        //只针对回字形的关键点位的映射处理
      void cgalComputeParallelLinesHeading(std::vector<polygonPoint> & lastRidgePts);  //计算平行线的点位的heading
+     void judgeIncreaseskeleton(cgal_PolygonPtrVector& last_poly_ptr, std::vector<polygonPoint> &  inner_polypts );
      std::vector<std::vector<polygonPoint>>  cgalGetBackShapeKeyPoints();
      std::vector<pathInterface::pathPoint> cgalComputeRidgeRoutingpts(int ridge_index);  //根据垄号获取routing
      void cgalComputeLastRidgeRoutingParallelLines(std::vector<pathInterface::pathPoint> &storageAllPath);
@@ -299,6 +299,9 @@ namespace Route_Planning
      int mode_choose_ = 0;                                      //分裂多边形分裂 mode_choose_ = 1 ,2
      cgalLastPolyIdentify             cgalLastPolyType_;
      int find_entrance_pts_size_ = 0;                        //入口点数
+     bool flag_increase_last_skeleton_ = false;    //判断是否添加最后内部直骨架路径
+     std::vector<polygonPoint>  storage_keypts_inner_skeleton_;  //存储最后的内部直骨架路径
+     std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> last_inner_skeleton_keypts_; //获取关键点的映射信息
 
  };
 }

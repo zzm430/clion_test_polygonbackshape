@@ -142,7 +142,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         storage_polypts.push_back(temp);
         storage_polypts.push_back(temdd);
         if(i->is_inner_bisector()){
-            std::cout << "------------------------start---------------------" << std::endl;
+//            std::cout << "------------------------start---------------------" << std::endl;
             print_point(i->opposite()->vertex()->point());
             polygonPoint temp_m;
             temp_m.x = i->opposite()->vertex()->point()[0];
@@ -154,7 +154,8 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
             temp_n.y = i->vertex()->point()[1];
             inner_polypts.push_back(temp_m);
             inner_polypts.push_back(temp_n);
-            std::cout <<"------------------------end---------------------" << std::endl;
+            last_inner_skeleton_keypts_[temp_m].push_back(temp_n);
+//            std::cout <<"------------------------end---------------------" << std::endl;
         }
         cgalPtMaping_[temdd].push_back(temp) ;
     }
@@ -210,7 +211,9 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 
     //计算内缩多边形
     double  buffer_distance = DBL_MAX;
+    double f;
     std::vector<cgal_PolygonPtrVector> offset_polys;  //专门用于cgal
+    cgal_PolygonPtrVector last_poly_ptr;
     for(auto i = 1;i <= MAX_TRAVERSALS_NUMBERS;i++){
         if(i == 1){
             buffer_distance =  RIDGE_WIDTH_LENGTH/2;
@@ -225,6 +228,8 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         if(offset_polygons.size() == 0){
             LOG(INFO) << "already narrow to last ,the narrow poly size is " << i - 1 ;
             cgal_narrow_size_  = i - 1;
+            //判断是否要增加内部直骨架路线
+            judgeIncreaseskeleton(last_poly_ptr,inner_polypts);
             break;
         }
         std::vector<polygonPoint>   poly_pts;
@@ -238,7 +243,8 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                 poly_pts.push_back(temppt);
             }
         }
-        poly_pts.push_back(poly_pts[0]); //这个点可以看做是多边形的最后一个点也可以后续计算下个路口的入口点
+        last_poly_ptr = offset_polygons;
+        poly_pts.push_back(poly_pts[0]);     //这个点可以看做是多边形的最后一个点也可以后续计算下个路口的入口点
         cgalPolypts_.push_back(poly_pts);
     }
 
@@ -1248,6 +1254,147 @@ void pathPolygonPlan::computeLastRidgePoints4and4(){
     }
     test_rect<< std::endl;
     test_rect.close();
+}
+
+
+void pathPolygonPlan::judgeIncreaseskeleton(
+                cgal_PolygonPtrVector& last_poly_ptr,
+               std::vector<polygonPoint> &  inner_polypts ){
+    auto poly_last_ridge =  last_poly_ptr[0];
+    double min_angle = DBL_MAX;
+    polygonPoint min_point;
+    for(auto it = poly_last_ridge->begin();
+             it != poly_last_ridge->end();
+             it++){
+        auto current = *it;
+        auto previous = *(it == poly_last_ridge->begin() ? poly_last_ridge->end()-1: it-1);
+        auto next = *(it == poly_last_ridge->end()-1 ? poly_last_ridge->begin()  : it+1);
+        // 计算当前顶点的角度
+        double angle = std::atan2(next.y() - current.y(), next.x() - current.x()) -
+                       std::atan2(previous.y() - current.y(), previous.x() - current.x());
+        angle = angle * (180 / M_PI);
+        if(angle > 180){
+            angle = 360 - angle ;
+        }
+        if(fabs(angle) < min_angle){
+            min_angle = fabs(angle);
+            min_point.x = current.x();
+            min_point.y = current.y();
+        }
+        if(fabs(angle) < 30) {
+            flag_increase_last_skeleton_ = true;
+        }
+        std::cout << "Angle at vertex ("
+                  << current.x() << ", " << current.y()
+                  << "): " << angle << std::endl;
+    }
+    //判断其顶点个数，如果是三角形则同样增加
+    if(poly_last_ridge->size() == 3){
+        LOG(INFO) << "increase last skeleton because of trangle !"
+        << " the poly size is : " << poly_last_ridge->size();
+        flag_increase_last_skeleton_ = true;
+    }
+    if(flag_increase_last_skeleton_){
+        LOG(INFO) << "increase last skeleton !";
+    }
+    //检测内部直骨架点位的方向
+    std::unordered_set<polygonPoint,polyPointHash>   storage_inner_pts;
+    for(auto it : inner_polypts){
+        cgal_Point  tempPt(it.x,it.y);
+        cgal_Bounded_side bounded_side = CGAL::bounded_side_2(
+                                                       poly_last_ridge->begin(),
+                                                       poly_last_ridge->end(),
+                                                       tempPt);
+        if (bounded_side == CGAL::ON_BOUNDED_SIDE){
+            if(storage_inner_pts.find(it) == storage_inner_pts.end()){
+                storage_inner_pts.insert(it);
+            }
+        }else {
+            //DONOTHING;
+        }
+    }
+    //判断内点的个数
+    if(storage_inner_pts.size() == 1){
+        //执行生成最后path的操作
+        //找到最后的路径的方向
+        for(int i = 0;i < inner_polypts.size();i++){
+                auto on_it = common::commonMath::isPointOnSegment(
+                        inner_polypts[i],
+                        inner_polypts[i+1],
+                        *storage_inner_pts.begin());
+                auto on_im = common::commonMath::isPointOnSegment(
+                        inner_polypts[i],
+                        inner_polypts[i+1],
+                        min_point);
+                if(on_it && on_im){
+                    //生成path关键点位
+                    //找到对应的同方向点位
+                    polygonPoint vector_1;
+                    vector_1.x = min_point.x - storage_inner_pts.begin()->x;
+                    vector_1.y = min_point.y - storage_inner_pts.begin()->y;
+                    polygonPoint vector_2;
+                    vector_2.x = inner_polypts[i+1].x - inner_polypts[i].x;
+                    vector_2.y = inner_polypts[i+1].y - inner_polypts[i].y;
+                    double angle_1 = common::commonMath::computeTwoLineAngle(vector_1,vector_2);
+                    LOG(INFO) << "the two vector angle is :" << fabs(angle_1) * (180 / M_PI);
+                    if(fabs(angle_1) *(180 / M_PI) < 5 ){
+                        //生成path记录
+                        storage_keypts_inner_skeleton_.push_back(*storage_inner_pts.begin());
+                        storage_keypts_inner_skeleton_.push_back(inner_polypts[i+1]);
+                        polygonPoint  judge_pt = inner_polypts[i+1];
+                        polygonPoint  order_pt = *storage_inner_pts.begin();
+                        while(last_inner_skeleton_keypts_[judge_pt].size() != 3 ||
+                              last_inner_skeleton_keypts_[judge_pt].size() != 1){
+                            auto temp_pts = last_inner_skeleton_keypts_[judge_pt];
+                            auto temp_1 = judge_pt;
+                            for(auto it : temp_pts){
+                                if( it != order_pt){
+                                    storage_keypts_inner_skeleton_.push_back(it);
+                                    judge_pt = it;
+                                }else{
+                                    order_pt = temp_1;
+                                }
+                            }
+                        }
+                    }else{
+                        storage_keypts_inner_skeleton_.push_back(*storage_inner_pts.begin());
+                        storage_keypts_inner_skeleton_.push_back(inner_polypts[i]);
+                        polygonPoint  judge_pt = inner_polypts[i];
+                        polygonPoint  order_pt = *storage_inner_pts.begin();
+                        while(last_inner_skeleton_keypts_[judge_pt].size() == 2){
+                            LOG(INFO) << "the point is :" << judge_pt.x <<" "
+                                      << judge_pt.y << " "
+                                      << last_inner_skeleton_keypts_[judge_pt].size();
+                            auto temp_pts = last_inner_skeleton_keypts_[judge_pt];
+                            auto temp_1 = judge_pt;
+                            for(auto it : temp_pts){
+                                if( it != order_pt){
+                                    storage_keypts_inner_skeleton_.push_back(it);
+                                    judge_pt = it;
+                                }else{
+                                    order_pt = temp_1;
+                                }
+                            }
+
+                        }
+                    }
+                    break;
+                }
+        }
+    }
+    std::ofstream  inner_skeleton_path;
+    inner_skeleton_path.open(
+            "/home/zzm/Desktop/test_path_figure-main/src/inner_skeleton_path.txt",
+            std::ios::out);
+    for(auto it : storage_keypts_inner_skeleton_){
+        inner_skeleton_path << " " << it.x;
+    }
+    inner_skeleton_path << std::endl;
+    for(auto it : storage_keypts_inner_skeleton_){
+        inner_skeleton_path <<" " << it.y;
+    }
+    inner_skeleton_path << std::endl;
+    inner_skeleton_path.close();
 }
 
 void pathPolygonPlan::computeLastRidgePoints4and3(){
