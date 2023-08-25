@@ -1864,8 +1864,27 @@ std::vector<pathInterface::pathPoint>  pathPolygonPlan::cgalComputeRidgeRoutingp
             pathInterface::pathPoint   pathPointCurve;
             pathPointCurve.x = finalpath[j][0];
             pathPointCurve.y = finalpath[j][1];
+            //针对给定点位计算点位的heading,用来判断前进倒退标志
+            if(finalpath.size() > 4){
+                if(j < (finalpath.size() - 4)){
+                    polygonPoint p1, p2;
+                    p1.x = finalpath[j+1][0] - finalpath[j][0];
+                    p1.y = finalpath[j+1][1] - finalpath[j][1];
+                    p2.x = finalpath[j+2][0] - finalpath[j+1][0];
+                    p2.y = finalpath[j+2][1] - finalpath[j+1][1];
+                    auto angle = common::commonMath::computeTwolineAngleDu(p1,p2);
+                    if(angle > 0){
+                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                    }else{
+                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::BACK;
+                    }
+                }else{
+                    pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                }
+            }else{
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            }
             pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
-            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
             pathPointCurve.ridge_number = ridge_index;
             storageAllPath.push_back(pathPointCurve);
         }
@@ -1916,8 +1935,6 @@ std::vector<pathInterface::pathPoint>  pathPolygonPlan::cgalComputeRidgeRoutingp
             storageAllPath.push_back(it);
         }
     }
-
-
    return storageAllPath;
 }
 
@@ -2610,8 +2627,27 @@ void pathPolygonPlan::cgalComputeLastRidgeRoutingParallelLines(
         pathInterface::pathPoint pathPointCurve;
         pathPointCurve.x = finalpath[j][0];
         pathPointCurve.y = finalpath[j][1];
+        if(finalpath.size() > 4){
+            if(j < (finalpath.size() - 4)){
+                polygonPoint p1, p2;
+                p1.x = finalpath[j+1][0] - finalpath[j][0];
+                p1.y = finalpath[j+1][1] - finalpath[j][1];
+                p2.x = finalpath[j+2][0] - finalpath[j+1][0];
+                p2.y = finalpath[j+2][1] - finalpath[j+1][1];
+                auto angle = common::commonMath::computeTwolineAngleDu(p1,p2);
+                if(angle > 0){
+                    pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                }else{
+                    pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::BACK;
+                }
+            }else{
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            }
+        }else{
+            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+        }
         pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
-        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+//        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
         pathPointCurve.ridge_number = num - 1;
         storageAllPath.push_back(pathPointCurve);
     }
@@ -2639,8 +2675,27 @@ void pathPolygonPlan::cgalComputeLastRidgeRoutingParallelLines(
             pathInterface::pathPoint pathPointCurve;
             pathPointCurve.x = finalpath[j][0];
             pathPointCurve.y = finalpath[j][1];
+            if(finalpath.size() > 4){
+                if(j < (finalpath.size() - 4)){
+                    polygonPoint p1, p2;
+                    p1.x = finalpath[j+1][0] - finalpath[j][0];
+                    p1.y = finalpath[j+1][1] - finalpath[j][1];
+                    p2.x = finalpath[j+2][0] - finalpath[j+1][0];
+                    p2.y = finalpath[j+2][1] - finalpath[j+1][1];
+                    auto angle = common::commonMath::computeTwolineAngleDu(p1,p2);
+                    if(angle > 0){
+                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                    }else{
+                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::BACK;
+                    }
+                }else{
+                    pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                }
+            }else{
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            }
             pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
-            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+//            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
             pathPointCurve.ridge_number = num - 1;
             storageAllPath.push_back(pathPointCurve);
         }
@@ -3055,28 +3110,7 @@ void pathPolygonPlan::cgalUpdatePolygonPointsINcrease(){
             break;
         }
     }
-//    if(entrance_pts_.size() == num -1){
-//        LOG(INFO) << "the last polygon has no intersection with the entrance_lines";
-//        for(int i = 0;i < num - 1;i++ ){
-//            auto poly_pts = insertPointToPolygon(
-//                    entrance_pts_[i],
-//                    cgalandboostPolypts_[i]);
-//            cgalIncreaseptPolypts_.push_back(poly_pts);
-//        }
-//        //最后一笼单独添加
-//        auto tempPolygon = cgalandboostPolypts_[num - 1];
-//        cgalIncreaseptPolypts_.push_back(tempPolygon);
-//    }else{
-//        for(int i = 0;i < num ;i++ ){
-//            auto poly_pts = insertPointToPolygon(
-//                    entrance_pts_[i],
-//                    cgalandboostPolypts_[i]);
-//         cgalIncreaseptPolypts_.push_back(poly_pts);
-//        }
-//        for(int i = num ;i < cgalandboostPolypts_.size();i++){
-//            cgalIncreaseptPolypts_.push_back(cgalandboostPolypts_[i]);
-//        }
-//    }
+
 }
 
 void pathPolygonPlan::cgalUpatePolygonPointsSequence(){

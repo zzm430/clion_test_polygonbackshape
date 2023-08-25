@@ -281,6 +281,20 @@ namespace common{
             double mag_b = magnitude(line_2.x,line_2.y);
             return acos(dot / (mag_a * mag_b));
         }
+        //输出角度范围为-180 到 180 度
+        static double computeTwolineAngleDu(
+                aiforce::Route_Planning::polygonPoint a,
+                aiforce::Route_Planning::polygonPoint b){
+            float dotProduct = a.x * b.x + a.y * b.y;
+            float magnitude = std::sqrt(a.x * a.x + a.y * a.y) * std::sqrt(b.x * b.x + b.y * b.y);
+            float cosTheta = dotProduct / magnitude;
+            float theta = std::acos(cosTheta) * 180.0 / M_PI;
+            float crossProduct = a.x * b.y - a.y * b.x;
+            if (crossProduct < 0) {
+                theta = -theta;
+            }
+            return theta;
+        }
         //1.计算两点之间的距离
         static double  distanceTwoPolygonPoints(aiforce::Route_Planning::polygonPoint  point_1,
                                                 aiforce::Route_Planning::polygonPoint point_2){

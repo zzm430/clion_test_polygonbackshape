@@ -544,9 +544,7 @@ std::vector<std::vector<double> > ReedsSheppStateSpace::xingshensample(double q0
         //std::cout<<qnew[0]<<"   "<<qnew[1]<<"  "<<qnew[2]<<std::endl;
         result.push_back(temp);
     }
-
     return result;
-
 }
 
 void ReedsSheppStateSpace::interpolate(double q0[3], ReedsSheppPath &path, double seg, double s[3])
