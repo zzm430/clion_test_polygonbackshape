@@ -1668,7 +1668,7 @@ void pathPolygonPlan::updatePolygonPointsSequence1(){
     int num = insertedPtToNarrowPolygon_.size();
     int number;
     std::vector<polygonPoint>  storage_points;
-    for(int i = 0;i < num -1;i++){
+    for(int i = 0;i < num - 1;i++){
         for(auto it : insertedPtToNarrowPolygon_[i]){
             if(it.entrance_){
                 int num_1 = insertedPtToNarrowPolygon_[i].size();
@@ -1814,9 +1814,111 @@ std::vector<pathInterface::pathPoint>  pathPolygonPlan::cgalComputeRidgeRoutingp
     std::vector<std::vector<double>> finalpath;
     std::vector<pathInterface::pathPoint>  storageAllPath;
     double startPoint[3],endPoint[3];
+    int ridges_counts  = cgalbackShape_keypoints_.size();
+    //处理最后一个path(skeleton)
+    if(ridge_index == ridges_counts ){
+        //处理连接第一个点的弯道
+        int  n_size =   cgalbackShape_keypoints_[ridge_index-1].size();
+        startPoint[0] = cgalbackShape_keypoints_[ridge_index-1][n_size-1].x;
+        startPoint[1] = cgalbackShape_keypoints_[ridge_index-1][n_size-1].y;
+        startPoint[2] = cgalbackShape_keypoints_[ridge_index-1][n_size-1].heading;
+        endPoint[0] = storage_keypts_inner_skeleton_[0].x;
+        endPoint[1] = storage_keypts_inner_skeleton_[0].y;
+        endPoint[2] = storage_keypts_inner_skeleton_[0].heading;
+        r->reedsShepp(startPoint,endPoint);
+        finalpath = r->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+        for(int j = 0;j < finalpath.size();j++){
+            pathInterface::pathPoint   pathPointCurve;
+            pathPointCurve.x = finalpath[j][0];
+            pathPointCurve.y = finalpath[j][1];
+            //针对给定点位计算点位的heading,用来判断前进倒退标志
+            if(finalpath.size() > 4){
+                if(j < (finalpath.size() - 4)){
+                    polygonPoint p1, p2;
+                    p1.x = finalpath[j+1][0] - finalpath[j][0];
+                    p1.y = finalpath[j+1][1] - finalpath[j][1];
+                    p2.x = finalpath[j+2][0] - finalpath[j+1][0];
+                    p2.y = finalpath[j+2][1] - finalpath[j+1][1];
+                    auto angle = common::commonMath::computeTwolineAngleDu(p1,p2);
+                    if(angle > 0){
+                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                    }else{
+                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::BACK;
+                    }
+                }else{
+                    pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                }
+            }else{
+                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+            }
+            pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+            pathPointCurve.ridge_number = ridge_index;
+            storageAllPath.push_back(pathPointCurve);
+        }
+        for(int i = 1;i < storage_keypts_inner_skeleton_.size() - 1;i++){
+            auto temp_point =  storage_keypts_inner_skeleton_[i];
+            Point point_temp1 = backshape_keypts_info_[temp_point].start_curve_point;
+            Point point_temp2 = backshape_keypts_info_[temp_point].end_curve_point;
+            startPoint[0] = point_temp1.x;
+            startPoint[1] = point_temp1.y;
+            startPoint[2] = point_temp1.heading;
+            endPoint[0] = point_temp2.x;
+            endPoint[1] = point_temp2.y;
+            endPoint[2] = point_temp2.heading;
+            LOG(INFO) << "heading 1 is : " << startPoint[2]
+                      << "heading 2 is : " << endPoint[2];
+
+            if(fabs(fabs(startPoint[2]) - fabs(endPoint[2])) < 0.3){
+                point_1.x = storage_keypts_inner_skeleton_[i].x;
+                point_1.y = storage_keypts_inner_skeleton_[i].y;
+                point_1.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+                point_1.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                point_1.ridge_number = ridge_index;
+                storageAllPath.push_back(point_1);
+                continue;
+            }
+            r->reedsShepp(startPoint,endPoint);
+            finalpath = r->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
+            for(int j = 0;j < finalpath.size(); j++){
+                pathInterface::pathPoint   pathPointCurve;
+                pathPointCurve.x = finalpath[j][0];
+                pathPointCurve.y = finalpath[j][1];
+                //针对给定点位计算点位的heading,用来判断前进倒退标志
+                if(finalpath.size() > 4){
+                    if(j < (finalpath.size() - 4)){
+                        polygonPoint p1, p2;
+                        p1.x = finalpath[j+1][0] - finalpath[j][0];
+                        p1.y = finalpath[j+1][1] - finalpath[j][1];
+                        p2.x = finalpath[j+2][0] - finalpath[j+1][0];
+                        p2.y = finalpath[j+2][1] - finalpath[j+1][1];
+                        auto angle = common::commonMath::computeTwolineAngleDu(p1,p2);
+                        if(angle > 0){
+                            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                        }else{
+                            pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::BACK;
+                        }
+                    }else{
+                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                    }
+                }else{
+                    pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+                }
+                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+                pathPointCurve.ridge_number = ridge_index;
+                storageAllPath.push_back(pathPointCurve);
+            }
+        }
+        //添加终点
+        point_1.x = storage_keypts_inner_skeleton_[storage_keypts_inner_skeleton_.size() - 1].x;
+        point_1.y = storage_keypts_inner_skeleton_[storage_keypts_inner_skeleton_.size() - 1].y;
+        point_1.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+        point_1.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
+        point_1.ridge_number = ridge_index;
+        storageAllPath.push_back(point_1);
+        return storageAllPath;
+    }
     auto  ordered_points = cgalbackShape_keypoints_[ridge_index];
     int num = ordered_points.size();
-    int ridges_counts  = cgalbackShape_keypoints_.size();
 
     //分情况处理最后一垄
     if(ridge_index == cgalbackShape_keypoints_.size() - 1  &&
@@ -3148,9 +3250,9 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
     std::vector<polygonPoint>  temp_points;
 
     //当处于POLY_LEAVE时需要重新更新num
-//    if(find_entrance_pts_size_){
-//        num = find_entrance_pts_size_ + 1;
-//    }
+    //    if(find_entrance_pts_size_){
+    //        num = find_entrance_pts_size_ + 1;
+    //}
     for(int i = 0;i < num ;i++) {
         for(int  it = 1 ; it < cgalSequencedPolypts_[i].size();it ++){
             temp_points.push_back(cgalSequencedPolypts_[i][it]);
@@ -3183,6 +3285,7 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
             LOG(INFO) << "This situation has not been taken into account !";
         }
     }
+    //判断是否添加分裂多边形中的平行线
     LOG(INFO) << "--------------------------------------------------";
     LOG(INFO) << "the mode is : " << mode_choose_;
     if(mode_choose_ == 2){
@@ -3195,6 +3298,53 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
         }
     }
     LOG(INFO) << "--------------------------------------------------";
+    //判断是否增加内部直骨架点位映射
+    if(!storage_keypts_inner_skeleton_.empty()){
+        cgalIncludeLastskeletonMap();
+    }
+}
+
+void pathPolygonPlan::cgalIncludeLastskeletonMap(){
+    //计算最后一个关键点的heading
+    int last_poly = cgalbackShape_keypoints_.size();
+    int last_size = cgalbackShape_keypoints_[last_poly-1].size();
+    auto last_key_pt_1 = cgalbackShape_keypoints_[last_poly - 1][last_size - 1];
+    auto last_key_pt_2 = cgalbackShape_keypoints_[last_poly - 1][last_size - 2];
+    cgalbackShape_keypoints_[last_poly - 1][last_size - 1].heading
+            = atan2(last_key_pt_1.y - last_key_pt_2.y,
+                    last_key_pt_1.x - last_key_pt_2.x);
+    LOG(INFO) <<" the last key pt heading is : " <<
+                 cgalbackShape_keypoints_[last_poly - 1][last_size - 1].heading * 180 / M_PI;
+
+    //计算对应的弯道关键点位
+    //计算第一个点位的heading
+    int m_size = storage_keypts_inner_skeleton_.size();
+    storage_keypts_inner_skeleton_[0].heading =
+            atan2(storage_keypts_inner_skeleton_[1].y - storage_keypts_inner_skeleton_[0].y,
+                  storage_keypts_inner_skeleton_[1].x - storage_keypts_inner_skeleton_[0].x);
+
+    LOG(INFO) <<"the first skeleton  pt heading is : " <<
+                                    storage_keypts_inner_skeleton_[0].heading * 180 / M_PI;
+    //计算中间点位的映射关键点
+    for(int i = 1;i <  m_size - 1; i++){
+        //计算指定点的前后弯道关键点
+        ridgeKeypoint tempPtInfo;
+        tempPtInfo.start_dis = SET_STARTTURN_DISTANCE;
+        tempPtInfo.end_dis  = SET_ENDTURN_DISTANCE;
+        tempPtInfo.start_curve_point =
+                common::commonMath::findPointOnSegment(
+                        storage_keypts_inner_skeleton_[i-1],
+                        storage_keypts_inner_skeleton_[i],
+                        SET_STARTTURN_DISTANCE,
+                        false);
+        tempPtInfo.end_curve_point =
+                common::commonMath::findPointOnSegment(
+                        storage_keypts_inner_skeleton_[i],
+                        storage_keypts_inner_skeleton_[i+1],
+                        SET_ENDTURN_DISTANCE,
+                        true);
+        backshape_keypts_info_[storage_keypts_inner_skeleton_[i]] = tempPtInfo;
+    }
 }
 
 void pathPolygonPlan::cgalComputeParallelLinesHeading(
@@ -3406,6 +3556,10 @@ void pathPolygonPlan::cgalComputeRidgeKeyPointsLeave(){
 
 std::vector<std::vector<polygonPoint>>  pathPolygonPlan::cgalGetBackShapeKeyPoints(){
     return cgalbackShape_keypoints_;
+}
+
+std::vector<polygonPoint> pathPolygonPlan::cgalGetBackShapeSkeletonPts(){
+    return storage_keypts_inner_skeleton_;
 }
 
 

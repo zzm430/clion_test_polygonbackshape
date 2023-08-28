@@ -1,6 +1,5 @@
 #ifndef PATH_POLYGONPLAN_H
 #define PATH_POLYGONPLAN_H
-
 #include <vector>
 #include <cmath>
 #include <unordered_map>
@@ -268,6 +267,8 @@ namespace Route_Planning
      void cgalComputeParallelLinesHeading(std::vector<polygonPoint> & lastRidgePts);  //计算平行线的点位的heading
      void judgeIncreaseskeleton(cgal_PolygonPtrVector& last_poly_ptr, std::vector<polygonPoint> &  inner_polypts );
      std::vector<std::vector<polygonPoint>>  cgalGetBackShapeKeyPoints();
+     std::vector<polygonPoint> cgalGetBackShapeSkeletonPts();
+     void cgalIncludeLastskeletonMap();
      std::vector<pathInterface::pathPoint> cgalComputeRidgeRoutingpts(int ridge_index);  //根据垄号获取routing
      void cgalComputeLastRidgeRoutingParallelLines(std::vector<pathInterface::pathPoint> &storageAllPath);
      void computeEntranceLines(std::vector<Point> &points);
@@ -299,7 +300,7 @@ namespace Route_Planning
      int mode_choose_ = 0;                                      //分裂多边形分裂 mode_choose_ = 1 ,2
      cgalLastPolyIdentify             cgalLastPolyType_;
      int find_entrance_pts_size_ = 0;                        //入口点数
-     bool flag_increase_last_skeleton_ = false;    //判断是否添加最后内部直骨架路径
+     bool flag_increase_last_skeleton_ = false;              //判断是否添加最后内部直骨架路径
      std::vector<polygonPoint>  storage_keypts_inner_skeleton_;  //存储最后的内部直骨架路径
      std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> last_inner_skeleton_keypts_; //获取关键点的映射信息
 

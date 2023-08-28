@@ -123,22 +123,35 @@ int main(int argc, char **argv) {
     int all_size = keypoints_m.size();
     int m ;
     m = 0;
-//    m = all_size - 2;
+//  m = all_size - 2;
+    auto m_skeleton =  instance_pathPolygonPlan.cgalGetBackShapeSkeletonPts();
+
     for(auto i  = m  ;i < all_size ;i++){
          for(auto j : keypoints_m[i]){
              keypoints << " " << j.x;
          }
     }
+    if(!m_skeleton.empty()){
+        for(auto i  = 0  ;i < m_skeleton.size() ;i++){
+            keypoints << " " << m_skeleton[i].x;
+        }
+    }
     keypoints << std::endl;
-    for(auto i = m ;i < all_size;i++){
+    for(auto i = m ;i < all_size ;i++){
         for(auto j : keypoints_m[i]){
             keypoints << " " << j.y;
         }
     }
+    if(!m_skeleton.empty()){
+        for(auto f  = 0  ;f < m_skeleton.size() ;f++){
+            keypoints << " " << m_skeleton[f].y;
+        }
+        all_size += 1;
+    }
     keypoints << std::endl;
     keypoints.close();
 
-   LOG(INFO) << "the program can enter here !";
+    LOG(INFO) << "the program can enter here !";
 
     //获取cgal版本的routing信息
     std::ofstream  cgal_show_ridge_path;
@@ -146,7 +159,7 @@ int main(int argc, char **argv) {
                          std::ios::out);
     std::vector<pathInterface::pathPoint> cgal_routing_pts;
     std::vector<std::vector<pathInterface::pathPoint>>  cgal_all_path;
-    for(auto i  = 0; i < all_size ;i++){
+    for(auto i  = 0 ; i < all_size ;i++){
         cgal_routing_pts =
                 instance_pathPolygonPlan.cgalComputeRidgeRoutingpts(i);
         for (int i = 0; i < (int)cgal_routing_pts.size(); i++) {
