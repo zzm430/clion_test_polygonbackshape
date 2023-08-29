@@ -15,10 +15,8 @@
 #include <CGAL/random_convex_set_2.h>
 #include <CGAL/min_quadrilateral_2.h>
 #include <CGAL/intersections.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <Planning/path_interface.h>
 #include <Geometry/reeds_shepp.h>
-//#include "path_baseplan.h"
 #include "common/common_parameters.h"
 #include <common/plotter.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -49,6 +47,7 @@ namespace Route_Planning
     typedef CGAL::Polygon_2<Kernel>                   Polygon_2;
 
     typedef CGAL::Exact_predicates_inexact_constructions_kernel K ;
+    typedef K::FT                             cgal_FT ;
     typedef K::Point_2                        cgal_Point ;
     typedef CGAL::Polygon_2<K>                cgal_Polygon_2 ;
     typedef CGAL::Straight_skeleton_2<K>      cgal_Ss ;
@@ -126,7 +125,7 @@ namespace Route_Planning
     enum class cgalLastPolyIdentify:uint8_t {
         POLY_NONE = 0,      //标志着入口线段们与最后一笼相交
         POLY_ONLY_ONE = 1,  //标志着入口线段们未与最后一笼相交
-        POLY_LEAVE  = 2,        //标志着入口线段们至少有两笼未相交
+        POLY_LEAVE  = 2,    //标志着入口线段们至少有两笼未相交
         POLY_LESS_THR       //入口交点小于最后阈值内无交点
     };
 
@@ -256,6 +255,8 @@ namespace Route_Planning
  private:                                                    //用于四边形内嵌四边形
      std::vector<polygonPoint>  move_pts_line_1_;            //线段的交点1
      std::vector<polygonPoint>  move_pts_line_2_;            //线段的交点2
+     std::vector<polygonPoint>  move_pts_line_B_1_;            //线段的交点1 B
+     std::vector<polygonPoint>  move_pts_line_B_2_;            //线段的交点2 B
 
  public:
      void cgalNarrowPolygons(std::vector<Point> &points);
@@ -282,7 +283,9 @@ namespace Route_Planning
              std::vector<std::vector<polygonPoint>>& storage_spilt_second_polys,
              point&                            spilt_first_poly_center);
      void computeLeaveSituation(int last_ordered_poly_index);
-     void cgalComputeRidgeKeyPointsLeave();               //计算剩余未相交的按照弓字型处理的关键点
+     void computeLeaveSituation(std::vector<polygonPoint> & origin_poly);                       //将B中的分裂多边形按照平行线处理
+     void cgalComputeRidgeKeyPointsLeave();               //计算A剩余未相交的按照弓字型处理的关键点
+     void cgalComputeBRidgeKeyPointsLeave();              //计算B剩余未相交的按照弓字型处理的关键点
  private:
      std::vector<std::vector<polygonPoint>>   cgalPolypts_;  //内缩多边形的存储
      std::vector<std::vector<polygonPoint>>   cgalandboostPolypts_; //cgal和boost混合的内缩多边形存储

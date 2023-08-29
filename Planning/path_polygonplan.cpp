@@ -223,6 +223,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 //                CGAL::create_interior_skeleton_and_offset_polygons_2(buffer_distance,poly);
         cgal_PolygonPtrVector offset_polygons =  CGAL::create_offset_polygons_2<cgal_Polygon_2>(
                                                              buffer_distance,*iss);
+        LOG(INFO) << "the offset_polygon size is : " << offset_polygons.size();
         if(offset_polygons.size() == 0){
             LOG(INFO) << "already narrow to last ,the narrow poly size is " << i - 1 ;
             cgal_narrow_size_  = i - 1;
@@ -297,11 +298,12 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         for(auto it : bufferspiltPolys2_[0]){
               poly2.outer().push_back(point(it.x,it.y));
         }
+        auto n_size = entrance_lines_.size();
         auto distance1 = boost::geometry::distance(
-                                     point(entrance_lines_[0].x,entrance_lines_[0].y),
+                                     point(entrance_lines_[n_size-1].x,entrance_lines_[n_size-1].y),
                                      poly1);
         auto distance2 = boost::geometry::distance(
-                                     point(entrance_lines_[0].x,entrance_lines_[0].y),
+                                     point(entrance_lines_[n_size-1].x,entrance_lines_[n_size-1].y),
                                      poly2);
         if(fabs(distance1) < fabs(distance2)){
             mode_choose_ = 1;
@@ -361,29 +363,36 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 
         LOG(INFO) << "the find entrance pts size is : " << judge_number;
 
-           auto temp =  cgalandboostPolypts_.size() - judge_number;
-           if(temp > SET_POLY_TRANSFER_THR){
-               cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LEAVE;
-               LOG(INFO) << "the cgalLastPolyType_ is : POLY_LEAVE !";
-               find_entrance_pts_size_ = judge_number;
-               computeLeaveSituation(judge_number-1);
+        auto temp =  cgalandboostPolypts_.size() - judge_number;
+       if(temp > SET_POLY_TRANSFER_THR){
+           cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LEAVE;
+           LOG(INFO) << "the cgalLastPolyType_ is : POLY_LEAVE !";
+           find_entrance_pts_size_ = judge_number;
+           computeLeaveSituation(judge_number-1);
+       }else{
+           //当最后一笼是四边形并且temp == 0时
+           int polySize = cgalandboostPolypts_.size();
+           if(temp == 0  &&
+               cgalandboostPolypts_[polySize-1].size() == 5 ){
+               cgalLastPolyType_ = cgalLastPolyIdentify::POLY_NONE;
+               LOG(INFO) << "the cgalLastPolyType_ is : POLY_NONE !";
+               int countSize = cgalandboostPolypts_.size();
+               computeLeaveSituation(countSize-1-SET_POLY_TRANSFER_THR);
            }else{
-               //当最后一笼是四边形并且temp == 0时
-               int polySize = cgalandboostPolypts_.size();
-               if(temp == 0  &&
-                   cgalandboostPolypts_[polySize-1].size() == 5 ){
-                   cgalLastPolyType_ = cgalLastPolyIdentify::POLY_NONE;
-                   LOG(INFO) << "the cgalLastPolyType_ is : POLY_NONE !";
-                   int countSize = cgalandboostPolypts_.size();
-                   computeLeaveSituation(countSize-1-SET_POLY_TRANSFER_THR);
-               }else{
-                   LOG(INFO) << "the cgalLastPolyType_ is : POLY_LESS_THR !";
-                   cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LESS_THR;
-                   int countSize = cgalandboostPolypts_.size();
-                   computeLeaveSituation(countSize-1-SET_POLY_TRANSFER_THR);
-               }
+               LOG(INFO) << "the cgalLastPolyType_ is : POLY_LESS_THR !";
+               cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LESS_THR;
+               int countSize = cgalandboostPolypts_.size();
+               computeLeaveSituation(countSize-1-SET_POLY_TRANSFER_THR);
            }
-
+       }
+       //在这里对mode_choose_的分裂多边形中A、B 多边形中的B做平行线处理
+       //A:统一进入第一个内缩多边形
+       //B:统一进入第二个内缩多边形
+       if(mode_choose_ == 1){
+           computeLeaveSituation(bufferspiltPolys2_[0]);
+       }else if(mode_choose_ == 2){
+           computeLeaveSituation(bufferspiltPolys1_[0]);
+       }
 
         std::ofstream  cgal_pts_entrance;
         cgal_pts_entrance.open("/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt",
@@ -444,11 +453,11 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     std::ofstream test_skeleton_3;
     test_skeleton_3.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_3.txt",
                          std::ios::out);
-    for(auto it : inner_polypts){
+    for(auto it : spilt_origin_poly){
         test_skeleton_3 << " " << it.x ;
     }
     test_skeleton_3 << std::endl;
-    for(auto it : inner_polypts){
+    for(auto it : spilt_origin_poly){
         test_skeleton_3 << " " << it.y;
     }
     test_skeleton_3 << std::endl;
@@ -474,13 +483,13 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 
     std::ofstream   test_111_poly;
     test_111_poly.open("/home/zzm/Desktop/test_path_figure-main/src/test_111_poly.txt",std::ios::out);
-    for(auto it : bufferspiltPolys1_){
+    for(auto it : bufferspiltPolys2_){
         for(auto j : it){
             test_111_poly << " " << j.x;
         }
     }
     test_111_poly << std::endl;
-    for(auto m : bufferspiltPolys1_){
+    for(auto m : bufferspiltPolys2_){
         for(auto j :m){
             test_111_poly << " " << j.y;
         }
@@ -716,6 +725,238 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
 
     std::ofstream test_rect;
     test_rect.open("/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt",std::ios::out);
+    for(auto it = temp.begin(); it != temp.end();it++){
+        test_rect << " " << (*it).x;
+    }
+    test_rect << std::endl;
+    for(auto it = temp.begin(); it != temp.end();it++){
+        test_rect << " " << (*it).y;
+    }
+    test_rect<< std::endl;
+    test_rect.close();
+};
+void pathPolygonPlan::computeLeaveSituation(std::vector<polygonPoint> & origin_poly){
+    cgal_FT  buffer_distance = RIDGE_WIDTH_LENGTH/2;
+    auto virtual_origin_poly =  origin_poly;
+    //从此多边形开始外扩垄宽/2;
+    cgal_Polygon_2 poly_temp;
+//    std::reverse(origin_poly.begin(), origin_poly.end());
+    for(int i = 0; i < virtual_origin_poly.size() - 1 ;i++){
+        poly_temp.push_back(cgal_Point(
+                virtual_origin_poly[i].x,
+                virtual_origin_poly[i].y));
+    }
+    std::vector<cgal_Polygon_2> offset_polys;
+    cgal_PolygonPtrVector outer_offset_polygons =
+            CGAL::create_exterior_skeleton_and_offset_polygons_2(
+                    buffer_distance,
+                    poly_temp);
+    std::vector<polygonPoint> stor_poly;
+    print_polygons(outer_offset_polygons);
+    for(auto m : *outer_offset_polygons[1]){
+        polygonPoint temppt;
+        temppt.x = m.x();
+        temppt.y = m.y();
+        stor_poly.push_back(temppt);
+    }
+
+    //将多边形构成闭环
+    stor_poly.push_back(stor_poly[0]);
+    double max_dis_ridge = -DBL_MAX;
+    int count_ordered;
+    for(int i = 0;i < stor_poly.size()-1; i++){
+        double dis = common::commonMath::distance2(stor_poly[i],stor_poly[i+1]);
+        if(dis > max_dis_ridge){
+            max_dis_ridge = dis;
+            count_ordered = i;
+        }
+    }
+    std::vector<polygonPoint> longest_line;
+    longest_line.push_back(stor_poly[count_ordered]);
+    longest_line.push_back(stor_poly[count_ordered+1]);
+    std::vector<polygonPoint> other_points;
+    for(int i = 0;i < stor_poly.size();i++){
+        if(stor_poly[i] != stor_poly[count_ordered] &&
+           stor_poly[i] != stor_poly[count_ordered+1]){
+            other_points.push_back(stor_poly[i]);
+        }
+    }
+    double max_dis = -DBL_MAX;
+    polygonPoint max_dis_pt;
+    polygonPoint foot_print;
+    for(auto it : other_points){
+        auto  temp_foot_print = common::commonMath::computeFootPoint(it,
+                                                                     longest_line[0],
+                                                                     longest_line[1]);
+        double dis_pts = common::commonMath::distance2(it,temp_foot_print);
+        if(dis_pts > max_dis){
+            max_dis = dis_pts;
+            foot_print = temp_foot_print;
+            max_dis_pt = it;
+        }
+    }
+
+    //扩大的原来的图形绘制
+    std::ofstream test_virtual_origin_poly;
+    test_virtual_origin_poly.open(
+            "/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly.txt",
+            std::ios::out);
+    for(auto it = stor_poly.begin(); it != stor_poly.end();it++){
+        test_virtual_origin_poly << " " << (*it).x;
+    }
+    test_virtual_origin_poly << std::endl;
+    for(auto it = stor_poly.begin(); it != stor_poly.end();it++){
+        test_virtual_origin_poly << " " << (*it).y;
+    }
+    test_virtual_origin_poly << std::endl;
+    test_virtual_origin_poly.close();
+
+    //计算需要平移次数
+    double integer_number =  ceil(max_dis/RIDGE_WIDTH_LENGTH);
+    double mod = common::commonMath::doubleMod(max_dis,RIDGE_WIDTH_LENGTH);
+    double last_path_cover = mod * RIDGE_WIDTH_LENGTH;
+
+    LOG(INFO) << "max distance is : " << max_dis;
+    LOG(INFO) << "need move size is :" << integer_number;
+    LOG(INFO) << "the last line cover is :" << last_path_cover;
+
+    //计算平移的点位信息
+    std::vector<polygonPoint>  foot_line;
+    foot_line.push_back(foot_print);
+    foot_line.push_back(max_dis_pt);
+
+    //选择最长边的中线和顶点作为分界线
+    //首先计算最长边的中点
+    polygonPoint   middle_point;
+    middle_point.x = (longest_line[0].x + longest_line[1].x)/2;
+    middle_point.y = (longest_line[0].y + longest_line[1].y)/2;
+    std::vector<polygonPoint> middle_line;
+    middle_line.push_back(middle_point);
+    middle_line.push_back(max_dis_pt);
+
+    //这里需要对这个longest_line进行延伸一下防止与四边形没有交点
+    auto temp_pt1 = common::commonMath::findPointExtendSegment(
+            longest_line[0],
+            longest_line[1],
+            500,
+            true,
+            1);
+    auto temp_pt2 = common::commonMath::findPointExtendSegment(
+            longest_line[0],
+            longest_line[1],
+            500,
+            false,
+            1);
+    longest_line.clear();
+    longest_line.push_back(polygonPoint(temp_pt1[0].x,temp_pt1[0].y));
+    longest_line.push_back(polygonPoint(temp_pt2[0].x,temp_pt2[0].y));
+
+    //求外扩多边形与最长的线段的一个线段交点
+    polygon  poly_f;
+    std::reverse(stor_poly.begin(),stor_poly.end());
+    for(auto it : stor_poly){
+        poly_f.outer().push_back(point(it.x,it.y));
+    }
+    //将最长边往最远点移动一定距离
+    auto longest_pts = common::commonMath::computeLineTranslationPoints(
+            longest_line,
+            foot_line,
+            RIDGE_WIDTH_LENGTH/2);
+
+    linestring_type  line;
+    line.push_back(point(longest_pts[0].x,
+                         longest_pts[0].y));
+    line.push_back(point(longest_pts[1].x,longest_pts[1].y));
+    std::vector<point> output;
+    boost::geometry::intersection(line,poly_f,output);
+    polygonPoint  vector_1,vector_2;
+    polygonPoint  judgeDirection;
+    judgeDirection.x = output[0].x();
+    judgeDirection.y = output[0].y();
+    vector_1 = common::commonMath::construceVector(max_dis_pt,middle_point);
+    vector_2 = common::commonMath::construceVector(judgeDirection,middle_point);
+    double judge_direction = common::commonMath::pointLocation(vector_1,vector_2);
+    if(judge_direction == 1){
+        move_pts_line_B_1_.push_back(polygonPoint(output[0].x(),output[0].y()));
+        move_pts_line_B_2_.push_back(polygonPoint(output[1].x(),output[1].y()));
+    }else{
+        move_pts_line_B_1_.push_back(polygonPoint(output[1].x(),output[1].y()));
+        move_pts_line_B_2_.push_back(polygonPoint(output[0].x(),output[0].y()));
+    }
+
+    std::vector<polygonPoint>   tempStorage;
+    for(int i = 1; i <= integer_number; i++){
+        std::vector<polygonPoint> points;
+        if(i == 1){
+            points = common::commonMath::computeLineTranslationPoints(
+                    longest_line,
+                    foot_line,
+                    RIDGE_WIDTH_LENGTH);
+        }else{
+            points = common::commonMath::computeLineTranslationPoints(
+                    longest_line,
+                    foot_line,
+                    RIDGE_WIDTH_LENGTH + RIDGE_WIDTH_LENGTH *(i-1));
+        }
+
+        //计算平移后的线段与四边形的交点
+        polygon  poly;
+        std::reverse(stor_poly.begin(),stor_poly.end());
+        for(auto it : stor_poly){
+            poly.outer().push_back(point(it.x,it.y));
+        }
+        linestring_type  line;
+        line.push_back(point(points[0].x,
+                             points[0].y));
+        line.push_back(point(points[1].x,points[1].y));
+        std::vector<point> output;
+        boost::geometry::intersection(line,poly,output);
+        LOG(INFO) << "output size is :" << output.size();
+        if(output.size() != 2){
+            LOG(ERROR) << "the line points is wrong !";
+            break;
+        }
+        polygonPoint  trans_pt;
+        trans_pt.x = output[0].x();
+        trans_pt.y = output[0].y();
+        std::vector<polygonPoint> origin_line;
+        vector_2  = common::commonMath::construceVector(trans_pt,middle_point);
+        double cross_2 =  common::commonMath::pointLocation(vector_1,vector_2);
+        if(cross_2 == 1){
+            origin_line.push_back(polygonPoint(output[0].x(),output[0].y()));
+            origin_line.push_back(polygonPoint(output[1].x(),output[1].y()));
+            auto result_pts = common::commonMath::computeLineTranslationPoints(
+                    origin_line,
+                    foot_line,
+                    RIDGE_WIDTH_LENGTH/2);
+            move_pts_line_B_1_.push_back(polygonPoint(result_pts[0].x,result_pts[0].y));
+            move_pts_line_B_2_.push_back(polygonPoint(result_pts[1].x,result_pts[1].y));
+            tempStorage.push_back(origin_line[0]);
+            tempStorage.push_back(origin_line[1]);
+        }else{
+            origin_line.push_back(polygonPoint(output[0].x(),output[0].y()));
+            origin_line.push_back(polygonPoint(output[1].x(),output[1].y()));
+            auto res_pts = common::commonMath::computeLineTranslationPoints(
+                    origin_line,
+                    foot_line,
+                    RIDGE_WIDTH_LENGTH/2);
+            move_pts_line_B_1_.push_back(polygonPoint(res_pts[1].x,res_pts[1].y));
+            move_pts_line_B_2_.push_back(polygonPoint(res_pts[0].x,res_pts[0].y));
+            tempStorage.push_back(origin_line[0]);
+            tempStorage.push_back(origin_line[1]);
+        }
+    }
+
+    std::vector<polygonPoint>  temp;
+    for(auto it : move_pts_line_B_1_){
+        temp.push_back(it);
+    }
+    for(auto it : move_pts_line_B_2_){
+        temp.push_back(it);
+    }
+
+    std::ofstream test_rect;
+    test_rect.open("/home/zzm/Desktop/test_path_figure-main/src/test_move_pts_B.txt",std::ios::out);
     for(auto it = temp.begin(); it != temp.end();it++){
         test_rect << " " << (*it).x;
     }
@@ -3290,16 +3531,11 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
     //判断是否添加分裂多边形中的平行线
     LOG(INFO) << "--------------------------------------------------";
     LOG(INFO) << "the mode is : " << mode_choose_;
-    if(mode_choose_ == 2){
-        for(auto it : bufferspiltPolys1_){
-            cgalbackShape_keypoints_.push_back(it);
-        }
-    }else if(mode_choose_ == 1){
-        for(auto it : bufferspiltPolys2_){
-            cgalbackShape_keypoints_.push_back(it);
-        }
+    if(mode_choose_ == 2 || mode_choose_ == 1 ){
+        cgalComputeBRidgeKeyPointsLeave();
     }
     LOG(INFO) << "--------------------------------------------------";
+
     //判断是否增加内部直骨架点位映射
     if(!storage_keypts_inner_skeleton_.empty()){
         cgalIncludeLastskeletonMap();
@@ -3436,6 +3672,124 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
                         true);
         backshape_keypts_info_[cgalbackShape_keypoints_[num-1][i]] = tempPt;
     }
+}
+
+void pathPolygonPlan:: cgalComputeBRidgeKeyPointsLeave(){
+    polygonPoint specify_point;
+    int number_m  =  cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1].size();
+    specify_point =  cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-1];
+    LOG(INFO) << "the last ridege entrance point is : ("
+              << specify_point.x
+              << ","
+              << specify_point.y
+              << ")";
+    //计算指定点的heading
+    auto spec_pt_forwardpt = cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-2];
+    specify_point.heading = atan2(specify_point.y - spec_pt_forwardpt.y,
+                                  specify_point.x - spec_pt_forwardpt.x);
+    cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-1].heading =
+            specify_point.heading;
+
+    //根据line1和line2 确定哪个距离最近
+    double distance1 =
+            common::commonMath::distance2(specify_point,move_pts_line_B_1_[0]);
+    double distance2 =
+            common::commonMath::distance2(specify_point,move_pts_line_B_2_[0]);
+    double distance3 =
+            common::commonMath::distance2(specify_point,
+                                          move_pts_line_B_1_[move_pts_line_B_1_.size()-1]);
+    double distance4 =
+            common::commonMath::distance2(specify_point,
+                                          move_pts_line_B_2_[move_pts_line_B_2_.size()-1]);
+
+    std::vector<double> stor_distance;
+    stor_distance.push_back(distance1);
+    stor_distance.push_back(distance2);
+    stor_distance.push_back(distance3);
+    stor_distance.push_back(distance4);
+
+    LOG(INFO) << "move pts line1 distance is ： "  <<  distance1;
+    LOG(INFO) << "move pts line2 distance is :  "  <<  distance2;
+    LOG(INFO) << "move pts line1 end distance is ： "  <<  distance3;
+    LOG(INFO) << "move pts line2 end distance is :  "  <<  distance4;
+
+    double min_dis = DBL_MAX;
+    int spec_number;
+    for(int i = 0;i < 4;i++){
+        if(min_dis > stor_distance[i]){
+            min_dis = stor_distance[i];
+            spec_number = i;
+        }
+    }
+    spec_number +=1;
+    LOG(INFO) <<"the spec number is : " << spec_number;
+    std::vector<polygonPoint> storage_last_keypts;
+
+    switch(spec_number){
+        case 1: {
+            LOG(INFO) << "the situation belong to minimum distance to line1 front !";
+            for (int i = 0; i < move_pts_line_B_1_.size(); i++) {
+                if (i % 2 == 0) {
+                    storage_last_keypts.push_back(move_pts_line_B_1_[i]);
+                    storage_last_keypts.push_back(move_pts_line_B_2_[i]);
+                } else {
+                    storage_last_keypts.push_back(move_pts_line_B_2_[i]);
+                    storage_last_keypts.push_back(move_pts_line_B_1_[i]);
+                }
+            }
+            break;
+        }
+        case 2:{
+            LOG(INFO) << "the situation belong to minimum distance to line2 front !";
+            for(int i = 0;i < move_pts_line_B_1_.size();i++){
+                if(i % 2 == 0){
+                    storage_last_keypts.push_back(move_pts_line_B_2_[i]);
+                    storage_last_keypts.push_back(move_pts_line_B_1_[i]);
+                }else{
+                    storage_last_keypts.push_back(move_pts_line_B_1_[i]);
+                    storage_last_keypts.push_back(move_pts_line_B_2_[i]);
+                }
+            }
+            break;
+        }
+        case 3:{
+            std::reverse(move_pts_line_B_1_.begin(),move_pts_line_B_1_.end());
+            std::reverse(move_pts_line_B_2_.begin(),move_pts_line_B_2_.end());
+            LOG(INFO) << "the situation belong to minimum distance to line1 back !";
+            for(int i = 0;i < move_pts_line_B_1_.size();i++){
+                if( i % 2 == 0){
+                    storage_last_keypts.push_back(move_pts_line_B_1_[i]);
+                    storage_last_keypts.push_back(move_pts_line_B_2_[i]);
+                }else{
+                    storage_last_keypts.push_back(move_pts_line_B_2_[i]);
+                    storage_last_keypts.push_back(move_pts_line_B_1_[i]);
+                }
+            }
+            break;
+        }
+        case 4:{
+            std::reverse(move_pts_line_B_1_.begin(),move_pts_line_B_1_.end());
+            std::reverse(move_pts_line_B_2_.begin(),move_pts_line_B_2_.end());
+            LOG(INFO) << "the situation belong to minimum distance to line2 back!";
+            for(int i = 0;i < move_pts_line_B_1_.size();i++){
+                if(i % 2 == 0){
+                    storage_last_keypts.push_back(move_pts_line_B_2_[i]);
+                    storage_last_keypts.push_back(move_pts_line_B_1_[i]);
+                }else{
+                    storage_last_keypts.push_back(move_pts_line_B_1_[i]);
+                    storage_last_keypts.push_back(move_pts_line_B_2_[i]);
+                }
+            }
+            break;
+        }
+        default:{
+            LOG(INFO) << "the situation no  considered !";
+            break;
+        }
+    }
+    //此处需要添加平行线的heading计算部分
+    cgalComputeParallelLinesHeading(storage_last_keypts);
+    cgalbackShape_keypoints_.push_back(storage_last_keypts);
 }
 
 void pathPolygonPlan::cgalComputeRidgeKeyPointsLeave(){
