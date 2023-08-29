@@ -142,7 +142,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         storage_polypts.push_back(temp);
         storage_polypts.push_back(temdd);
         if(i->is_inner_bisector()){
-//            std::cout << "------------------------start---------------------" << std::endl;
             print_point(i->opposite()->vertex()->point());
             polygonPoint temp_m;
             temp_m.x = i->opposite()->vertex()->point()[0];
@@ -155,7 +154,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
             inner_polypts.push_back(temp_m);
             inner_polypts.push_back(temp_n);
             last_inner_skeleton_keypts_[temp_m].push_back(temp_n);
-//            std::cout <<"------------------------end---------------------" << std::endl;
         }
         cgalPtMaping_[temdd].push_back(temp) ;
     }
@@ -191,22 +189,22 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                   storageTemppt.push_back(it);
               }
           }
-              if(storageTemppt.size() == 1){
-                  lastPoly_innerpts_.push_back(storageTemppt[0]);
-                  transPt = storageTemppt[0];
-              }else{
-                  double min_distance  = DBL_MAX;
-                  polygonPoint min_pt;
-                  for(auto it : storageTemppt){
-                      auto dis = common::commonMath::distance2(it,storage_polypts[all_sken_pts-1]);
-                      if(dis < min_distance){
-                          min_distance = dis;
-                          min_pt = it;
-                      }
+          if(storageTemppt.size() == 1){
+              lastPoly_innerpts_.push_back(storageTemppt[0]);
+              transPt = storageTemppt[0];
+          }else{
+              double min_distance  = DBL_MAX;
+              polygonPoint min_pt;
+              for(auto it : storageTemppt){
+                  auto dis = common::commonMath::distance2(it,storage_polypts[all_sken_pts-1]);
+                  if(dis < min_distance){
+                      min_distance = dis;
+                      min_pt = it;
                   }
-                  lastPoly_innerpts_.push_back(min_pt);
-                  transPt = min_pt;
               }
+              lastPoly_innerpts_.push_back(min_pt);
+              transPt = min_pt;
+          }
     }
 
     //计算内缩多边形
@@ -366,6 +364,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
            auto temp =  cgalandboostPolypts_.size() - judge_number;
            if(temp > SET_POLY_TRANSFER_THR){
                cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LEAVE;
+               LOG(INFO) << "the cgalLastPolyType_ is : POLY_LEAVE !";
                find_entrance_pts_size_ = judge_number;
                computeLeaveSituation(judge_number-1);
            }else{
@@ -374,7 +373,11 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                if(temp == 0  &&
                    cgalandboostPolypts_[polySize-1].size() == 5 ){
                    cgalLastPolyType_ = cgalLastPolyIdentify::POLY_NONE;
+                   LOG(INFO) << "the cgalLastPolyType_ is : POLY_NONE !";
+                   int countSize = cgalandboostPolypts_.size();
+                   computeLeaveSituation(countSize-1-SET_POLY_TRANSFER_THR);
                }else{
+                   LOG(INFO) << "the cgalLastPolyType_ is : POLY_LESS_THR !";
                    cgalLastPolyType_ = cgalLastPolyIdentify::POLY_LESS_THR;
                    int countSize = cgalandboostPolypts_.size();
                    computeLeaveSituation(countSize-1-SET_POLY_TRANSFER_THR);
@@ -1382,6 +1385,13 @@ void pathPolygonPlan::judgeIncreaseskeleton(
                 }
         }
     }
+    if(!SET_FLAG_INNER_SKELETON_PATH){
+        storage_keypts_inner_skeleton_.clear();
+        return;
+    }
+    if(!storage_keypts_inner_skeleton_.empty()){
+        LOG(INFO) << "this map  increases innner skeleton path !";
+    }
     std::ofstream  inner_skeleton_path;
     inner_skeleton_path.open(
             "/home/zzm/Desktop/test_path_figure-main/src/inner_skeleton_path.txt",
@@ -1921,16 +1931,10 @@ std::vector<pathInterface::pathPoint>  pathPolygonPlan::cgalComputeRidgeRoutingp
     int num = ordered_points.size();
 
     //分情况处理最后一垄
-    if(ridge_index == cgalbackShape_keypoints_.size() - 1  &&
-            cgalLastPolyType_ !=  cgalLastPolyIdentify::POLY_NONE) {
+    if(ridge_index == cgalbackShape_keypoints_.size() - 1) {
         switch (cgalLastPolyType_) {
-            case cgalLastPolyIdentify::POLY_LEAVE: {
-                cgalComputeLastRidgeRoutingParallelLines(storageAllPath);
-                break;
-            }
-//            case cgalLastPolyIdentify::POLY_NONE: {
-//                break;
-//            }
+            case cgalLastPolyIdentify::POLY_LEAVE:
+            case cgalLastPolyIdentify::POLY_NONE:
             case cgalLastPolyIdentify::POLY_LESS_THR: {
                 cgalComputeLastRidgeRoutingParallelLines(storageAllPath);
                 break;
@@ -3186,18 +3190,19 @@ void pathPolygonPlan::cgalUpdatePolygonPointsINcrease(){
             }
             break;
         }
-        case cgalLastPolyIdentify::POLY_NONE:{
-            LOG(INFO) << "the difference  between the polygon and the entrance == 0";
-            for(int i = 0;i < num ;i++ ){
-                auto poly_pts = insertPointToPolygon(
-                        entrance_pts_[i],
-                        cgalandboostPolypts_[i]);
-                cgalIncreaseptPolypts_.push_back(poly_pts);
-            }
-            break;
-        }
+//        case cgalLastPolyIdentify::POLY_NONE:{
+//            LOG(INFO) << "the difference  between the polygon and the entrance == 0";
+//            for(int i = 0;i < num ;i++ ){
+//                auto poly_pts = insertPointToPolygon(
+//                        entrance_pts_[i],
+//                        cgalandboostPolypts_[i]);
+//                cgalIncreaseptPolypts_.push_back(poly_pts);
+//            }
+//            break;
+//        }
+        case cgalLastPolyIdentify::POLY_NONE:
         case cgalLastPolyIdentify::POLY_LESS_THR:{
-            LOG(INFO) << "the difference  between the polygon and the entrance <= 2";
+            LOG(INFO) << "the difference  between the polygon and the entrance <= 2 or last poly is quadrilateral！";
             int countSize = cgalandboostPolypts_.size();
             for(int i = 0;i < countSize - SET_POLY_TRANSFER_THR ;i++ ){
                 auto poly_pts = insertPointToPolygon(
@@ -3271,12 +3276,9 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
             cgalComputeRidgeKeyPointsLeave();
             break;
         }
-        case aiforce::Route_Planning::cgalLastPolyIdentify::POLY_NONE:{
-            LOG(INFO) << "keypoint type is poly_none !";
-            break;
-        }
+        case aiforce::Route_Planning::cgalLastPolyIdentify::POLY_NONE:
         case aiforce::Route_Planning::cgalLastPolyIdentify::POLY_LESS_THR:{
-            LOG(INFO) << "keypoint type is poly_less_Thr !";
+            LOG(INFO) << "keypoint type is poly_less_Thr or  poly_NONE!";
             //添加最后一笼
             cgalComputeRidgeKeyPointsLeave();
             break;

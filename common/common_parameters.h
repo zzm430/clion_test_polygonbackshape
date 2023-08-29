@@ -31,6 +31,7 @@
 #define  SET_BACK_DIS             20      //设置倒车间隔
 #define  SET_VIRTUAL_LINE_LENGTH  2500    //设置虚拟线的长度
 #define  SET_POLY_TRANSFER_THR     2      //设置开始走平行路线的阈值
+#define  SET_FLAG_INNER_SKELETON_PATH  false //设置是否走内部直骨架路径
 //LOG以及相关txt信息输出
 #define DEBUG_MIDDLE_INFO                 //控制输出的txt文件debug使用
 
