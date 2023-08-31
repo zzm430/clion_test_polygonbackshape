@@ -35,7 +35,7 @@ CC_y = CC[1]
 # test_111_poly_x = test_111_poly[0]
 # test_111_poly_y = test_111_poly[1]
 
-test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly.txt')
+test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly_common.txt')
 test_virtual_origin_poly_x = test_virtual_origin_poly[0]
 test_virtual_origin_poly_y = test_virtual_origin_poly[1]
 
@@ -43,29 +43,38 @@ test_virtual_origin_poly_y = test_virtual_origin_poly[1]
 # test_move_pts_x = test_move_pts[0]
 # test_move_pts_y = test_move_pts[1]
 
-cgal_pts_entrance = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt')
-cgal_pts_entrance_x = cgal_pts_entrance[0]
-cgal_pts_entrance_y = cgal_pts_entrance[1]
+# cgal_pts_entrance = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt')
+# cgal_pts_entrance_x = cgal_pts_entrance[0]
+# cgal_pts_entrance_y = cgal_pts_entrance[1]
 
-test_skeleton_2 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_3.txt')
-test_skeleton_2_x = test_skeleton_2[0]
-test_skeleton_2_y = test_skeleton_2[1]
+# test_skeleton_2 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_3.txt')
+# test_skeleton_2_x = test_skeleton_2[0]
+# test_skeleton_2_y = test_skeleton_2[1]
 
-test_skeleton_4 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_4.txt')
-test_skeleton_4_x = test_skeleton_4[0]
-test_skeleton_4_y = test_skeleton_4[1]
+# test_skeleton_4 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_4.txt')
+# test_skeleton_4_x = test_skeleton_4[0]
+# test_skeleton_4_y = test_skeleton_4[1]
 
 test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly.txt')
 test_virtual_origin_poly_x = test_virtual_origin_poly[0]
 test_virtual_origin_poly_y = test_virtual_origin_poly[1]
 
-test_move_pts = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt')
-test_move_pts_x = test_move_pts[0]
-test_move_pts_y = test_move_pts[1]
+# test_move_pts = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_move_pts_B.txt')
+# test_move_pts_x = test_move_pts[0]
+# test_move_pts_y = test_move_pts[1]
 
 inner_skeleton_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/inner_skeleton_path.txt')
 inner_skeleton_path_x = inner_skeleton_path[0]
 inner_skeleton_path_y = inner_skeleton_path[1]
+
+test_txt = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test.txt')
+test_txt_x = test_txt[0]
+test_txt_y = test_txt[1]
+
+
+entrance_lines = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt')
+entrance_lines_x = entrance_lines[0]
+entrance_lines_y = entrance_lines[1]
 
 # cgal_show_ridge_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_show_ridge_path.txt')
 # cgal_show_ridge_path_x = cgal_show_ridge_path[0]
@@ -76,8 +85,13 @@ inner_skeleton_path_y = inner_skeleton_path[1]
 # ax.plot(DD_x,DD_y,color='y',markerfacecolor='green',marker='o',label='inter_nodes data')
 # ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_polygon data')
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(test_txt_x,test_txt_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
+# ax.plot(entrance_lines_x,entrance_lines_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
+
 # ax.plot(test_skeleton_4_x,test_skeleton_4_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(inner_skeleton_path_x,inner_skeleton_path_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(test_skeleton_2_x,test_skeleton_2_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.3,markersize=1)
+
+# ax.plot(inner_skeleton_path_x,inner_skeleton_path_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 
 # ax.plot(cgal_show_ridge_path_x,cgal_show_ridge_path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.5,markersize=1)
 
@@ -95,6 +109,8 @@ ax.plot(inner_skeleton_path_x,inner_skeleton_path_y,color='blue',markerfacecolor
 # ax.plot(DD_x,DD_y,color='r',markerfacecolor='green',marker='o',label='realline data')
 
 # for a, b in zip(CC_x,CC_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+# for a, b in zip(entrance_lines_x,entrance_lines_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # #
 # #

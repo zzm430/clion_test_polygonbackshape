@@ -58,7 +58,6 @@ namespace Route_Planning
     typedef boost::shared_ptr<cgal_Polygon_2> cgal_PolygonPtr ;
     typedef std::vector<cgal_PolygonPtr>      cgal_PolygonPtrVector ;
 
-
     typedef CGAL::Partition_traits_2<K>                         Traits;
     typedef Traits::Point_2                               partition_Point_2;
     typedef Traits::Polygon_2                             partition_Polygon_2;      // a polygon of indices
@@ -85,7 +84,6 @@ namespace Route_Planning
         bool operator == ( const polygonPoint& other) const{
             return (fabs(x - other.x) < 0.001 &&
                     fabs(y -other.y) < 0.001);
-//               return (x == other.x && y == other.y);
         }
 
         bool operator != ( const polygonPoint& other) const {
@@ -257,6 +255,8 @@ namespace Route_Planning
      std::vector<polygonPoint>  move_pts_line_2_;            //线段的交点2
      std::vector<polygonPoint>  move_pts_line_B_1_;            //线段的交点1 B
      std::vector<polygonPoint>  move_pts_line_B_2_;            //线段的交点2 B
+     std::vector<std::vector<polygonPoint>> move_pts_line_B_all_1_; //所有的线段的交点1 B
+     std::vector<std::vector<polygonPoint>> move_pts_line_B_all_2_; //所有的线段的交点2 B
 
  public:
      void cgalNarrowPolygons(std::vector<Point> &points);
@@ -266,7 +266,7 @@ namespace Route_Planning
      void cgalComputebackShapeKeypoints();
      void cgalComputeAKeyptsMapping();        //只针对回字形的关键点位的映射处理
      void cgalComputeParallelLinesHeading(std::vector<polygonPoint> & lastRidgePts);  //计算平行线的点位的heading
-     void judgeIncreaseskeleton(cgal_PolygonPtrVector& last_poly_ptr, std::vector<polygonPoint> &  inner_polypts );
+     void judgeIncreaseskeleton(std::vector<polygonPoint> &  inner_polypts );
      std::vector<std::vector<polygonPoint>>  cgalGetBackShapeKeyPoints();
      std::vector<polygonPoint> cgalGetBackShapeSkeletonPts();
      void cgalIncludeLastskeletonMap();
@@ -283,14 +283,19 @@ namespace Route_Planning
              std::vector<std::vector<polygonPoint>>& storage_spilt_second_polys,
              point&                            spilt_first_poly_center);
      void computeLeaveSituation(int last_ordered_poly_index);
+     void computeLeaveSituation();
      void computeLeaveSituation(std::vector<polygonPoint> & origin_poly);                       //将B中的分裂多边形按照平行线处理
      void cgalComputeRidgeKeyPointsLeave();               //计算A剩余未相交的按照弓字型处理的关键点
      void cgalComputeBRidgeKeyPointsLeave();              //计算B剩余未相交的按照弓字型处理的关键点
+     void processSpiltPolys();           //将分裂多边形分开存储,挑选出A结构的多边形，Bs结构的多边形
  private:
-     std::vector<std::vector<polygonPoint>>   cgalPolypts_;  //内缩多边形的存储
+     std::vector<std::vector<polygonPoint>>   cgalPolypts_;         //内缩多边形的存储
      std::vector<std::vector<polygonPoint>>   cgalandboostPolypts_; //cgal和boost混合的内缩多边形存储
      std::vector<std::vector<polygonPoint>>   bufferspiltPolys1_;   //buffer裂变出的第一个多边形
      std::vector<std::vector<polygonPoint>>   bufferspiltPolys2_;   //buffer裂变出的第二个多边形
+
+     std::vector<std::vector<std::vector<polygonPoint>>>   bufferspiltPolysAandBs_; //分裂多边形A和Bs的存储
+     std::vector<int>      storage_order_polys_distance_;   //依次存储距离入口的远近多边形的序号
 
      int cgal_narrow_size_;
      std::vector<polygonPoint>        lastPoly_innerpts_;    //从顶点到直骨架最内部的关键点
@@ -306,7 +311,6 @@ namespace Route_Planning
      bool flag_increase_last_skeleton_ = false;              //判断是否添加最后内部直骨架路径
      std::vector<polygonPoint>  storage_keypts_inner_skeleton_;  //存储最后的内部直骨架路径
      std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> last_inner_skeleton_keypts_; //获取关键点的映射信息
-
  };
 }
 }
