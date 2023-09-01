@@ -25,6 +25,9 @@
 #include <CGAL/partition_2.h>
 #include <CGAL/Partition_traits_2.h>
 #include <CGAL/property_map.h>
+#include <CGAL/convex_hull_2.h>
+#include <CGAL/Convex_hull_traits_adapter_2.h>
+#include <numeric>
 #include <list>
 #include <boost/shared_ptr.hpp>
 #include <common/print.h>
@@ -54,6 +57,8 @@ namespace Route_Planning
     typedef boost::shared_ptr<cgal_Ss>        cgal_SsPtr ;
     typedef K::Segment_2                      cgal_Segment_2;
     typedef Kernel::Bounded_side              cgal_Bounded_side;
+    typedef CGAL::Convex_hull_traits_adapter_2<K,
+            CGAL::Pointer_property_map<cgal_Point>::type > Convex_hull_traits_2;
 
     typedef boost::shared_ptr<cgal_Polygon_2> cgal_PolygonPtr ;
     typedef std::vector<cgal_PolygonPtr>      cgal_PolygonPtrVector ;
@@ -308,6 +313,7 @@ namespace Route_Planning
      int mode_choose_ = 0;                                      //分裂多边形分裂 mode_choose_ = 1 ,2
      cgalLastPolyIdentify             cgalLastPolyType_;
      int find_entrance_pts_size_ = 0;                        //入口点数
+     bool set_flag_about_buffer_spilt_polys_ = false;                //设置是否启用B的平行线相关代码
      bool flag_increase_last_skeleton_ = false;              //判断是否添加最后内部直骨架路径
      std::vector<polygonPoint>  storage_keypts_inner_skeleton_;  //存储最后的内部直骨架路径
      std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> last_inner_skeleton_keypts_; //获取关键点的映射信息

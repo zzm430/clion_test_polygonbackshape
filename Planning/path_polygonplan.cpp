@@ -139,6 +139,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         }
         cgalPtMaping_[temdd].push_back(temp) ;
     }
+
     //根据指定的顶点找到对应的骨架路径
     polygonPoint entrance_point;
     entrance_point.x = points[3].x;
@@ -160,6 +161,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
             }
         }
     }
+
     //存储剩余点内骨架点位
     auto all_sken_pts = storage_polypts.size();
     while(transPt != storage_polypts[all_sken_pts-1] &&
@@ -188,6 +190,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
               transPt = min_pt;
           }
     }
+
     //计算内缩多边形
     double  buffer_distance = DBL_MAX;
     double f;
@@ -204,7 +207,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         std::vector<polygonPoint>   poly_pts;
         cgal_PolygonPtrVector offset_polygons =  CGAL::create_offset_polygons_2<cgal_Polygon_2>(
                                                              buffer_distance,*iss);
-//        LOG(INFO) << "the offset_polygons size is : " << offset_polygons.size();
+        LOG(INFO) << "the offset_polygons size is : " << offset_polygons.size();
 
         if(offset_polygons.size() == 1 && !flag_enter){
             for(auto it : offset_polygons){
@@ -388,6 +391,23 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 
     }
 
+    std::ofstream test_skeleton_6;
+    test_skeleton_6.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_6.txt",
+                         std::ios::out);
+    for(int i  = 0;i < cgalPolypts_.size() ;i++){
+        for(auto j : cgalPolypts_[i]){
+            test_skeleton_6 << " " << j.x;
+        }
+    }
+    test_skeleton_6 << std::endl;
+    for(int i = 0; i <cgalPolypts_.size() ;i++){
+        for(auto j : cgalPolypts_[i]){
+            test_skeleton_6 << " " << j.y;
+        }
+    }
+    test_skeleton_6 << std::endl;
+    test_skeleton_6.close();
+
     std::ofstream   test_skeleton_2;
     test_skeleton_2.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_2.txt",
                    std::ios::out);
@@ -475,8 +495,59 @@ void pathPolygonPlan::processSpiltPolys(){
 }
 
 void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
+    //判断此多边形的凹凸性
+    partition_Polygon_2  transed_poly;
+    partition_Polygon_list list_polys;
+    std::vector<polygonPoint>   virtual_origin_poly;
+    for(int i = 0;i < cgalPolypts_[last_ordered_poly_index].size() - 1;i++){
+        transed_poly.push_back(partition_Point_2(
+                cgalPolypts_[last_ordered_poly_index][i].x,
+                cgalPolypts_[last_ordered_poly_index][i].y));
+    }
+   bool flag_convex_2 = CGAL::is_convex_2(transed_poly.begin(),transed_poly.end());
+    LOG(INFO) << "the flag_convex_2 is : " << flag_convex_2;
+    if(!flag_convex_2){
+        LOG(INFO) << "This polygon is a concave polygon ！";
+        std::vector<cgal_Point> points ;
+        for(int i = 0;i < cgalPolypts_[last_ordered_poly_index].size() - 1;i++){
+            points.push_back(cgal_Point(
+                    cgalPolypts_[last_ordered_poly_index][i].x,
+                    cgalPolypts_[last_ordered_poly_index][i].y));
+        }
+        std::vector<std::size_t> indices(points.size()), out;
+        std::iota(indices.begin(), indices.end(),0);
+        CGAL::convex_hull_2(indices.begin(), indices.end(), std::back_inserter(out),
+                            Convex_hull_traits_2(CGAL::make_property_map(points)));
+        std::vector<polygonPoint>   tempPoly;
+        for(std::size_t i : out){
+            polygonPoint  tempPt;
+            tempPt.x = points[i].x();
+            tempPt.y = points[i].y();
+            tempPoly.push_back(tempPt);
+        }
+        tempPoly.push_back(tempPoly[0]);
+        virtual_origin_poly = tempPoly;
+
+        //针对特殊情况处理
+        if(!bufferspiltPolysAandBs_.empty()){
+            set_flag_about_buffer_spilt_polys_ = false;  //此处有bug
+        }
+        std::ofstream   convexHull;
+        convexHull.open("/home/zzm/Desktop/test_path_figure-main/src/convexHull.txt",std::ios::out);
+        for( std::size_t i : out){
+            convexHull << " " << points[i].x();
+        }
+        convexHull << std::endl;
+        for( std::size_t i : out){
+            convexHull << " " << points[i].y();
+        }
+        convexHull << std::endl;
+        convexHull.close();
+        LOG(INFO) << "the list_polys size is : " << list_polys.size();
+    }else{
+         virtual_origin_poly =  cgalPolypts_[last_ordered_poly_index];
+    }
     double  buffer_distance = RIDGE_WIDTH_LENGTH/2;
-   auto virtual_origin_poly =  cgalPolypts_[last_ordered_poly_index];
    //从此多边形开始内缩垄宽/2;
     cgal_Polygon_2 poly_temp;
     for(int i = 0; i < virtual_origin_poly.size();i++){
@@ -950,9 +1021,9 @@ void pathPolygonPlan::computeLeaveSituation(){
     for(int i = 1;i < bufferspiltPolysAandBs_.size();i++){
         int f = storage_order_polys_distance_[i];
         auto virtual_origin_poly =  bufferspiltPolysAandBs_[f][0];
-        //从此多边形开始外扩垄宽/2;
+        //此多边形开始外扩垄宽/2;
         cgal_Polygon_2 poly_temp;
-//    std::reverse(origin_poly.begin(), origin_poly.end());
+        //std::reverse(origin_poly.begin(), origin_poly.end());
         for(int i = 0; i < virtual_origin_poly.size() - 1 ;i++){
             poly_temp.push_back(cgal_Point(
                     virtual_origin_poly[i].x,
@@ -3702,7 +3773,6 @@ void pathPolygonPlan::cgalUpatePolygonPointsSequence(){
 void pathPolygonPlan::cgalComputebackShapeKeypoints(){
     int num = cgalSequencedPolypts_.size();
     std::vector<polygonPoint>  temp_points;
-
     //当处于POLY_LEAVE时需要重新更新num
     //    if(find_entrance_pts_size_){
     //        num = find_entrance_pts_size_ + 1;
@@ -3718,7 +3788,6 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
 
     //此处需要添加关键点的弯道映射部分
     cgalComputeAKeyptsMapping();
-
     switch(cgalLastPolyType_){
         case aiforce::Route_Planning::cgalLastPolyIdentify::POLY_LEAVE:{
             LOG(INFO) << "keypoint type is poly_leave !";
@@ -3738,12 +3807,11 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
     }
     //判断是否添加分裂多边形中的平行线
     LOG(INFO) << "--------------------------------------------------";
-    if(!bufferspiltPolysAandBs_.empty()){
+    if(!bufferspiltPolysAandBs_.empty() && !set_flag_about_buffer_spilt_polys_){
         LOG(INFO) << "increase spilt poly size is : " << bufferspiltPolysAandBs_.size() - 1;
         cgalComputeBRidgeKeyPointsLeave();
     }
     LOG(INFO) << "--------------------------------------------------";
-
     //判断是否增加内部直骨架点位映射
     if(!storage_keypts_inner_skeleton_.empty()){
         cgalIncludeLastskeletonMap();
