@@ -32,5 +32,13 @@ plt.plot(a[:,0],a[:,1],'-b',linewidth=0.3)                                      
 # for i in range(len(a)):
 #     plt.plot(a[i,0],a[i,1],'ro', markersize=8)                         # 绘制每个点
 #     plt.text(a[i,0]+0.2,a[i,1]+0.2,f"({a[i,0]}, {a[i,1]})")                      # 在每个点旁边添加坐标的文本说明
+#
+# m = [-2.3,-1.5, -2.3 ,  -1.5 ,  -2.3 ,-1.5 ]
+# n = [-2 , -2,  -2 , -2, 2  ,2]
+# plt.plot(m, n, 'ro')  # 'ro'表示红色的圆点
+#
+# for i in range(len(m)):
+#     ax.annotate(f"({m[i]}, {m[i]})", (m[i], m[i]))
+
 plt.axis('equal')  # 让横坐标间隔等于纵坐标间隔
 plt.show()

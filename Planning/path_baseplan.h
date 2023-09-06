@@ -8,9 +8,9 @@
 #include <vector>
 #include <unordered_map>
 //#include "planning_common.h"
-#include "Planning/path_interface.h"
-#include "Planning/path_common.h"
-#include "common/common_parameters.h"
+#include "common/utilpath/path_interface.h"
+#include "common/utilpath/path_common.h"
+#include "common/common_param/common_parameters.h"
 
 namespace aiforce {
 namespace Route_Planning

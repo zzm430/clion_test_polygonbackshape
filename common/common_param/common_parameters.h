@@ -35,6 +35,15 @@
 //LOG以及相关txt信息输出
 #define DEBUG_MIDDLE_INFO                 //控制输出的txt文件debug使用
 
+//回型部分弯道起始点和终点相关参数设置
+#define YFLW                      2       //垄宽/2
+#define YFRW                      2       //垄宽/2
+#define DCRI                      0.8       //车体相关参数1
+#define DWA                       0.3     //车体相关参数2
+#define LWORK                     0.5     //车体相关参数3
+#define WWORK                     4       //垄宽
+#define OFFWORK                   0       //偏移量农具
+
 //回字形规划方法选择
 //#define  RECTANGLE_BACK_SHAPE           //矩形回字形规划
 #define  POLYGON_BACK_SHAPE               //多边形回字形规划

@@ -207,8 +207,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         std::vector<polygonPoint>   poly_pts;
         cgal_PolygonPtrVector offset_polygons =  CGAL::create_offset_polygons_2<cgal_Polygon_2>(
                                                              buffer_distance,*iss);
-        LOG(INFO) << "the offset_polygons size is : " << offset_polygons.size();
-
         if(offset_polygons.size() == 1 && !flag_enter){
             for(auto it : offset_polygons){
                 auto m = *it;
@@ -388,7 +386,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
        if(!bufferspiltPolysAandBs_.empty()){
            computeLeaveSituation();
         }
-
     }
 
     std::ofstream test_skeleton_6;
@@ -2525,51 +2522,51 @@ std::vector<pathInterface::pathPoint>  pathPolygonPlan::cgalComputeRidgeRoutingp
             storageAllPath.push_back(pathPointCurve);
         }
 
-        //弯道结束需要增加3个点位信息
-        aiforce::Route_Planning::polygonPoint p2;
-        p2.x = point_temp2.x;
-        p2.y = point_temp2.y;
-        auto increase_points3 =
-                common::commonMath::findPointExtendSegment(temp_point,
-                                                           p2,
-                                                           SET_CONVERTDIRECTION_DIST,
-                                                           true,
-                                                           SET_CONVERTDIRECTION_COUNT);
-        for(auto it : increase_points3){
-            it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
-            it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
-            it.ridge_number = ridge_index;
-            storageAllPath.push_back(it);
-        }
-        //增加倒车点位信息
-        std::vector<polygonPoint>  lineInfo;
-        lineInfo.push_back(p2);
-        lineInfo.push_back(temp_point);
-        auto back_points =
-                common::commonMath::densify(lineInfo,
-                                            SET_BACK_DIS);
-        for(auto it : back_points){
-            pathInterface::pathPoint temp_point;
-            temp_point.x = it.x;
-            temp_point.y = it.y;
-            temp_point.path_point_mode1 =  pathInterface::pathPointMode1::WORK_AREA;
-            temp_point.path_point_mode2 =  pathInterface::pathPointMode2::BACK;
-            temp_point.ridge_number = ridge_index;
-            storageAllPath.push_back(temp_point);
-        }
-        //结束倒车增加3个点位信息
-        auto ending_back_points =
-                common::commonMath::findPointExtendSegment(temp_point,
-                                                           p2,
-                                                           SET_CONVERTDIRECTION_DIST,
-                                                           false,
-                                                           SET_CONVERTDIRECTION_COUNT);
-        for(auto it : ending_back_points){
-            it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
-            it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
-            it.ridge_number = ridge_index;
-            storageAllPath.push_back(it);
-        }
+//        //弯道结束需要增加3个点位信息
+//        polygonPoint p2;
+//        p2.x = point_temp2.x;
+//        p2.y = point_temp2.y;
+//        auto increase_points3 =
+//                common::commonMath::findPointExtendSegment(temp_point,
+//                                                           p2,
+//                                                           SET_CONVERTDIRECTION_DIST,
+//                                                           true,
+//                                                           SET_CONVERTDIRECTION_COUNT);
+//        for(auto it : increase_points3){
+//            it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+//            it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+//            it.ridge_number = ridge_index;
+//            storageAllPath.push_back(it);
+//        }
+//        //增加倒车点位信息
+//        std::vector<polygonPoint>  lineInfo;
+//        lineInfo.push_back(p2);
+//        lineInfo.push_back(temp_point);
+//        auto back_points =
+//                common::commonMath::densify(lineInfo,
+//                                            SET_BACK_DIS);
+//        for(auto it : back_points){
+//            pathInterface::pathPoint temp_point;
+//            temp_point.x = it.x;
+//            temp_point.y = it.y;
+//            temp_point.path_point_mode1 =  pathInterface::pathPointMode1::WORK_AREA;
+//            temp_point.path_point_mode2 =  pathInterface::pathPointMode2::BACK;
+//            temp_point.ridge_number = ridge_index;
+//            storageAllPath.push_back(temp_point);
+//        }
+//        //结束倒车增加3个点位信息
+//        auto ending_back_points =
+//                common::commonMath::findPointExtendSegment(temp_point,
+//                                                           p2,
+//                                                           SET_CONVERTDIRECTION_DIST,
+//                                                           false,
+//                                                           SET_CONVERTDIRECTION_COUNT);
+//        for(auto it : ending_back_points){
+//            it.path_point_mode1 = pathInterface::pathPointMode1::WORK_AREA;
+//            it.path_point_mode2 = pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+//            it.ridge_number = ridge_index;
+//            storageAllPath.push_back(it);
+//        }
     }
    return storageAllPath;
 }
@@ -2675,7 +2672,7 @@ std::vector<pathInterface::pathPoint> pathPolygonPlan::computeRidgeRoutingpts(in
             //判断是否需要添加
             if(SET_REVERSING_FLAG){
                 //弯道结束需要增加3个点位信息
-                aiforce::Route_Planning::polygonPoint p2;
+                polygonPoint p2;
                 p2.x = point_temp2.x;
                 p2.y = point_temp2.y;
                 auto increase_points3 =
@@ -3877,8 +3874,28 @@ void pathPolygonPlan::cgalComputeParallelLinesHeading(
 
 void pathPolygonPlan::cgalComputeAKeyptsMapping(){
     int num =  cgalbackShape_keypoints_.size();
+//    //从第3垄开始计算中间点位的起始和结束的位置
+//    for(int i = 2;i < num -1;i++){
+//        for(int j = 1;j < cgalbackShape_keypoints_[i].size() - 1;j++){
+//            auto fr_lt_pts =  common::commonMath::computeForwardAndBackPoints(
+//                    cgalbackShape_keypoints_[i],
+//                    cgalbackShape_keypoints_[i][j]);
+//            std::vector<polygonPoint>  arriveLine,leaveLine;
+//            arriveLine.push_back(fr_lt_pts[0]);
+//            arriveLine.push_back(cgalbackShape_keypoints_[i][j]);
+//            leaveLine.push_back(cgalbackShape_keypoints_[i][j]);
+//            leaveLine.push_back(fr_lt_pts[1]);
+//            cornerTuringLocation  cornerTuringLocationInstance(
+//                                     arriveLine,
+//                                     leaveLine);
+//            cornerTuringLocationInstance.decideLpAandLpB();
+//            cornerTuringLocationInstance.calculatePointsAandBForCurve();
+//            polygonPoint pt1 = cornerTuringLocationInstance.getCurveStartPtA();
+//            polygonPoint pt2 = cornerTuringLocationInstance.getCurveendPtB();
+//        }
+//    }
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
-    for(int i = 0;i < num - 1;i++){
+    for(int i = 0;i <  1;i++){
         for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
             auto ordered_pt = cgalbackShape_keypoints_[i][j];
             //计算指定点的前后弯道关键点
@@ -3889,6 +3906,18 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
                  common::commonMath::computeForwardAndBackPoints(
                          cgalbackShape_keypoints_[i],
                          cgalbackShape_keypoints_[i][j]);
+            std::vector<polygonPoint>  arriveLine,leaveLine;
+            arriveLine.push_back(forward_last_points[0]);
+            arriveLine.push_back(cgalbackShape_keypoints_[i][j]);
+            leaveLine.push_back(cgalbackShape_keypoints_[i][j]);
+            leaveLine.push_back(forward_last_points[1]);
+            cornerTuringLocation  cornerTuringLocationInstance(
+                    arriveLine,
+                    leaveLine);
+            cornerTuringLocationInstance.decideLpAandLpB();
+            cornerTuringLocationInstance.calculatePointsAandBForCurve();
+            polygonPoint pt1 = cornerTuringLocationInstance.getCurveStartPtA();
+            polygonPoint pt2 = cornerTuringLocationInstance.getCurveendPtB();
             tempPtInfo.start_curve_point =
                common::commonMath::findPointOnSegment(
                        forward_last_points[0],
@@ -3901,6 +3930,28 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
                        forward_last_points[1],
                        SET_ENDTURN_DISTANCE,
                        true);
+            double distanceB =  sqrt(pt2.x * pt2.x + pt2.y * pt2.y);
+            //计算大地坐标系下的A和B点
+           auto vector_pts =  common::commonMath::findPointExtendSegment(
+                    forward_last_points[0],
+                    cgalbackShape_keypoints_[i][j],
+                    pt1.x,
+                    true,
+                    1);
+           auto vector_ptsB = common::commonMath::findPointExtendSegment(
+                   forward_last_points[1],
+                   cgalbackShape_keypoints_[i][j],
+                   distanceB,
+                   true,
+                   1);
+            tempPtInfo.start_curve_point.x = vector_pts[0].x;
+            tempPtInfo.start_curve_point.y = vector_pts[0].y;
+            tempPtInfo.end_curve_point.x = vector_ptsB[0].x;
+            tempPtInfo.end_curve_point.y = vector_ptsB[0].y;
+            LOG(INFO) << "the start point is : " <<  tempPtInfo.start_curve_point.x << " "
+                      << tempPtInfo.start_curve_point.y  ;
+            LOG(INFO) << "the end point is 111: " << tempPtInfo.end_curve_point.x << " "
+                      << tempPtInfo.end_curve_point.y ;
             backshape_keypts_info_[cgalbackShape_keypoints_[i][j]] = tempPtInfo;
         }
         //最后一个点单独处理,j = cgalbackShape_keypoints_[i].size() - 1

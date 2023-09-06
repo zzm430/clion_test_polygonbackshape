@@ -4,9 +4,9 @@
 #ifndef POLYGONBACKSHAPE_COMMON_MATH_H
 #define POLYGONBACKSHAPE_COMMON_MATH_H
 #include <vector>
-#include <Planning/path_common.h>
+#include <common/utilpath/path_common.h>
 #include <Planning/path_polygonplan.h>
-#include <Planning/path_interface.h>
+#include <common/utilpath/path_interface.h>
 #include <math.h>
 #include <algorithm>
 #include <float.h>
@@ -102,8 +102,8 @@ namespace common{
             return v1.x * v2.y - v1.y * v2.x;
         }
 
-        static double cross(aiforce::Route_Planning::polygonPoint A,
-                            aiforce::Route_Planning::polygonPoint B){
+        static double cross(polygonPoint A,
+                            polygonPoint B){
             return A.x * B.y - A.y * B.x;
         }
 
@@ -131,9 +131,9 @@ namespace common{
                 return result;
         }
 
-        static std::vector<aiforce::Route_Planning::polygonPoint>   computeLineTranslationPoints(
-                                                std::vector<aiforce::Route_Planning::polygonPoint> initialPoints,
-                                                std::vector<aiforce::Route_Planning::polygonPoint> directionPoints,
+        static std::vector<polygonPoint>   computeLineTranslationPoints(
+                                                std::vector<polygonPoint> initialPoints,
+                                                std::vector<polygonPoint> directionPoints,
                                                                  double distance){
             long double Bx = directionPoints[1].x - directionPoints[0].x;
             long double By = directionPoints[1].y - directionPoints[0].y;
@@ -144,12 +144,12 @@ namespace common{
             long double p1y_new = initialPoints[0].y + distance * u_By;
             long double p2x_new = initialPoints[1].x + distance * u_Bx;
             long double p2y_new = initialPoints[1].y + distance * u_By;
-            aiforce::Route_Planning::polygonPoint p1,p2;
+            polygonPoint p1,p2;
             p1.x = p1x_new;
             p1.y = p1y_new;
             p2.x = p2x_new;
             p2.y = p2y_new;
-            std::vector<aiforce::Route_Planning::polygonPoint>  result;
+            std::vector<polygonPoint>  result;
             result.push_back(p1);
             result.push_back(p2);
             return result;
@@ -177,13 +177,13 @@ namespace common{
         }
 
         //7.对于给定点，求出给定点的前向点和后向点
-        static std::vector<aiforce::Route_Planning::polygonPoint>  computeForwardAndBackPoints(
-                                        std::vector<aiforce::Route_Planning::polygonPoint> polyPoints,
-                                        aiforce::Route_Planning::polygonPoint topPoint){
+        static std::vector<polygonPoint>  computeForwardAndBackPoints(
+                                        std::vector<polygonPoint> polyPoints,
+                                        polygonPoint topPoint){
             //要求polyPoints中没有重复点
             int num =  polyPoints.size();
-            std::vector<aiforce::Route_Planning::polygonPoint> storagePoints;
-            aiforce::Route_Planning::polygonPoint p, prev,next;
+            std::vector<polygonPoint> storagePoints;
+            polygonPoint p, prev,next;
             for(int i = 0; i < num ;i++){
                 p = polyPoints[i];
                 prev = polyPoints[(i + num -1) % num];
@@ -223,8 +223,8 @@ namespace common{
             return storage_new_points;
         }
         //13.给出一个三角形，删除重复点，按照逆时针返回
-//        static std::vector<aiforce::Route_Planning::polygonPoint> computeOrderedPts(
-//                std::vector<aiforce::Route_Planning::polygonPoint> points){
+//        static std::vector<polygonPoint> computeOrderedPts(
+//                std::vector<polygonPoint> points){
 //               //默认给出的三角形是闭环的
 //               int num = points.size();
 //               double min_distance = DBL_MAX;
@@ -232,11 +232,11 @@ namespace common{
 //               return storage_pts;
 //        }
         //14.给定一个点和一个多边形(闭环)的点位，更新多边形的存储顺序，第一个点距离该点距离最近
-        static std::vector<aiforce::Route_Planning::polygonPoint>  updatePolySequenceOrdered(
-                aiforce::Route_Planning::polygonPoint point_A,
-                std::vector<aiforce::Route_Planning::polygonPoint>  pts){
+        static std::vector<polygonPoint>  updatePolySequenceOrdered(
+                polygonPoint point_A,
+                std::vector<polygonPoint>  pts){
             double min_dis = DBL_MAX;
-            aiforce::Route_Planning::polygonPoint min_pt;
+            polygonPoint min_pt;
             int ordered_number;
             for(int it = 0; it  < pts.size();it++){
                 double temp_dis = distance2(pts[it],point_A);
@@ -249,7 +249,7 @@ namespace common{
             }
             int num = pts.size();
             int temp_m = ordered_number;
-            std::vector<aiforce::Route_Planning::polygonPoint> stro_pts;
+            std::vector<polygonPoint> stro_pts;
             for(int i = 0;i < num-1;i++){
                 stro_pts.push_back(pts[ordered_number % num]);
                 ordered_number +=1;
@@ -274,8 +274,8 @@ namespace common{
                double mag_b = magnitude(line_2.x,line_2.y);
                return acos(dot / (mag_a * mag_b));
         }
-        static double computeTwoLineAngle(aiforce::Route_Planning::polygonPoint line_1,
-                                          aiforce::Route_Planning::polygonPoint line_2){
+        static double computeTwoLineAngle(polygonPoint line_1,
+                                          polygonPoint line_2){
             double dot = dot_product(line_1,line_2);
             double mag_a = magnitude(line_1.x,line_1.y);
             double mag_b = magnitude(line_2.x,line_2.y);
@@ -283,8 +283,8 @@ namespace common{
         }
         //输出角度范围为-180 到 180 度
         static double computeTwolineAngleDu(
-                aiforce::Route_Planning::polygonPoint a,
-                aiforce::Route_Planning::polygonPoint b){
+                polygonPoint a,
+                polygonPoint b){
             float dotProduct = a.x * b.x + a.y * b.y;
             float magnitude = std::sqrt(a.x * a.x + a.y * a.y) * std::sqrt(b.x * b.x + b.y * b.y);
             float cosTheta = dotProduct / magnitude;
@@ -296,17 +296,17 @@ namespace common{
             return theta;
         }
         //1.计算两点之间的距离
-        static double  distanceTwoPolygonPoints(aiforce::Route_Planning::polygonPoint  point_1,
-                                                aiforce::Route_Planning::polygonPoint point_2){
+        static double  distanceTwoPolygonPoints(polygonPoint  point_1,
+                                                polygonPoint point_2){
                  double  result;
                  result = sqrt((point_2.x - point_1.x) * (point_2.x - point_1.x) +
                                        (point_2.y - point_1.y) * (point_2.y - point_1.y));
             return  result;
         }
         //2.找到线段上固定端点固定距离的点
-        static aiforce::Route_Planning::polygonPoint findPointOnSegment(
-                aiforce::Route_Planning::polygonPoint p1,
-                aiforce::Route_Planning::polygonPoint p2,
+        static polygonPoint findPointOnSegment(
+                polygonPoint p1,
+                polygonPoint p2,
                 double dist,
                 bool isP1Fixed){
             //计算线段长度
@@ -322,7 +322,7 @@ namespace common{
 //            }
             // 确定起始点
             Point startPoint = isP1Fixed ? p1 : p2;
-            aiforce::Route_Planning::polygonPoint endPoint;
+            polygonPoint endPoint;
             if(isP1Fixed){
                 endPoint.x = startPoint.x + dx * dist;
                 endPoint.y = startPoint.y + dy * dist;
@@ -335,8 +335,8 @@ namespace common{
         }
         //3.找到线段上固定端点的延长线上固定距离的点
         static std::vector<pathInterface::pathPoint>  findPointExtendSegment(
-                aiforce::Route_Planning::polygonPoint p1,
-                aiforce::Route_Planning::polygonPoint p2,
+                polygonPoint p1,
+                polygonPoint p2,
                 double dist,
                 bool isP1Fixed,
                 double count){
@@ -366,7 +366,7 @@ namespace common{
            return storage_points;
         }
         //4.在线段之间插入factor-1个点，等间隔插入
-        static std::vector<Point> densify(const std::vector<aiforce::Route_Planning::polygonPoint>& points,
+        static std::vector<Point> densify(const std::vector<polygonPoint>& points,
                                                       int factor) {
             std::vector<Point> densified_points;
             for (size_t i = 0; i < points.size() - 1; ++i) {
@@ -393,10 +393,10 @@ namespace common{
             return distanceAB;
         }
         //6.计算点p在线段AB上的投影点
-        static aiforce::Route_Planning::polygonPoint  projectPointOnSegment(
-                aiforce::Route_Planning::polygonPoint p,
-                aiforce::Route_Planning::polygonPoint a,
-                aiforce::Route_Planning::polygonPoint b){
+        static polygonPoint  projectPointOnSegment(
+                polygonPoint p,
+                polygonPoint a,
+                polygonPoint b){
             double  segmentLength =
                     std::sqrt(std::pow(b.x - a.x,2) + std::pow(b.y - a.y,2));
             if(segmentLength == 0){
@@ -422,7 +422,7 @@ namespace common{
                 LOG(INFO) << "projection length >= length ab";
                 return b;
             }
-            aiforce::Route_Planning::polygonPoint projectionPoint;
+            polygonPoint projectionPoint;
             projectionPoint.x = a.x + projectionLength * vx;
             projectionPoint.y = a.y + projectionLength * vy;
 
@@ -430,19 +430,19 @@ namespace common{
         }
 
         // 7.计算点p在线段AB上的垂足点
-        static aiforce::Route_Planning::polygonPoint  computeFootPoint(
-               aiforce::Route_Planning::polygonPoint P,
-               aiforce::Route_Planning::polygonPoint A,
-               aiforce::Route_Planning::polygonPoint B){
-           aiforce::Route_Planning::polygonPoint AP = {P.x - A.x, P.y - A.y};
-           aiforce::Route_Planning::polygonPoint AB = {B.x - A.x, B.y - A.y};
+        static polygonPoint  computeFootPoint(
+               polygonPoint P,
+               polygonPoint A,
+               polygonPoint B){
+           polygonPoint AP = {P.x - A.x, P.y - A.y};
+           polygonPoint AB = {B.x - A.x, B.y - A.y};
 
            double dotProduct = AP.x * AB.x + AP.y * AB.y;
            double abSquared = AB.x * AB.x + AB.y * AB.y;
 
            double t = dotProduct/abSquared;
 
-           aiforce::Route_Planning::polygonPoint footPoint;
+           polygonPoint footPoint;
            footPoint.x = A.x + t * AB.x;
            footPoint.y = A.y + t * AB.y;
            return footPoint;
@@ -456,26 +456,26 @@ namespace common{
             return (x - static_cast<double>(q_number) * y) / y;
         }
         //2.计算两点之间欧式距离
-        static double distance2(aiforce::Route_Planning::polygonPoint a,
-                                aiforce::Route_Planning::polygonPoint b){
+        static double distance2(polygonPoint a,
+                                polygonPoint b){
             double distance;
             distance =   std::sqrt(std::pow(b.x - a.x,2) + std::pow(b.y - a.y,2));
             return  distance;
         }
         static  double distance2(Point a,
-                                aiforce::Route_Planning::polygonPoint b){
+                                polygonPoint b){
             double distance;
             distance =   std::sqrt(std::pow(b.x - a.x,2) + std::pow(b.y - a.y,2));
             return  distance;
         }
         //3.计算向量的heading
-        static double calculateHeading(aiforce::Route_Planning::polygonPoint vector_p){
+        static double calculateHeading(polygonPoint vector_p){
             double heading = std::atan2(vector_p.y,vector_p.x);
             return heading;
         }
         //4.计算一个点是在线段AB所在直线的左侧还是右侧,左侧返回1,右侧返回-1,直线上返回0
-        static int pointLocation(aiforce::Route_Planning::polygonPoint v1,
-                                 aiforce::Route_Planning::polygonPoint v2){
+        static int pointLocation(polygonPoint v1,
+                                 polygonPoint v2){
             double result = cross(v1,v2);
             if(result > 0){
                 return 1;  //点在直线左侧
@@ -486,19 +486,19 @@ namespace common{
             }
         }
         //5.根据两点构造一个向量
-         static  aiforce::Route_Planning::polygonPoint  construceVector(
-                aiforce::Route_Planning::polygonPoint A,
-                aiforce::Route_Planning::polygonPoint B){
-            aiforce::Route_Planning::polygonPoint vector_C;
+         static  polygonPoint  construceVector(
+                polygonPoint A,
+                polygonPoint B){
+            polygonPoint vector_C;
             vector_C.x = A.x - B.x;
             vector_C.y = A.y - B.y;
             return vector_C;
         }
         //6.判断一个点是否在线段AB上
         static bool isPointOnSegment(
-                aiforce::Route_Planning::polygonPoint A,
-                aiforce::Route_Planning::polygonPoint B,
-                aiforce::Route_Planning::polygonPoint P){
+                polygonPoint A,
+                polygonPoint B,
+                polygonPoint P){
             // 计算向量AP、BP和AB的长度
             double AP_length = distance2(A, P);
             double BP_length = distance2(B, P);

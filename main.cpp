@@ -1,6 +1,6 @@
 #include <iostream>
 #include "PreProcess/getMapData.h"
-#include "Planning/path_common.h"
+#include "common/utilpath/path_common.h"
 #include <boost/geometry.hpp>
 #include <boost/geometry/algorithms/buffer.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
@@ -11,6 +11,7 @@
 #include "common/math/common_math.h"
 #include "Planning/path_polygonplan.h"
 #include "Geometry/innerRect.h"
+#include "Geometry/cornerTuring_location.h"
 namespace bg = boost::geometry;
 
 INITIALIZE_EASYLOGGINGPP
@@ -59,7 +60,7 @@ int main(int argc, char **argv) {
 
     aiforce::Route_Planning::pathPolygonPlan   instance_pathPolygonPlan;
 //    instance_pathPolygonPlan.computeNarrowPolygons(narrowingPolygonPoints);
-//    std::reverse(narrowingPolygonPoints.begin(),narrowingPolygonPoints.end());
+
     instance_pathPolygonPlan.cgalNarrowPolygons(narrowingPolygonPoints);
 
     Point temp_point;
@@ -95,7 +96,7 @@ int main(int argc, char **argv) {
     instance_pathPolygonPlan.cgalUpdatePolygonPointsINcrease();
     instance_pathPolygonPlan.cgalUpatePolygonPointsSequence();
     instance_pathPolygonPlan.cgalComputebackShapeKeypoints();
-//
+
 //    std::ofstream  increaseNodes;
 //    increaseNodes.open("/home/zzm/Desktop/test_path_figure-main/src/increaseNodes.txt",std::ios::out);
 //    for(auto it : m ){
@@ -123,7 +124,6 @@ int main(int argc, char **argv) {
     int all_size = keypoints_m.size();
     int m ;
     m = 0;
-//  m = all_size - 2;
     auto m_skeleton =  instance_pathPolygonPlan.cgalGetBackShapeSkeletonPts();
 
     for(auto i  = m  ;i < all_size ;i++){
@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
                          std::ios::out);
     std::vector<pathInterface::pathPoint> cgal_routing_pts;
     std::vector<std::vector<pathInterface::pathPoint>>  cgal_all_path;
-    for(auto i  = 0 ; i < all_size ;i++){
+    for(auto i  = 0; i < 1 ;i++){
         cgal_routing_pts =
                 instance_pathPolygonPlan.cgalComputeRidgeRoutingpts(i);
         for (int i = 0; i < (int)cgal_routing_pts.size(); i++) {

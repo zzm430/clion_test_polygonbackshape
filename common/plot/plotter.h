@@ -5,8 +5,8 @@
 #include <easylogging++.h>
 #include <sstream>
 #include <chrono>
-#include <Planning/path_common.h>
-#include <Planning/path_polygonplan.h>
+#include <common/utilpath/path_common.h>
+#include <common/utilpath/path_polygonPoint.h>
 
 
 //using namespace tabulate;

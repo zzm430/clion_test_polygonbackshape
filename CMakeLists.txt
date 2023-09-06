@@ -28,19 +28,19 @@ add_executable(polygonbackshape
 #              PreProcess/getMapData.h
               PreProcess/getMapData.cpp
 #              Planning/path_common.h
-              Planning/path_common.cpp
+#              Planning/path_common.cpp
 #              Planning/path_baseplan.h
               Planning/path_baseplan.cpp
               Geometry/reeds_shepp.cpp
               Geometry/reeds_shepp.h
               Geometry/dubins.cpp
               Geometry/dubins.h
-              common/plotter.h
+              common/plot/plotter.h
               easylogging++.cc
               Planning/path_polygonplan.cpp
               Planning/path_polygonplan.h
               common/math/common_math.h
-        )
+        Geometry/cornerTuring_location.h Geometry/cornerTuring_location.cpp common/utilpath/path_polygonPoint.h)
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
 target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})

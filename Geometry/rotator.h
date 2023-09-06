@@ -5,7 +5,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
 #include "histogram.h"
-#include "common/common_parameters.h"
+#include "common/common_param/common_parameters.h"
 
 
 class Rotator
