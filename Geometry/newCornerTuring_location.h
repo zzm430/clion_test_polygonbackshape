@@ -4,13 +4,16 @@
 
 #ifndef POLYGONBACKSHAPE_NEWCORNERTURING_LOCATION_H
 #define POLYGONBACKSHAPE_NEWCORNERTURING_LOCATION_H
-#include "Planning/path_polygonplan.h"
-#include "common/math/common_math.h"
 #include <boost/geometry/algorithms/intersection.hpp>
 #include <iostream>
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/segment.hpp>
+#include "Planning/path_polygonplan.h"
+#include "common/math/common_math.h"
+#include "common/print/filePrint.h"
+#include "common/print/filePrint2.h"
+#include "common/designPattern/singleton.hpp"
 
 typedef boost::geometry::model::d2::point_xy<double> pointm;
 typedef boost::geometry::model::segment<pointm> segmentm;

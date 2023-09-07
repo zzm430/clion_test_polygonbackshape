@@ -48,6 +48,19 @@ void newCornerTuringLocation::computeLpAandLpB(
                2);
      std::cout << "line 1 is : " << line1[0].x << " " << line1[0].y  << " " << line1[1].x << " " << line1[1].y << std::endl;
      std::cout << "line 2 is : " << line2[0].x << " " << line2[0].y  << " " << line2[1].x << " " << line2[1].y << std::endl;
+     //存储线段用于显示
+     std::string filename = "/home/zzm/Desktop/test_path_figure-main/src/lineshow.txt";
+    auto & myfile =
+            common::Singleton::GetInstance<filePrint>(filename);
+    myfile.writePt(line1[0]);
+    myfile.writePt(line1[1]);
+    myfile.writePt(line2[0]);
+    myfile.writePt(line2[1]);
+    //存储点位用于显示
+    std::string ptname = "/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt";
+    auto & ptsshow =
+            common::Singleton::GetInstance<filePrint2>(ptname);
+
      //求两个线段之间的交点
     segmentm seg1(pointm(line1[0].x, line1[0].y), pointm(line1[1].x, line1[1].y));
     segmentm seg2(pointm(line2[0].x, line2[0].y), pointm(line2[1].x, line2[1].y));
@@ -79,6 +92,10 @@ void newCornerTuringLocation::computeLpAandLpB(
     startA_.x = ptAs[0].x;
     startA_.y = ptAs[0].y;
     std::cout << "the A is : " << startA_.x << " " << startA_.y << std::endl;
+
+    ptsshow.writePt(polygonPoint(output.front().x(),output.front().y()));
+    ptsshow.writePt(footPt);
+    ptsshow.writePt(startA_);
     switch(angleType_){
         case curveAngleType::ANGLE_ACUTE:{
             //将arriveline外扩2m，leaveline外扩2m
@@ -97,6 +114,10 @@ void newCornerTuringLocation::computeLpAandLpB(
             auto line4_transd = common::commonMath::findPointExtendSegment2(line4[0],line4[1],10);
             std::cout << "line f1 is : " << line3_transd[0].x << " " << line3_transd[0].y  << " " << line3_transd[1].x << " " << line3_transd[1].y << std::endl;
             std::cout << "line f2 is : " << line4_transd[0].x << " " << line4_transd[0].y  << " " << line4_transd[1].x << " " << line4_transd[1].y << std::endl;
+            myfile.writePt(line3_transd[0]);
+            myfile.writePt(line3_transd[1]);
+            myfile.writePt(line4_transd[0]);
+            myfile.writePt(line4_transd[1]);
             //求两个线段之间的交点
             segmentm seg3(pointm(line3_transd[0].x, line3_transd[0].y), pointm(line3_transd[1].x, line3_transd[1].y));
             segmentm seg4(pointm(line4_transd[0].x, line4_transd[0].y), pointm(line4_transd[1].x, line4_transd[1].y));
@@ -124,6 +145,10 @@ void newCornerTuringLocation::computeLpAandLpB(
             endB_ = ptB;
             std::cout <<"the foot pt  B is : " << footPt.x << " " << footPt.y  << std::endl;
             std::cout << "the B is : " << endB_.x << " " << endB_.y << std::endl;
+
+            ptsshow.writePt(polygonPoint(output1.front().x(),output1.front().y()));
+            ptsshow.writePt(footPt);
+            ptsshow.writePt(endB_);
             break;
         }
         case curveAngleType::ANGLE_OBTUSE:{
@@ -148,6 +173,10 @@ void newCornerTuringLocation::computeLpAandLpB(
             //计算两条线段交点
             std::cout << "line m1 is : " << line5[0].x << " " << line5[0].y  << " " << line5[1].x << " " << line5[1].y << std::endl;
             std::cout << "line m2 is : " << line6[0].x << " " << line6[0].y  << " " << line6[1].x << " " << line6[1].y << std::endl;
+            myfile.writePt(line5[0]);
+            myfile.writePt(line5[1]);
+            myfile.writePt(line6[0]);
+            myfile.writePt(line6[1]);
             segmentm seg3(pointm(line5[0].x, line5[0].y), pointm(line5[1].x, line5[1].y));
             segmentm seg4(pointm(line6[0].x, line6[0].y), pointm(line6[1].x, line6[1].y));
             std::deque<pointm> output1;
@@ -173,6 +202,9 @@ void newCornerTuringLocation::computeLpAandLpB(
             endB_ = ptB;
             std::cout << "the foot B pt is : " << footPt.x << " " << footPt.y << std::endl;
             std::cout << "the end B pt is : " << ptB.x << " "<< ptB.y << std::endl;
+            ptsshow.writePt(polygonPoint(output1.front().x(),output1.front().y()));
+            ptsshow.writePt(footPt);
+            ptsshow.writePt(endB_);
             break;
         }
         default:{
