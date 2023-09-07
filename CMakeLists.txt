@@ -40,7 +40,7 @@ add_executable(polygonbackshape
               Planning/path_polygonplan.cpp
               Planning/path_polygonplan.h
               common/math/common_math.h
-        Geometry/cornerTuring_location.h Geometry/cornerTuring_location.cpp common/utilpath/path_polygonPoint.h)
+        Geometry/cornerTuring_location.h Geometry/cornerTuring_location.cpp common/utilpath/path_polygonPoint.h Geometry/newCornerTuring_location.h Geometry/newCornerTuring_location.cpp)
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
 target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})

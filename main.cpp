@@ -11,7 +11,8 @@
 #include "common/math/common_math.h"
 #include "Planning/path_polygonplan.h"
 #include "Geometry/innerRect.h"
-#include "Geometry/cornerTuring_location.h"
+//#include "Geometry/cornerTuring_location.h"
+#include "Geometry/newCornerTuring_location.h"
 namespace bg = boost::geometry;
 
 INITIALIZE_EASYLOGGINGPP
