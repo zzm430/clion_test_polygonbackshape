@@ -26,7 +26,7 @@ newCornerTuringLocation::newCornerTuringLocation(
         angle_2 += 360;
     }
     //按照逆时针处理
-    double angle_diff = angle_1 - angle_2;
+    double angle_diff = angle_1 - angle_2;  //如果是论文中的方法，是按照顺时针，应该是angle1 - angle2
     if(angle_diff < 0){
         angle_diff += 360;
     }
