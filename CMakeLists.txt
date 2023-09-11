@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.9)
 project(polygonbackshape)
 find_package(Boost REQUIRED COMPONENTS )
 find_package(OpenCV REQUIRED)
