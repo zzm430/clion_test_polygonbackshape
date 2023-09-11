@@ -19,8 +19,10 @@ typedef boost::geometry::model::d2::point_xy<double> pointm;
 typedef boost::geometry::model::segment<pointm> segmentm;
 
 enum  class curveAngleType :uint8_t{
-    ANGLE_ACUTE  = 0,
-    ANGLE_OBTUSE = 1
+    ANGLE_ONE  = 0,
+    ANGLE_TWO = 1,
+    ANGLE_THREE = 2,
+    ANGLE_FOUR = 3
 };
 
 class newCornerTuringLocation{
@@ -32,6 +34,14 @@ public:
     void computeLpAandLpB(
             std::vector<polygonPoint> arriveLine,
             std::vector<polygonPoint> leaveLine);
+    void computeBPt(    std::vector<polygonPoint>& arriveLine,
+                        std::vector<polygonPoint>& leaveLine);
+    void computeAPt(    std::vector<polygonPoint>& arriveLine,
+                        std::vector<polygonPoint>& leaveLine);
+    void computeAPt2(    std::vector<polygonPoint>& arriveLine,
+                        std::vector<polygonPoint>& leaveLine);
+    void computeBPt2(std::vector<polygonPoint>& arriveLine,
+                                              std::vector<polygonPoint>& leaveLine);
     virtual  ~newCornerTuringLocation();
     polygonPoint  getCurveStartAPt();
     polygonPoint  getCurveEndBPt();

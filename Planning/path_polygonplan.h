@@ -35,6 +35,7 @@
 #include <unordered_map>
 #include "common/utilpath/path_polygonPoint.h"
 #include "Geometry/cornerTuring_location.h"
+#include "Geometry/newCornerTuring_location.h"
 namespace aiforce{
 namespace Route_Planning
 {
