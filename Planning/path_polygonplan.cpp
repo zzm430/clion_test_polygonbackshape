@@ -3912,11 +3912,13 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
             arriveLine.push_back(cgalbackShape_keypoints_[i][j]);
             leaveLine.push_back(cgalbackShape_keypoints_[i][j]);
             leaveLine.push_back(forward_last_points[1]);
-            newCornerTuringLocation newCornerTuringLocationInstance(
+            cornerTuringLocation cornerTuringLocationInstance(
                     arriveLine,
                     leaveLine);
-            polygonPoint pt1 =  newCornerTuringLocationInstance.getCurveStartAPt();
-            polygonPoint pt2 =  newCornerTuringLocationInstance.getCurveEndBPt();
+            cornerTuringLocationInstance.decideLpAandLpB();
+            cornerTuringLocationInstance.calculatePointsAandBForCurve();
+            polygonPoint pt1 =  cornerTuringLocationInstance.getCurveStartPtA();
+            polygonPoint pt2 =  cornerTuringLocationInstance.getCurveendPtB();
             tempPtInfo.start_curve_point =
                common::commonMath::findPointOnSegment(
                        forward_last_points[0],
