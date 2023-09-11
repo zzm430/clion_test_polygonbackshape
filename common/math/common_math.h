@@ -365,6 +365,18 @@ namespace common{
             }
            return storage_points;
         }
+        //3.找到线段上固定端点的两端延长线上固定距离的点只支持扩展count = 1
+        static std::vector<polygonPoint>  findPointExtendSegment2(
+                polygonPoint p1,
+                polygonPoint p2,
+                double dist){
+            std::vector<polygonPoint> storage_points;
+           auto line1 =  findPointExtendSegment(p1,p2,dist,true,1);
+           auto line2 = findPointExtendSegment(p1,p2,dist,false,1);
+           storage_points.push_back(polygonPoint(line2[0].x,line2[0].y));
+           storage_points.push_back(polygonPoint(line1[0].x,line1[0].y));
+            return storage_points;
+        }
         //4.在线段之间插入factor-1个点，等间隔插入
         static std::vector<Point> densify(const std::vector<polygonPoint>& points,
                                                       int factor) {

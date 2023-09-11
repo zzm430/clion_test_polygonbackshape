@@ -44,6 +44,9 @@
 #define WWORK                     4       //垄宽
 #define OFFWORK                   0       //偏移量农具
 
+#define DIS_1                     1.1    //农具到车后轮中心的距离
+#define DIS_2                     1.6     //包含农具到车后轮中心的距离
+
 //回字形规划方法选择
 //#define  RECTANGLE_BACK_SHAPE           //矩形回字形规划
 #define  POLYGON_BACK_SHAPE               //多边形回字形规划

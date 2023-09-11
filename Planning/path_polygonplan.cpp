@@ -2,6 +2,7 @@
 // Created by zzm on 2023/6/1.
 //
 #include <common/math/common_math.h>
+#include <Geometry/newCornerTuring_location.h>
 #include "path_polygonplan.h"
 
 namespace aiforce{
@@ -3911,13 +3912,11 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
             arriveLine.push_back(cgalbackShape_keypoints_[i][j]);
             leaveLine.push_back(cgalbackShape_keypoints_[i][j]);
             leaveLine.push_back(forward_last_points[1]);
-            cornerTuringLocation  cornerTuringLocationInstance(
+            newCornerTuringLocation newCornerTuringLocationInstance(
                     arriveLine,
                     leaveLine);
-            cornerTuringLocationInstance.decideLpAandLpB();
-            cornerTuringLocationInstance.calculatePointsAandBForCurve();
-            polygonPoint pt1 = cornerTuringLocationInstance.getCurveStartPtA();
-            polygonPoint pt2 = cornerTuringLocationInstance.getCurveendPtB();
+            polygonPoint pt1 =  newCornerTuringLocationInstance.getCurveStartAPt();
+            polygonPoint pt2 =  newCornerTuringLocationInstance.getCurveEndBPt();
             tempPtInfo.start_curve_point =
                common::commonMath::findPointOnSegment(
                        forward_last_points[0],
