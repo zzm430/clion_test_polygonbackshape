@@ -13,34 +13,51 @@ cornerTuringLocation::cornerTuringLocation(
         std::vector<polygonPoint> leaveLine){
    //arriveLine描述起始向量
    //leaveLine描述结束向量
-   //计算向量的夹角转换为0到2MPI之间
-   polygonPoint vector_1,vector_2;
+   polygonPoint vector_1,vector_2,reference_vector;
    vector_1.x = arriveLine[1].x - arriveLine[0].x;
    vector_1.y = arriveLine[1].y - arriveLine[0].y;
    vector_2.x = leaveLine[1].x - leaveLine[0].x;
    vector_2.y = leaveLine[1].y - leaveLine[0].y;
-   double angle = common::commonMath::computeTwolineAngleDu(vector_1,vector_2);
-   if(angle >0 && angle < 90){
+   reference_vector.x = 0;
+   reference_vector.y = 1;
+   double angle_1 = common::commonMath::computeTwolineAngleDu(vector_1,reference_vector);
+   if(angle_1 < 0){
+       angle_1 += 360;
+   }
+   double angle_2 = common::commonMath::computeTwolineAngleDu(vector_2,reference_vector);
+   if(angle_2 < 0){
+       angle_2 += 360;
+   }
+   //按照逆时针处理
+   double angle_diff = angle_2 - angle_1;
+   if(angle_diff < 0){
+       angle_diff += 360;
+   }
+   LOG(INFO) << "the angle 1 2 is : "
+             << angle_1
+             << " "
+             << angle_2;
+   LOG(INFO) << "angle diff is : "
+             << angle_diff;
+   if(angle_diff >0 && angle_diff < 90){
        angleType_ = angleType::FIRST_QUADRANT;
-       angleInt_ = angle * M_PI / 180;
-   }else if(angle >=90 < 180){
+       LOG(INFO) << "FIRST_QUADRANT";
+   }else if(angle_diff >=90  && angle_diff < 180){
        angleType_ = angleType::SECOND_QUADRANT;
-       angleInt_ = angle * M_PI / 180;
-   }else if(angle < 0 && angle > -90){
+       LOG(INFO) << "SECOND_QUADRANT";
+   }else if(angle_diff >180  && angle_diff < 270){
        angleType_ = angleType::THIRD_QUADRANT;
-       angleInt_ += 360;
-       angleInt_ = angle * M_PI / 180;
+       LOG(INFO) << "THIRD_QUADRANT";
    }else{
        angleType_ = angleType::FOURTH_QUADRANT;
-       angleInt_ += 360;
-       angleInt_ = angle * M_PI / 180;
+       LOG(INFO) << "FOURTH_QUADRANT";
    }
-   LOG(INFO) << "the arrive line and leave line angle is : " << angleInt_
+   angleInt_ = angle_diff ;
+   LOG(INFO) << "the arrive line and leave line angle is : "
+             << angleInt_
              << " du is : "
-             << angleInt_ * 180 / M_PI ;
+             << angleInt_ ;
 };
-
-
 
 void cornerTuringLocation::decideLpAandLpB(){
      switch(angleType_){
@@ -110,8 +127,6 @@ void cornerTuringLocation::decideLpAandLpB(){
              break;
          }
      }
-
-
 }
 
 void cornerTuringLocation::calculatePointsAandBForCurve(){

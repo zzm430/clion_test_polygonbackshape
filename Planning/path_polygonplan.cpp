@@ -3944,6 +3944,7 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
                    distanceB,
                    true,
                    1);
+            LOG(INFO) <<"A and B is : " << pt1.x << " " << distanceB;
             tempPtInfo.start_curve_point.x = vector_pts[0].x;
             tempPtInfo.start_curve_point.y = vector_pts[0].y;
             tempPtInfo.end_curve_point.x = vector_ptsB[0].x;
