@@ -3912,11 +3912,25 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
             arriveLine.push_back(cgalbackShape_keypoints_[i][j]);
             leaveLine.push_back(cgalbackShape_keypoints_[i][j]);
             leaveLine.push_back(forward_last_points[1]);
-            newCornerTuringLocation cornerTuringLocationInstance(
-                    arriveLine,
-                    leaveLine);
-            polygonPoint pt1 =  cornerTuringLocationInstance.getCurveStartAPt();
-            polygonPoint pt2 =  cornerTuringLocationInstance.getCurveEndBPt();
+            cornerTuringLocation   cornerTuringLocationtest(arriveLine,
+                     leaveLine);
+            cornerTuringLocationtest.decideLpAandLpB();
+            cornerTuringLocationtest.calculatePointsAandBForCurve();
+            double angleInt = cornerTuringLocationtest.getCurveAngleInt();
+            double F1 = cornerTuringLocationtest.getCurveaboutF1();
+            double F2 = cornerTuringLocationtest.getCurveaboutF2();
+            double F3 = cornerTuringLocationtest.getCurveaboutF3();
+
+//            newCornerTuringLocation cornerTuringLocationInstance(
+//                    arriveLine,
+//                    leaveLine);
+            polygonPoint pt1 =  cornerTuringLocationtest.getCurveStartPtA();
+            polygonPoint pt2 =  cornerTuringLocationtest.getCurveendPtB();
+
+            double RC2 = CIRCLE_RIDIS_R + 0.5;
+            cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2);
+            cornerTuringTishNailtest.cornerTuringPath(pt1,pt2,RC2,F3);
+
             tempPtInfo.start_curve_point =
                common::commonMath::findPointOnSegment(
                        forward_last_points[0],
@@ -3929,29 +3943,29 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
                        forward_last_points[1],
                        SET_ENDTURN_DISTANCE,
                        true);
-//            double distanceB =  sqrt(pt2.x * pt2.x + pt2.y * pt2.y);
-//            //计算大地坐标系下的A和B点
-//           auto vector_pts =  common::commonMath::findPointExtendSegment(
-//                    forward_last_points[0],
-//                    cgalbackShape_keypoints_[i][j],
-//                    pt1.x,
-//                    true,
-//                    1);
-//           auto vector_ptsB = common::commonMath::findPointExtendSegment(
-//                   forward_last_points[1],
-//                   cgalbackShape_keypoints_[i][j],
-//                   distanceB,
-//                   true,
-//                   1);
-//            LOG(INFO) <<"A and B is : " << pt1.x << " " << distanceB;
-//            tempPtInfo.start_curve_point.x = vector_pts[0].x;
-//            tempPtInfo.start_curve_point.y = vector_pts[0].y;
-//            tempPtInfo.end_curve_point.x = vector_ptsB[0].x;
-//            tempPtInfo.end_curve_point.y = vector_ptsB[0].y;
-            tempPtInfo.start_curve_point.x = pt1.x;
-            tempPtInfo.start_curve_point.y = pt1.y;
-            tempPtInfo.end_curve_point.x = pt2.x;
-            tempPtInfo.end_curve_point.y = pt2.y;
+            double distanceB =  sqrt(pt2.x * pt2.x + pt2.y * pt2.y);
+            //计算大地坐标系下的A和B点
+           auto vector_pts =  common::commonMath::findPointExtendSegment(
+                    forward_last_points[0],
+                    cgalbackShape_keypoints_[i][j],
+                    pt1.x,
+                    true,
+                    1);
+           auto vector_ptsB = common::commonMath::findPointExtendSegment(
+                   forward_last_points[1],
+                   cgalbackShape_keypoints_[i][j],
+                   distanceB,
+                   true,
+                   1);
+            LOG(INFO) <<"A and B is : " << pt1.x << " " << distanceB;
+            tempPtInfo.start_curve_point.x = vector_pts[0].x;
+            tempPtInfo.start_curve_point.y = vector_pts[0].y;
+            tempPtInfo.end_curve_point.x = vector_ptsB[0].x;
+            tempPtInfo.end_curve_point.y = vector_ptsB[0].y;
+//            tempPtInfo.start_curve_point.x = pt1.x;
+//            tempPtInfo.start_curve_point.y = pt1.y;
+//            tempPtInfo.end_curve_point.x = pt2.x;
+//            tempPtInfo.end_curve_point.y = pt2.y;
             LOG(INFO) << "the start point is : " <<  tempPtInfo.start_curve_point.x << " "
                       << tempPtInfo.start_curve_point.y  ;
             LOG(INFO) << "the end point is 111: " << tempPtInfo.end_curve_point.x << " "

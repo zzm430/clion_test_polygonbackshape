@@ -14,14 +14,17 @@ class cornerTuringTishNail{
 public:
     cornerTuringTishNail() = default;
     virtual ~cornerTuringTishNail();
-    void computeCircleCenterPt(
+    cornerTuringTishNail(
             polygonPoint A,
             polygonPoint B,
             double angleInt,
-            double RC2);
+            double RC2,
+            double F1,
+            double F2);
     void cornerTuringPath( polygonPoint A,
                            polygonPoint B,
-                           double RC2);
+                           double RC2,
+                           double F3);
 
 private:
     std::vector<polygonPoint>   storage_circle_center_;  //存储c1、c2、c3的圆心

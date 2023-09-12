@@ -43,6 +43,10 @@ public:
       void calculatePointsAandBForCurve();
       polygonPoint   getCurveStartPtA();
       polygonPoint   getCurveendPtB();
+      double getCurveAngleInt();
+      double getCurveaboutF1();
+      double getCurveaboutF2();
+      double getCurveaboutF3();
 
 private:
     angleType  angleType_;                   //angleInt的类型
@@ -50,6 +54,9 @@ private:
     cornerAngleInfoMap cornerAngleInfoMap_;  //弯道中间信息
     polygonPoint   A_;                       //弯道起始点，以交点作为坐标原点
     polygonPoint   B_;                       //弯道终点，以交点作为坐标原点
+    double         F1_;
+    double         F2_;
+    double         F3_;
 
 };
 

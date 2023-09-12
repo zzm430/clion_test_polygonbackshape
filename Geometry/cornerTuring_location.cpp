@@ -42,17 +42,30 @@ cornerTuringLocation::cornerTuringLocation(
    if(angle_diff >0 && angle_diff < 90){
        angleType_ = angleType::FIRST_QUADRANT;
        LOG(INFO) << "FIRST_QUADRANT";
+       F1_ = 1;
+       F2_ = 1;
+       F3_ = 0;
    }else if(angle_diff >=90  && angle_diff < 180){
        angleType_ = angleType::SECOND_QUADRANT;
        LOG(INFO) << "SECOND_QUADRANT";
+       F1_ = -1;
+       F2_ = 1;
+       F3_ = 0;
    }else if(angle_diff >180  && angle_diff < 270){
        angleType_ = angleType::THIRD_QUADRANT;
+       F1_ = 1;
+       F2_ = -1;
+       F3_ = 1;
        LOG(INFO) << "THIRD_QUADRANT";
    }else{
        angleType_ = angleType::FOURTH_QUADRANT;
+       F1_ = -1;
+       F2_ = -1;
+       F3_ = 1;
        LOG(INFO) << "FOURTH_QUADRANT";
    }
    angleInt_ = angle_diff ;
+   angleInt_ = angleInt_ * M_PI / 180;
    LOG(INFO) << "the arrive line and leave line angle is : "
              << angleInt_
              << " du is : "
@@ -154,4 +167,20 @@ polygonPoint   cornerTuringLocation::getCurveStartPtA(){
 
 polygonPoint   cornerTuringLocation::getCurveendPtB(){
     return B_;
+}
+
+double cornerTuringLocation::getCurveAngleInt(){
+    return angleInt_;
+}
+
+double cornerTuringLocation::getCurveaboutF1(){
+    return  F1_;
+}
+
+double cornerTuringLocation::getCurveaboutF2(){
+    return  F2_;
+}
+
+double cornerTuringLocation::getCurveaboutF3(){
+    return  F3_;
 }

@@ -6,11 +6,13 @@ cornerTuringTishNail::~cornerTuringTishNail(){
 
 }
 
-void cornerTuringTishNail::computeCircleCenterPt(
+cornerTuringTishNail::cornerTuringTishNail(
                          polygonPoint A,
                          polygonPoint B,
                          double angleInt,
-                         double RC2){
+                         double RC2,
+                         double F1,
+                         double F2){
     polygonPoint  pt_1,pt_2,pt_3 ;
     pt_1.x = A.x;
     pt_1.y = F2 * CIRCLE_RIDIS_R ;
@@ -50,7 +52,8 @@ void cornerTuringTishNail::computeCircleCenterPt(
 
 void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
                                              polygonPoint B,
-                                             double RC2){
+                                             double RC2,
+                                             double F3){
     auto pt1 = storage_circle_center_[0];
     auto pt2 = storage_circle_center_[1];
     auto pt3 = storage_circle_center_[2];
@@ -68,7 +71,7 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     double C1alphaEnd  = alphaXC12 ;
     //十等分之后进行取点
     double angleC1diff = (C1alphaEnd - C1alphaStart)/10;
-    for(int i = 0;i < 10;i++){
+    for(int i = 0;i <= 10;i++){
         double C1alpha = C1alphaStart + i * angleC1diff;
         polygonPoint  tempPt;
         tempPt.x = pt1.x + sin(C1alpha) * CIRCLE_RIDIS_R;
@@ -76,11 +79,12 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
         C1path.push_back(tempPt);
     }
 
+
     //处理C2
     double C2alphaStart = - M_PI + alphaXC12;
     double C2alphaEnd = alphaXC23;
     double angleC2diff = (C2alphaEnd - C2alphaStart)/100;
-    for(int i = 0; i < 100;i++){
+    for(int i = 0; i <= 100;i++){
         double C2alpha = C2alphaStart + i * angleC2diff;
         polygonPoint  tempPt;
         tempPt.x = pt2.x + sin(C2alpha) * RC2;
@@ -92,7 +96,7 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     double C3alphaStart = alphaXC23 + M_PI;
     double C3alphaEnd = M_PI/2 - alphaC3By;
     double angleC3diff = (C3alphaEnd - C3alphaStart)/10;
-    for(int i = 0;i < 10;i++){
+    for(int i = 0;i <= 10;i++){
         double C3alpha = C3alphaStart + i * angleC3diff;
         polygonPoint tempPt;
         tempPt.x = pt3.x + sin(C3alpha) * CIRCLE_RIDIS_R;
@@ -101,14 +105,13 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     }
 
     std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
-//    std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
-//    std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
+    std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
+    std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
     normalPrint C1file(C1name);
-//    normalPrint C2file(C2name);
-//    normalPrint C3file(C3name);
-
+    normalPrint C2file(C2name);
+    normalPrint C3file(C3name);
     C1file.writePts(C1path);
-    C1file.writePts(C2path);
-    C1file.writePts(C3path);
+    C2file.writePts(C2path);
+    C3file.writePts(C3path);
 
 }
