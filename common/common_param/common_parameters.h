@@ -37,13 +37,20 @@
 
 //回型部分弯道起始点和终点相关参数设置
 #define DCRI                      0.8       //车体相关参数1
-#define DWA                       0.3     //车体相关参数2
-#define LWORK                     0.5     //车体相关参数3
-#define WWORK                     4       //垄宽
-#define OFFWORK                   0       //偏移量农具
+#define DWA                       0.3       //车体相关参数2
+#define LWORK                     0.5       //车体相关参数3
+#define WWORK                     4         //垄宽
+#define OFFWORK                   0         //偏移量农具
 
-#define DIS_1                     1.1    //农具到车后轮中心的距离
-#define DIS_2                     1.6     //包含农具到车后轮中心的距离
+#define DIS_1                     1.1        //农具到车后轮中心的距离
+#define DIS_2                     1.6        //包含农具到车后轮中心的距离
+
+
+//鱼尾弯道参数
+#define  F1                       1
+#define  F2                       1
+#define  F3                       1
+#define  CIRCLE_RIDIS_R            6        //圆半径
 
 //回字形规划方法选择
 //#define  RECTANGLE_BACK_SHAPE           //矩形回字形规划
