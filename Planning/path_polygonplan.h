@@ -37,6 +37,7 @@
 #include "Geometry/cornerTuring_location.h"
 #include "Geometry/newCornerTuring_location.h"
 #include "Geometry/cornerTuring_TishNail_Algorithm.h"
+#include "common/print/normaPrint.h"
 
 namespace aiforce{
 namespace Route_Planning

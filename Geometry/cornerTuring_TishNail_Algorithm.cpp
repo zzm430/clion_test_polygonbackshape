@@ -10,7 +10,7 @@ cornerTuringTishNail::cornerTuringTishNail(
                          polygonPoint A,
                          polygonPoint B,
                          double angleInt,
-                         double RC2,
+                         double& RC2,
                          double F1,
                          double F2){
     polygonPoint  pt_1,pt_2,pt_3 ;
@@ -48,12 +48,91 @@ cornerTuringTishNail::cornerTuringTishNail(
     storage_circle_center_.push_back(pt_1);
     storage_circle_center_.push_back(pt_2);
     storage_circle_center_.push_back(pt_3);
+
+    //计算出相切时圆C2的半径
+    int insec_pt = 0;
+    double count_upper = 0;
+
+    double order_R = 6;
+    double trans_R = 6;
+    for(int i = 0;i < 1000;i++){
+         double buffer_distance_1 = trans_R ;             // radius of circle
+         double buffer_distance_2 = order_R ;
+//        const int points_per_circle = 36;
+        boost::geometry::strategy::buffer::distance_symmetric<double> distance_strategy(buffer_distance_1);
+        boost::geometry::strategy::buffer::join_round join_strategy;
+        boost::geometry::strategy::buffer::end_round end_strategy;
+        boost::geometry::strategy::buffer::point_circle circle_strategy;
+        boost::geometry::strategy::buffer::side_straight side_strategy;
+        boost::geometry::strategy::buffer::distance_symmetric<double> distance_strategy2(buffer_distance_2);
+
+        boost::geometry::model::multi_polygon<polygonBoost> result_1;
+        boost::geometry::model::multi_polygon<polygonBoost> result_2;
+
+//        pointBoost pt1;
+//        pointBoost pt2;
+
+        pointBoost pt1(pt_1.x,pt_1.y);
+        pointBoost pt2(pt_2.x,pt_2.y);
+        boost::geometry::buffer(pt1, result_1,
+                                distance_strategy, side_strategy,
+                                join_strategy, end_strategy, circle_strategy);
+        // center of circle
+        boost::geometry::buffer(pt2, result_2,
+                                distance_strategy2, side_strategy,
+                                join_strategy, end_strategy, circle_strategy);
+        std::deque<polygonBoost> intersectionGeometry;
+        boost::geometry::intersection(result_1,result_2,intersectionGeometry);
+        std::cout << "the insecpts is : " << intersectionGeometry.front().outer().size() << std::endl;
+        std::cout << "the aaaa is : " << intersectionGeometry.size() << std::endl;
+
+        order_R += 0.1;
+        if(intersectionGeometry.size()){
+            std::cout << "the bbbbb " <<  boost::geometry::wkt(intersectionGeometry.front()) << std::endl;
+            break;
+        }
+    }
+    order_R = count_upper - 1;
+    for(int i  = 0;i < 1000;i++){
+//         double buffer_distance_1 = trans_R ;             // radius of circle
+//         double buffer_distance_2 = order_R ;
+//        const int points_per_circle = 36;
+//        boost::geometry::strategy::buffer::distance_symmetric<double> distance_strategy(buffer_distance_1);
+//        boost::geometry::strategy::buffer::join_round join_strategy(points_per_circle);
+//        boost::geometry::strategy::buffer::end_round end_strategy(points_per_circle);
+//        boost::geometry::strategy::buffer::point_circle circle_strategy(points_per_circle);
+//        boost::geometry::strategy::buffer::side_straight side_strategy;
+//        boost::geometry::strategy::buffer::distance_symmetric<double> distance_strategy2(buffer_distance_2);
+//
+//        boost::geometry::model::polygon<polygonBoost> result_1;
+//        boost::geometry::model::polygon<polygonBoost> result_2;
+//
+//        pointBoost pt1(pt_1.x,pt_1.y);
+//        pointBoost pt2(pt_2.x,pt_2.y);
+//        boost::geometry::buffer(pt1, result_1,
+//                                distance_strategy, side_strategy,
+//                                join_strategy, end_strategy, circle_strategy);
+//        // center of circle
+////        boost::geometry::buffer(pt2, result_2,
+////                                distance_strategy2, side_strategy,
+////                                join_strategy, end_strategy, circle_strategy);
+//        polygonBoost intersectionGeometry;
+//        boost::geometry::intersection(result_1,result_2,intersectionGeometry);
+//        std::cout << "the insecpts is : " << intersectionGeometry.outer().size();
+//        order_R += 0.01;
+//        if(intersectionGeometry.outer().size() >1){
+//            RC2 = order_R;
+//            break;
+//        }
+    }
+
 }
 
 void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
                                              polygonPoint B,
                                              double RC2,
-                                             double F3){
+                                             double F3,
+                                             double j){
     auto pt1 = storage_circle_center_[0];
     auto pt2 = storage_circle_center_[1];
     auto pt3 = storage_circle_center_[2];
@@ -70,8 +149,8 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     double C1alphaStart = (1 - F3 ) * M_PI ;
     double C1alphaEnd  = alphaXC12 ;
     //十等分之后进行取点
-    double angleC1diff = (C1alphaEnd - C1alphaStart)/10;
-    for(int i = 0;i <= 10;i++){
+    double angleC1diff = (C1alphaEnd - C1alphaStart)/100;
+    for(int i = 0;i <= 100;i++){
         double C1alpha = C1alphaStart + i * angleC1diff;
         polygonPoint  tempPt;
         tempPt.x = pt1.x + sin(C1alpha) * CIRCLE_RIDIS_R;
@@ -83,8 +162,8 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     //处理C2
     double C2alphaStart = - M_PI + alphaXC12;
     double C2alphaEnd = alphaXC23;
-    double angleC2diff = (C2alphaEnd - C2alphaStart)/100;
-    for(int i = 0; i <= 100;i++){
+    double angleC2diff = (C2alphaEnd - C2alphaStart)/1000;
+    for(int i = 0; i <= 1000;i++){
         double C2alpha = C2alphaStart + i * angleC2diff;
         polygonPoint  tempPt;
         tempPt.x = pt2.x + sin(C2alpha) * RC2;
@@ -95,8 +174,8 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     //处理C3
     double C3alphaStart = alphaXC23 + M_PI;
     double C3alphaEnd = M_PI/2 - alphaC3By;
-    double angleC3diff = (C3alphaEnd - C3alphaStart)/10;
-    for(int i = 0;i <= 10;i++){
+    double angleC3diff = (C3alphaEnd - C3alphaStart)/100;
+    for(int i = 0;i <= 100;i++){
         double C3alpha = C3alphaStart + i * angleC3diff;
         polygonPoint tempPt;
         tempPt.x = pt3.x + sin(C3alpha) * CIRCLE_RIDIS_R;
@@ -104,14 +183,17 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
         C3path.push_back(tempPt);
     }
 
-    std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
-    std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
-    std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
-    normalPrint C1file(C1name);
-    normalPrint C2file(C2name);
-    normalPrint C3file(C3name);
-    C1file.writePts(C1path);
-    C2file.writePts(C2path);
-    C3file.writePts(C3path);
+    if(j == 1){
+        std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
+        std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
+        std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
+        normalPrint C1file(C1name);
+        normalPrint C2file(C2name);
+        normalPrint C3file(C3name);
+        C1file.writePts(C1path);
+        C2file.writePts(C2path);
+        C3file.writePts(C3path);
+    }
+
 
 }

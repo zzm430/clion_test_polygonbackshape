@@ -29,7 +29,7 @@ cornerTuringLocation::cornerTuringLocation(
        angle_2 += 360;
    }
    //按照逆时针处理
-   double angle_diff = angle_2 - angle_1;
+   double angle_diff = angle_1 - angle_2;
    if(angle_diff < 0){
        angle_diff += 360;
    }

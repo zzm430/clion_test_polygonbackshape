@@ -3929,7 +3929,16 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
 
             double RC2 = CIRCLE_RIDIS_R + 0.5;
             cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2);
-            cornerTuringTishNailtest.cornerTuringPath(pt1,pt2,RC2,F3);
+            LOG(INFO) << "RC2 is : " << RC2;
+            cornerTuringTishNailtest.cornerTuringPath(pt1,pt2,RC2,F3,j);
+
+            if(j ==1){
+                std::vector<polygonPoint>  ptAB;
+                ptAB.push_back(pt1);
+                ptAB.push_back(pt2);
+                normalPrint   printAB("/home/zzm/Desktop/test_path_figure-main/src/testAB.txt");
+                printAB.writePts(ptAB);
+            }
 
             tempPtInfo.start_curve_point =
                common::commonMath::findPointOnSegment(

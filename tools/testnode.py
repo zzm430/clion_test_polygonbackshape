@@ -39,6 +39,11 @@ test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/s
 test_virtual_origin_poly_x = test_virtual_origin_poly[0]
 test_virtual_origin_poly_y = test_virtual_origin_poly[1]
 
+
+testAB = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testAB.txt')
+testAB_x = testAB[0]
+testAB_y = testAB[1]
+
 # test_move_pts = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt')
 # test_move_pts_x = test_move_pts[0]
 # test_move_pts_y = test_move_pts[1]
@@ -130,6 +135,7 @@ ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints 
 ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(C2path_x,C2path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(C3path_x,C3path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(testAB_x,testAB_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 
 # ax.plot(convexHull_x,convexHull_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # for i in range(len(a)):
@@ -167,8 +173,8 @@ ax.plot(C3path_x,C3path_y,color='g',markerfacecolor='green',marker='o',label='ke
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # #
 # #
-# for a, b in zip(BB_x,BB_y):
-#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+for a, b in zip(testAB_x,testAB_y):
+        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # for a, b in zip(test_virtual_origin_poly_x,test_virtual_origin_poly_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
