@@ -28,6 +28,17 @@ cornerTuringLocation::cornerTuringLocation(
    if(angle_2 < 0){
        angle_2 += 360;
    }
+
+   //计算arriveline与x轴正向的夹角
+   polygonPoint  refer_x_vector;
+   refer_x_vector.x = 1;
+   refer_x_vector.y = 0;
+   double angle_x = common::commonMath::computeTwolineAngleDu(vector_1,refer_x_vector);
+   if(angle_x < 0){
+       angle_x += 360;
+   }
+   //此方向为顺时针
+   arriveLineHeading_ = angle_x;
    //按照逆时针处理
    double angle_diff = angle_1 - angle_2;
    if(angle_diff < 0){
@@ -183,4 +194,8 @@ double cornerTuringLocation::getCurveaboutF2(){
 
 double cornerTuringLocation::getCurveaboutF3(){
     return  F3_;
+}
+
+double cornerTuringLocation::getCurveArrriveLineHeading() {
+    return arriveLineHeading_;
 }

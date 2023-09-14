@@ -44,6 +44,10 @@ testAB = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testAB.txt')
 testAB_x = testAB[0]
 testAB_y = testAB[1]
 
+testABtransd = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testABtransd.txt')
+testABtransd_x = testABtransd[0]
+testABtransd_y = testABtransd[1]
+
 # test_move_pts = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt')
 # test_move_pts_x = test_move_pts[0]
 # test_move_pts_y = test_move_pts[1]
@@ -78,7 +82,7 @@ inner_skeleton_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/in
 inner_skeleton_path_x = inner_skeleton_path[0]
 inner_skeleton_path_y = inner_skeleton_path[1]
 
-# a = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt')
+a = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt')
 
 # lineshow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/lineshow.txt')
 # lineshow_x = lineshow[0]
@@ -136,12 +140,14 @@ ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='ke
 ax.plot(C2path_x,C2path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(C3path_x,C3path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(testAB_x,testAB_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+ax.plot(testABtransd_x,testABtransd_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+
 
 # ax.plot(convexHull_x,convexHull_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-# for i in range(len(a)):
-#     plt.plot(a[i,0],a[i,1],'ro', markersize=3)
-#     plt.text(a[i, 0] + 0.2, a[i, 1] + 0.2, f"({a[i, 0]}, {a[i, 1]})")
-# plt.plot(a[0,0],a[0,1],'ro')
+for i in range(len(a)):
+    plt.plot(a[i,0],a[i,1],'ro', markersize=3)
+    plt.text(a[i, 0] + 0.2, a[i, 1] + 0.2, f"({a[i, 0]}, {a[i, 1]})")
+plt.plot(a[0,0],a[0,1],'ro')
 # ax.plot(test_txt_x,test_txt_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.8,markersize=1)
 # ax.plot(entrance_lines_x,entrance_lines_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
 
@@ -173,8 +179,10 @@ ax.plot(testAB_x,testAB_y,color='black',markerfacecolor='green',marker='o',label
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # #
 # #
-for a, b in zip(testAB_x,testAB_y):
-        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+# for a, b in zip(testAB_x,testAB_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+# for a, b in zip(testABtransd_x,testABtransd_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # for a, b in zip(test_virtual_origin_poly_x,test_virtual_origin_poly_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 

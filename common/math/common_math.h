@@ -281,7 +281,7 @@ namespace common{
             double mag_b = magnitude(line_2.x,line_2.y);
             return acos(dot / (mag_a * mag_b));
         }
-        //输出角度范围为-180 到 180 度
+        //输出角度范围为-180 到 180 度,这个函数顺时针为正方向
         static double computeTwolineAngleDu(
                 polygonPoint a,
                 polygonPoint b){

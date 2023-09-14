@@ -21,14 +21,6 @@
 typedef boost::geometry::model::d2::point_xy<double> pointBoost;
 typedef boost::geometry::model::polygon<pointBoost> polygonBoost;
 
-
-//typedef CGAL::Exact_circular_kernel_2             Circular_k;
-//typedef CGAL::Point_2<Circular_k>                 fishPoint_2;
-//typedef CGAL::Circle_2<Circular_k>                fishCircle_2;
-//typedef CGAL::Circular_arc_2<Circular_k>          Circular_arc_2;
-//typedef typename CGAL::CK2_Intersection_traits<Circular_k, fishCircle_2, fishCircle_2> Intersection_result;
-//typedef Circular_k::FT RT;
-
 class cornerTuringTishNail{
 public:
     cornerTuringTishNail() = default;
@@ -43,11 +35,15 @@ public:
     void cornerTuringPath( polygonPoint A,
                            polygonPoint B,
                            double RC2,
-                           double F3,
-                           double j);
-
+                           double F3);
+    std::vector<polygonPoint>   getFishNailC1path();
+    std::vector<polygonPoint>   getFishNailC2path();
+    std::vector<polygonPoint>   getFishNailC3path();
 private:
-    std::vector<polygonPoint>   storage_circle_center_;  //存储c1、c2、c3的圆心
+    std::vector<polygonPoint>   storage_circle_center_;   //存储c1、c2、c3的圆心
+    std::vector<polygonPoint>  C1path_;
+    std::vector<polygonPoint>  C2path_;
+    std::vector<polygonPoint>  C3path_;
 
 };
 #endif //POLYGONBACKSHAPE_CORNERTURING_TISHNAIL_ALGORITHM_H

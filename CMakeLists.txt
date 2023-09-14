@@ -22,7 +22,7 @@ include_directories(.)
 include_directories(${OpenCV_INCLUDE_DIRS})
 #include_directories(${PYTHON_INCLUDE_DIRS})
 
-
+#
 add_executable(polygonbackshape
               main.cpp
 #              PreProcess/getMapData.h
@@ -40,9 +40,15 @@ add_executable(polygonbackshape
               Planning/path_polygonplan.cpp
               Planning/path_polygonplan.h
               common/math/common_math.h
-        Geometry/cornerTuring_location.h Geometry/cornerTuring_location.cpp common/utilpath/path_polygonPoint.h Geometry/newCornerTuring_location.h Geometry/newCornerTuring_location.cpp common/print/filePrint.h
-        common/print/filePrint2.h Geometry/cornerTuring_TishNail_Algorithm.h Geometry/cornerTuring_TishNail_Algorithm.cpp common/print/normaPrint.h)
+             Geometry/cornerTuring_location.h Geometry/cornerTuring_location.cpp
+             common/utilpath/path_polygonPoint.h Geometry/newCornerTuring_location.h
+             Geometry/newCornerTuring_location.cpp common/print/filePrint.h
+             common/print/filePrint2.h Geometry/cornerTuring_TishNail_Algorithm.h
+             Geometry/cornerTuring_TishNail_Algorithm.cpp common/print/normaPrint.h
+             Planning/normalMatrix_Translate.h Planning/normalMatrix_Translate.cpp
+              Planning/diffMode_Choose.h )
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
+
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
 target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})
 target_link_libraries(polygonbackshape ${Matlab_LIBRARIES})

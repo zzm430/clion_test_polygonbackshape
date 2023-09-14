@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
 
     aiforce::Route_Planning::pathPolygonPlan   instance_pathPolygonPlan;
 //    instance_pathPolygonPlan.computeNarrowPolygons(narrowingPolygonPoints);
-
+    instance_pathPolygonPlan.initialize();
     instance_pathPolygonPlan.cgalNarrowPolygons(narrowingPolygonPoints);
 
     Point temp_point;

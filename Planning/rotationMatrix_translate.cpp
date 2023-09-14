@@ -181,8 +181,8 @@ void rotationMatrixAndTranslate::processInverse(std::vector<Point> & initial_poi
 
 //GCS坐标点的还原
 std::vector<Point> rotationMatrixAndTranslate::processOtherInverse(std::vector<Point> & initial_points){
-    vector<Point>   temp_storage;
-    vector<Point>  originalGCSPoints;
+    vector<Point>    temp_storage;
+    vector<Point>    originalGCSPoints;
     for(auto i=0 ;i < initial_points.size();i++){
         Point temp_point;
         temp_point.x = initial_points[i].x  + translate_point_.x;

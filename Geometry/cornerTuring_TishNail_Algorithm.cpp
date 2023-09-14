@@ -58,7 +58,6 @@ cornerTuringTishNail::cornerTuringTishNail(
     for(int i = 0;i < 1000;i++){
          double buffer_distance_1 = trans_R ;             // radius of circle
          double buffer_distance_2 = order_R ;
-//        const int points_per_circle = 36;
         boost::geometry::strategy::buffer::distance_symmetric<double> distance_strategy(buffer_distance_1);
         boost::geometry::strategy::buffer::join_round join_strategy;
         boost::geometry::strategy::buffer::end_round end_strategy;
@@ -68,9 +67,6 @@ cornerTuringTishNail::cornerTuringTishNail(
 
         boost::geometry::model::multi_polygon<polygonBoost> result_1;
         boost::geometry::model::multi_polygon<polygonBoost> result_2;
-
-//        pointBoost pt1;
-//        pointBoost pt2;
 
         pointBoost pt1(pt_1.x,pt_1.y);
         pointBoost pt2(pt_2.x,pt_2.y);
@@ -131,8 +127,7 @@ cornerTuringTishNail::cornerTuringTishNail(
 void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
                                              polygonPoint B,
                                              double RC2,
-                                             double F3,
-                                             double j){
+                                             double F3){
     auto pt1 = storage_circle_center_[0];
     auto pt2 = storage_circle_center_[1];
     auto pt3 = storage_circle_center_[2];
@@ -140,10 +135,6 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     double alphaXC23 = atan2((pt3.y - pt2.y),(pt2.x - pt3.x));
     double alphaC3By = atan((B.y - pt3.y)/(B.x - pt3.x));
     double alphaC21y = atan((pt2.x - pt1.x)/(pt2.y - pt1.y));
-
-    std::vector<polygonPoint>  C1path;
-    std::vector<polygonPoint>  C2path;
-    std::vector<polygonPoint>  C3path;
 
     //处理C1
     double C1alphaStart = (1 - F3 ) * M_PI ;
@@ -155,7 +146,7 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
         polygonPoint  tempPt;
         tempPt.x = pt1.x + sin(C1alpha) * CIRCLE_RIDIS_R;
         tempPt.y = pt1.y + cos(C1alpha) * CIRCLE_RIDIS_R;
-        C1path.push_back(tempPt);
+        C1path_.push_back(tempPt);
     }
 
 
@@ -168,8 +159,9 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
         polygonPoint  tempPt;
         tempPt.x = pt2.x + sin(C2alpha) * RC2;
         tempPt.y = pt2.y + cos(C2alpha) * RC2;
-        C2path.push_back(tempPt);
+        C2path_.push_back(tempPt);
     }
+
 
     //处理C3
     double C3alphaStart = alphaXC23 + M_PI;
@@ -180,20 +172,27 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
         polygonPoint tempPt;
         tempPt.x = pt3.x + sin(C3alpha) * CIRCLE_RIDIS_R;
         tempPt.y = pt3.y + cos(C3alpha) * CIRCLE_RIDIS_R;
-        C3path.push_back(tempPt);
-    }
-
-    if(j == 1){
-        std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
-        std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
-        std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
-        normalPrint C1file(C1name);
-        normalPrint C2file(C2name);
-        normalPrint C3file(C3name);
-        C1file.writePts(C1path);
-        C2file.writePts(C2path);
-        C3file.writePts(C3path);
+        C3path_.push_back(tempPt);
     }
 
 
+    std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
+    std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
+    std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
+    normalPrint C1file(C1name);
+    normalPrint C2file(C2name);
+    normalPrint C3file(C3name);
+    C1file.writePts(C1path_);
+    C2file.writePts(C2path_);
+    C3file.writePts(C3path_);
+}
+
+std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC1path(){
+    return C1path_;
+}
+std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC2path(){
+    return C2path_;
+}
+std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC3path(){
+    return C3path_;
 }

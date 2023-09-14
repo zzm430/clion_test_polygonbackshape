@@ -47,6 +47,7 @@ public:
       double getCurveaboutF1();
       double getCurveaboutF2();
       double getCurveaboutF3();
+      double getCurveArrriveLineHeading();
 
 private:
     angleType  angleType_;                   //angleInt的类型
@@ -57,9 +58,9 @@ private:
     double         F1_;
     double         F2_;
     double         F3_;
+    double         arriveLineHeading_;
+
 
 };
-
-
 
 #endif //POLYGONBACKSHAPE_CORNERTURING_LOCATION_H
