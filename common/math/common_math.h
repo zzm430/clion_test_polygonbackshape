@@ -42,6 +42,7 @@ namespace common{
 //3.计算向量的heading
 //4.计算一个点是在线段AB所在直线的左侧还是右侧
 //5.根据两点构造一个向量
+//6.计算路径的总长度
         commonMath() = default;
         virtual ~commonMath() = default;
 
@@ -521,6 +522,17 @@ namespace common{
             }
             return false;
         }
+        //7.计算路径的总长度
+      static  double computePathAllLength(std::vector<polygonPoint> & path){
+            double allPath;
+            int allSize = path.size();
+            for(int i = 0;i < allSize-1;i++){
+                double dis = distance2(path[i+1],path[i]);
+                allPath += dis;
+            }
+            return allPath;
+        }
+
 
 
     };

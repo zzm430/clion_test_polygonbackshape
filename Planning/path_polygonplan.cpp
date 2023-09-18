@@ -3982,7 +3982,6 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
              break;
          }
          default:{
-
              break;
          }
      }
@@ -4119,9 +4118,9 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             polygonPoint pt2 =  cornerTuringLocationtest.getCurveendPtB();
 
             double RC2 = CIRCLE_RIDIS_R + 0.5;
-            cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2);
+            cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2,F3);
             LOG(INFO) << "RC2 is : " << RC2;
-            cornerTuringTishNailtest.cornerTuringPath(pt1,pt2,RC2,F3);
+//            cornerTuringTishNailtest.cornerTuringPath(pt1,pt2,RC2,F3);
 
             std::vector<polygonPoint>  ptAB;
             ptAB.push_back(pt1);
@@ -4136,12 +4135,14 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                 LOG(INFO)  << "the pt transd   is : " << pt.x << " " << pt.y ;
             }
 
-
-
             //计算关键点对应的鱼尾路径点并一一对应存储
             auto local_C1path = cornerTuringTishNailtest.getFishNailC1path();
             auto local_C2path = cornerTuringTishNailtest.getFishNailC2path();
             auto local_C3path = cornerTuringTishNailtest.getFishNailC3path();
+
+//            auto local_C1path = cornerTuringTishNailtest.getC1path();
+//            auto local_C2path = cornerTuringTishNailtest.getC2path();
+//            auto local_C3path = cornerTuringTishNailtest.getC3path();
 
             std::vector<polygonPoint>  storage_origin_path;
             for(auto f : local_C1path){

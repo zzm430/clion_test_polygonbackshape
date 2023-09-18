@@ -44,6 +44,11 @@ testAB = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testAB.txt')
 testAB_x = testAB[0]
 testAB_y = testAB[1]
 
+
+test1 = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/test1.txt')
+test1_x = test1[0]
+test1_y = test1[1]
+
 testABtransd = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testABtransd.txt')
 testABtransd_x = testABtransd[0]
 testABtransd_y = testABtransd[1]
@@ -135,13 +140,14 @@ C3path_y = C3path[1]
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
 # ax.plot(DD_x,DD_y,color='y',markerfacecolor='green',marker='o',label='inter_nodes data')
 # ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_polygon data')
+# ax.plot(test1_x,test1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 4.3,markersize=1)
+
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(C2path_x,C2path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(C3path_x,C3path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(testAB_x,testAB_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
-ax.plot(testABtransd_x,testABtransd_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
-
+# ax.plot(testAB_x,testAB_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+# ax.plot(testABtransd_x,testABtransd_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 
 # ax.plot(convexHull_x,convexHull_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 for i in range(len(a)):
@@ -191,6 +197,8 @@ plt.plot(a[0,0],a[0,1],'ro')
 # for a, b in zip(test_txt_x, test_txt_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
+for a, b in zip(test1_x,test1_y):
+        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # # 绘制线段
 # for i in range(0, len(lineshow[0])-1, 2):
 #     x = [lineshow[0][i], lineshow[0][i+1]]
