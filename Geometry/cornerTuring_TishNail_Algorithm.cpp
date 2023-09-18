@@ -158,7 +158,7 @@ void cornerTuringTishNail::chooseOptimalpath(  polygonPoint A,
     computeCircleCenter(A,  B, angleInt, RC2, F1, F2);
     computeCircleC2Radius( A,B,angleInt,RC2,F1,F2);
     maxLengthCost = computeLengthCostPath();
-    for(int i = 1;i < 10;i++){
+    for(int i = 1;i < 2;i++){
         computeCircleCenter(A,  B, angleInt, RC2, F1, F2);   //重新计算C2的圆心
         cornerTuringPath(A,B,RC2,F3);
         std::cout << "the i is : " << i << std::endl;
@@ -186,13 +186,13 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     double alphaC21y = atan((pt2.x - pt1.x)/(pt2.y - pt1.y));
 
     //求3个圆之间的交点
-    auto insect1_2 = computeCircleInterSectPt(pt1,pt2,CIRCLE_RIDIS_R,RC2);
-    auto insect3_2 = computeCircleInterSectPt(pt3,pt2,CIRCLE_RIDIS_R,RC2);
-
+    auto insect1_2 = computeCircleInterSectPt(pt1,pt2,CIRCLE_RIDIS_R,RC2);  //C1,C2之间的交点
+    auto insect3_2 = computeCircleInterSectPt(pt3,pt2,CIRCLE_RIDIS_R,RC2);  //C2,C3之间的交点
 
     //处理C1
     double C1alphaStart = (1 - F3 ) * M_PI ;
     double C1alphaEnd  = alphaXC12 ;
+
     //等分之后进行取点
     double angleC1diff = (C1alphaEnd - C1alphaStart)/100;
     for(int i = 0;i <= 100;i++){
@@ -227,6 +227,35 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
         C3path_.push_back(tempPt);
     }
 
+    //C1、C2、C3的总长度
+    double C1_allLength = CIRCLE_RIDIS_R * (C1alphaEnd - C1alphaStart);
+    double C2_allLength = CIRCLE_RIDIS_R * (C2alphaEnd - C2alphaStart);
+    double C3_allLength = CIRCLE_RIDIS_R * (C3alphaEnd - C3alphaStart);
+
+    //等间隔采样点
+    auto C1_pts = common::commonMath::equalIntervalDiff(C1_allLength,
+                                                        FISHNail_DIFF_DIS,
+                                                        C1alphaStart,
+                                                        C1alphaEnd,
+                                                        CIRCLE_RIDIS_R,
+                                                        pt1);
+    auto C2_pts = common::commonMath::equalIntervalDiff(C2_allLength,
+                                                        FISHNail_DIFF_DIS,
+                                                        C2alphaStart,
+                                                        C2alphaEnd,
+                                                        RC2,
+                                                        pt2);
+
+    auto C3_pts = common::commonMath::equalIntervalDiff(C3_allLength,
+                                                        FISHNail_DIFF_DIS,
+                                                        C3alphaStart,
+                                                        C3alphaEnd,
+                                                        CIRCLE_RIDIS_R,
+                                                        pt3);
+    C1path_ = C1_pts;
+    C2path_ = C2_pts;
+    C3path_ = C3_pts;
+
     std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
     std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
     std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
@@ -257,6 +286,8 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
 //    C1file.writePts(fishNailC1path_);
 //    C2file.writePts(fishNailC2path_);
 //    C3file.writePts(fishNailC3path_);
+
+
 
 }
 

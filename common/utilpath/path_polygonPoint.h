@@ -12,6 +12,13 @@ enum  class sideBisector :uint8_t{
     INNER_BISECTOR = 2   //内部骨架边
 };
 
+
+enum  class pathPtType :uint8_t{
+    FORWARD  = 0 ,   //前进
+    BACKWARD = 1,    //后退
+    SWITCHPT = 2     //转换点
+};
+
 class  polygonPoint: public Point{
 public:
     polygonPoint() = default;
@@ -45,6 +52,7 @@ private:
     int origin_polygon_point_index_;           //对应多边形起始点的索引号
 public:
     bool entrance_ = false;                    //回字形入口点
+    pathPtType   pathPtType_;                  //路径点的前进方向
 };
 
 struct polyPointHash{

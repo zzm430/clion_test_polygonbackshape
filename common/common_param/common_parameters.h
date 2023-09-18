@@ -53,6 +53,7 @@
 //#define  F3                       1
 #define  CIRCLE_RIDIS_R             6        //圆半径
 #define  MAX_CIRCLE_RIDIS_R         12       //设置的最大圆半径
+#define  FISHNail_DIFF_DIS          0.2      //间隔20cm
 
 //回字形规划方法选择
 //#define  RECTANGLE_BACK_SHAPE           //矩形回字形规划

@@ -40,9 +40,9 @@ test_virtual_origin_poly_x = test_virtual_origin_poly[0]
 test_virtual_origin_poly_y = test_virtual_origin_poly[1]
 
 
-testAB = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testAB.txt')
-testAB_x = testAB[0]
-testAB_y = testAB[1]
+# testAB = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testAB.txt')
+# testAB_x = testAB[0]
+# testAB_y = testAB[1]
 
 
 test1 = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/test1.txt')
@@ -150,10 +150,10 @@ ax.plot(C3path_x,C3path_y,color='g',markerfacecolor='green',marker='o',label='ke
 # ax.plot(testABtransd_x,testABtransd_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 
 # ax.plot(convexHull_x,convexHull_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-for i in range(len(a)):
-    plt.plot(a[i,0],a[i,1],'ro', markersize=3)
-    plt.text(a[i, 0] + 0.2, a[i, 1] + 0.2, f"({a[i, 0]}, {a[i, 1]})")
-plt.plot(a[0,0],a[0,1],'ro')
+# for i in range(len(a)):
+#     plt.plot(a[i,0],a[i,1],'ro', markersize=3)
+#     plt.text(a[i, 0] + 0.2, a[i, 1] + 0.2, f"({a[i, 0]}, {a[i, 1]})")
+# plt.plot(a[0,0],a[0,1],'ro')
 # ax.plot(test_txt_x,test_txt_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.8,markersize=1)
 # ax.plot(entrance_lines_x,entrance_lines_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
 
@@ -197,8 +197,8 @@ plt.plot(a[0,0],a[0,1],'ro')
 # for a, b in zip(test_txt_x, test_txt_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
-for a, b in zip(test1_x,test1_y):
-        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+# for a, b in zip(test1_x,test1_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # # 绘制线段
 # for i in range(0, len(lineshow[0])-1, 2):
 #     x = [lineshow[0][i], lineshow[0][i+1]]

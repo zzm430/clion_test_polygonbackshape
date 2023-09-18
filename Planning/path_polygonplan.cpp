@@ -2525,29 +2525,25 @@ void pathPolygonPlan::cgalComputeFishNailRidgePath(
             pathInterface::pathPoint   pathPointCurve;
             pathPointCurve.x = finalpath[j].x;
             pathPointCurve.y = finalpath[j].y;
-            //针对给定点位计算点位的heading,用来判断前进倒退标志
-            if(finalpath.size() > 4){
-                if(j < (finalpath.size() - 4)){
-                    polygonPoint p1, p2;
-                    p1.x = finalpath[j+1].x - finalpath[j].x;
-                    p1.y = finalpath[j+1].y - finalpath[j].y;
-                    p2.x = finalpath[j+2].x - finalpath[j+1].x;
-                    p2.y = finalpath[j+2].y - finalpath[j+1].y;
-                    auto angle = common::commonMath::computeTwolineAngleDu(p1,p2);
-                    if(angle > 0){
-                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
-                    }else{
-                        pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::BACK;
-                    }
-                }else{
-                    pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
-                }
-            }else{
-                pathPointCurve.path_point_mode2 = pathInterface::pathPointMode2::FORWARD;
-            }
-            pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
-            pathPointCurve.ridge_number = ridge_index;
-            storageAllPath.push_back(pathPointCurve);
+
+           if(finalpath[j].pathPtType_ == pathPtType::FORWARD){
+               pathPointCurve.path_point_mode2 =  pathInterface::pathPointMode2::FORWARD;
+               pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+               pathPointCurve.ridge_number = ridge_index;
+               storageAllPath.push_back(pathPointCurve);
+           }else if(finalpath[j].pathPtType_ == pathPtType::BACKWARD){
+               pathPointCurve.path_point_mode2 =  pathInterface::pathPointMode2::BACK;
+               pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+               pathPointCurve.ridge_number = ridge_index;
+               storageAllPath.push_back(pathPointCurve);
+           }else if(finalpath[j].pathPtType_ == pathPtType::SWITCHPT){
+               pathPointCurve.path_point_mode2 =  pathInterface::pathPointMode2::SWITCH_BACK_FORWARD;
+               pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
+               pathPointCurve.ridge_number = ridge_index;
+               storageAllPath.push_back(pathPointCurve);
+               storageAllPath.push_back(pathPointCurve);
+               storageAllPath.push_back(pathPointCurve);
+           }
         }
     }
 }
@@ -4081,9 +4077,11 @@ void pathPolygonPlan::cgalComputeCustomAandB(){
 
 void pathPolygonPlan::cgalComputeHeadleadsAandB(){
     int num =  cgalbackShape_keypoints_.size();
+
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
     for(int i = 0;i <  1;i++){
         for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
+//            for(int j = 1 ; j < 2;j++){
             auto ordered_pt = cgalbackShape_keypoints_[i][j];
             //计算指定点的前后弯道关键点
             ridgeKeypoint tempPtInfo;
@@ -4144,28 +4142,71 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
 //            auto local_C2path = cornerTuringTishNailtest.getC2path();
 //            auto local_C3path = cornerTuringTishNailtest.getC3path();
 
-            std::vector<polygonPoint>  storage_origin_path;
-            for(auto f : local_C1path){
-                storage_origin_path.push_back(f);
-            }
-            for(auto f : local_C2path){
-                storage_origin_path.push_back(f);
-            }
-            for(auto f : local_C3path){
-                storage_origin_path.push_back(f);
-            }
-
             //转换到世界坐标系下
             normalMatrixTranslate  normalMatrixTranslateInstance;
-            std::vector<polygonPoint>  storage_transed_path;
-            for(auto m : storage_origin_path){
+//            std::vector<polygonPoint>  storage_transed_path;
+
+            std::vector<polygonPoint>  storage_origin_path;
+            int num_size_C1 = local_C1path.size();
+            int num_size_C2 = local_C2path.size();
+            int num_size_C3 = local_C3path.size();
+
+            for(int m = 0 ;m <  num_size_C1 - 1;m++){
                 auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
-                                             m,
-                                             cgalbackShape_keypoints_[i][j],
-                                             arriveLineHeading);
-                storage_transed_path.push_back(tempPt);
+                        local_C1path[m],
+                        cgalbackShape_keypoints_[i][j],
+                        arriveLineHeading);
+                tempPt.pathPtType_ = pathPtType::FORWARD;
+                storage_origin_path.push_back(tempPt);
             }
-            backshape_fishnail_curve_path_[cgalbackShape_keypoints_[i][j]] = storage_transed_path;
+
+            auto C1_LAST_PT = local_C1path[num_size_C1-1];
+            auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
+                    C1_LAST_PT,
+                    cgalbackShape_keypoints_[i][j],
+                    arriveLineHeading);
+            tempPt.pathPtType_ = pathPtType::SWITCHPT;
+            storage_origin_path.push_back(tempPt);
+
+
+            for(int m =0 ;m <  num_size_C2 -1;m++){
+                auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
+                        local_C2path[m],
+                        cgalbackShape_keypoints_[i][j],
+                        arriveLineHeading);
+                tempPt.pathPtType_ = pathPtType::BACKWARD;
+                storage_origin_path.push_back(tempPt);
+            }
+
+            auto C2_LAST_PT = local_C2path[num_size_C2-1];
+            auto tempPt1 = normalMatrixTranslateInstance.reverseRotatePoint(
+                    C2_LAST_PT,
+                    cgalbackShape_keypoints_[i][j],
+                    arriveLineHeading);
+            tempPt1.pathPtType_ = pathPtType::SWITCHPT;
+            storage_origin_path.push_back(tempPt1);
+
+            for(int m =0 ;m <  num_size_C3;m++){
+                auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
+                        local_C3path[m],
+                        cgalbackShape_keypoints_[i][j],
+                        arriveLineHeading);
+                tempPt.pathPtType_ = pathPtType::FORWARD;
+                storage_origin_path.push_back(tempPt);
+            }
+
+
+            //转换到世界坐标系下
+//            normalMatrixTranslate  normalMatrixTranslateInstance;
+//            std::vector<polygonPoint>  storage_transed_path;
+//            for(auto m : storage_origin_path){
+//                auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
+//                                             m,
+//                                             cgalbackShape_keypoints_[i][j],
+//                                             arriveLineHeading);
+//                storage_transed_path.push_back(tempPt);
+//            }
+            backshape_fishnail_curve_path_[cgalbackShape_keypoints_[i][j]] = storage_origin_path;
 
 
 //            tempPtInfo.start_curve_point =

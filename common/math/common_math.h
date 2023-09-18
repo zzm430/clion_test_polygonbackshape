@@ -522,6 +522,7 @@ namespace common{
             }
             return false;
         }
+
         //7.计算路径的总长度
       static  double computePathAllLength(std::vector<polygonPoint> & path){
             double allPath;
@@ -533,7 +534,33 @@ namespace common{
             return allPath;
         }
 
+        //等间隔差分一段圆弧,并获取其结果
+        static std::vector<polygonPoint> equalIntervalDiff(
+                double arc_length,
+                double diff_dis,
+                double start_angle,   //弧度为单位
+                double end_angle,
+                double radis,      //半径
+                polygonPoint circle_center
+                ){
+           int num_samples = std::ceil(fabs(arc_length)/diff_dis); //向上取整
+           double angle_increment =
+                   (end_angle - start_angle ) / (num_samples - 1);
 
+           //存储采样点的容器
+           std::vector<polygonPoint> sample_points;
+
+           for(int i = 0;i < num_samples;i++){
+               double current_angle = start_angle + i * angle_increment;
+               double x = circle_center.x + radis * std::sin(current_angle);
+               double y = circle_center.y + radis * std::cos(current_angle);
+               polygonPoint tempPt(x,y);
+               sample_points.push_back(tempPt);
+           }
+
+           return sample_points;  //C1、C2、C3的总长度
+
+        }
 
     };
 }
