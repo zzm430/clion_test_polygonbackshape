@@ -179,8 +179,8 @@ ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints 
 #
 # ax.plot(DD_x,DD_y,color='r',markerfacecolor='green',marker='o',label='realline data')
 
-# for a, b in zip(CC_x,CC_y):
-#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+for a, b in zip(CC_x,CC_y):
+        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # for a, b in zip(entrance_lines_x,entrance_lines_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # #

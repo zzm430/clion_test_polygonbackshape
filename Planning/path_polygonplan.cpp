@@ -2517,7 +2517,7 @@ void pathPolygonPlan::cgalComputeFishNailRidgePath(
         std::vector<polygonPoint> & ordered_points,
         int & ridge_index,
         std::vector<pathInterface::pathPoint> & storageAllPath){
-    for(int  i = 1;i < num;i++){
+    for(int  i = 1;i <= num;i++){
         //点位弯道处理
         auto temp_point = ordered_points[i];
         auto finalpath = backshape_fishnail_curve_path_[temp_point];
@@ -4057,8 +4057,9 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
     int num =  cgalbackShape_keypoints_.size();
 
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
-    for(int i = 0;i <= num -1;i++){
-        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
+    for(int i = 0;i <= num-1 ;i++){
+//        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
+        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1  ;j++){
 //            for(int j = 3 ; j < 4;j++){
             auto ordered_pt = cgalbackShape_keypoints_[i][j];
             //计算指定点的前后弯道关键点
@@ -4090,7 +4091,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             polygonPoint pt1 =  cornerTuringLocationtest.getCurveStartPtA();
             polygonPoint pt2 =  cornerTuringLocationtest.getCurveendPtB();
 
-            double RC2 = CIRCLE_RIDIS_R + 0.5;
+            double RC2 = CIRCLE_RIDIS_R ;
             cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2,F3);
             LOG(INFO) << "RC2 is : " << RC2;
 
@@ -4166,32 +4167,159 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                 tempPt.pathPtType_ = pathPtType::FORWARD;
                 storage_origin_path.push_back(tempPt);
             }
-
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[i][j]] = storage_origin_path;
-
         }
         //最后一个点单独处理,j = cgalbackShape_keypoints_[i].size() - 1
         //如果走到回型最后一个圆圈需要特殊处理
 //        auto second_pt = cgalbackShape_keypoints_[i+1][1];
-        ridgeKeypoint  tempLastPt;
-        tempLastPt.start_dis = SET_STARTTURN_DISTANCE;
-        tempLastPt.end_dis = SET_ENDTURN_DISTANCE;
-        int numSize = cgalbackShape_keypoints_[i].size();
-//        tempLastPt.start_curve_point =
-//                common::commonMath::findPointOnSegment(
-//                        cgalbackShape_keypoints_[i][numSize-2],
-//                        cgalbackShape_keypoints_[i][numSize-1],
-//                        SET_STARTTURN_DISTANCE,
-//                        false);
-//        tempLastPt.end_curve_point =
-//                common::commonMath::findPointOnSegment(
-//                        cgalbackShape_keypoints_[i][numSize-1],
-//                        second_pt,
-//                        SET_ENDTURN_DISTANCE,
-//                        true);
-        backshape_keypts_info_[cgalbackShape_keypoints_[i][numSize-1]] = tempLastPt;
+        int spiral_size = cgalbackShape_keypoints_[i].size();
+        if(i != num-1 ){                       //当不是回型最后一笼的处理
+            std::vector<polygonPoint> last_arriveline;
+            std::vector<polygonPoint> last_leaveline;
+
+            last_arriveline.push_back(cgalbackShape_keypoints_[i][spiral_size-2]);
+            last_arriveline.push_back(cgalbackShape_keypoints_[i][spiral_size-1]);
+            last_leaveline.push_back(cgalbackShape_keypoints_[i+1][0]);
+            last_leaveline.push_back(cgalbackShape_keypoints_[i+1][1]);
+            cgalComputeEntraceCurvePath(
+                    last_arriveline,
+                    last_leaveline,
+                    cgalbackShape_keypoints_[i][spiral_size - 1]);
+        }else{                                 //回型最后一个点不做处理,直接映射
+            ridgeKeypoint tempPtInfo;
+            tempPtInfo.start_dis = SET_STARTTURN_DISTANCE;
+            tempPtInfo.end_dis  = SET_ENDTURN_DISTANCE;
+
+        }
+
     }
 }
+
+void pathPolygonPlan::cgalComputeEntraceCurvePath(std::vector<polygonPoint> & arriveLine,
+                                                  std::vector<polygonPoint> & leaveLine,
+                                                  polygonPoint    curvePt){
+    auto ordered_pt = curvePt;  //这里的curvePt指的是弯道需要的映射点并不是交点
+    //计算指定点的前后弯道关键点
+    ridgeKeypoint tempPtInfo;
+    tempPtInfo.start_dis = SET_STARTTURN_DISTANCE;
+    tempPtInfo.end_dis  = SET_ENDTURN_DISTANCE;
+
+    //将arriveline 和leaveline延长一定距离，并求交点
+    auto extend_arriveline = common::commonMath::findPointExtendSegment2(arriveLine[0],arriveLine[1],10);
+    auto extend_leaveline = common::commonMath::findPointExtendSegment2(leaveLine[0],leaveLine[1],10);
+
+    Segment seg1(point(extend_arriveline[0].x, extend_arriveline[0].y), point(extend_arriveline[1].x, extend_arriveline[1].y));
+    Segment seg2(point(extend_leaveline[0].x, extend_leaveline[0].y), point(extend_leaveline[1].x, extend_leaveline[1].y));
+    std::deque<point> output1;
+    boost::geometry::intersection(seg1, seg2, output1);
+
+    if (!output1.empty()){
+        std::cout << " Entrance Curve Intersection point: ("
+                  << output1.front().x()
+                  << ", "
+                  << output1.front().y()
+                  << ")"
+                  << std::endl;
+    }
+    polygonPoint   IntersecPt(output1.front().x(),output1.front().y());
+
+    cornerTuringLocation   cornerTuringLocationtest(extend_arriveline,
+                                                    extend_leaveline);
+    cornerTuringLocationtest.decideLpAandLpB();
+    cornerTuringLocationtest.calculatePointsAandBForCurve();
+    double angleInt = cornerTuringLocationtest.getCurveAngleInt();
+    double arriveLineHeading = cornerTuringLocationtest.getCurveArrriveLineHeading();
+    arriveLineHeading = arriveLineHeading * M_PI / 180;
+    //这里按照逆时针考虑的，所以取负
+    arriveLineHeading = -arriveLineHeading;
+    double F1 = cornerTuringLocationtest.getCurveaboutF1();
+    double F2 = cornerTuringLocationtest.getCurveaboutF2();
+    double F3 = cornerTuringLocationtest.getCurveaboutF3();
+
+    polygonPoint pt1 =  cornerTuringLocationtest.getCurveStartPtA();
+    polygonPoint pt2 =  cornerTuringLocationtest.getCurveendPtB();
+
+    double RC2 = CIRCLE_RIDIS_R + 0.5;
+    cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2,F3);
+    LOG(INFO) << "RC2 is : " << RC2;
+
+    std::vector<polygonPoint>  ptAB;
+    ptAB.push_back(pt1);
+    ptAB.push_back(pt2);
+    normalPrint   printAB("/home/zzm/Desktop/test_path_figure-main/src/testAB.txt");
+    printAB.writePts(ptAB);
+
+    normalMatrixTranslate   testtemp;
+    for(auto it : ptAB){
+        auto pt = testtemp.reverseRotatePoint(it,IntersecPt,
+                                              arriveLineHeading);
+        LOG(INFO)  << "the pt transd   is : " << pt.x << " " << pt.y ;
+    }
+
+    //计算关键点对应的鱼尾路径点并一一对应存储
+    auto local_C1path = cornerTuringTishNailtest.getFishNailC1path();
+    auto local_C2path = cornerTuringTishNailtest.getFishNailC2path();
+    auto local_C3path = cornerTuringTishNailtest.getFishNailC3path();
+
+//            auto local_C1path = cornerTuringTishNailtest.getC1path();
+//            auto local_C2path = cornerTuringTishNailtest.getC2path();
+//            auto local_C3path = cornerTuringTishNailtest.getC3path();
+
+    //转换到世界坐标系下
+    normalMatrixTranslate  normalMatrixTranslateInstance;
+
+    std::vector<polygonPoint>  storage_origin_path;
+    int num_size_C1 = local_C1path.size();
+    int num_size_C2 = local_C2path.size();
+    int num_size_C3 = local_C3path.size();
+
+    for(int m = 0 ;m <  num_size_C1 - 1;m++){
+        auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
+                local_C1path[m],
+                IntersecPt,
+                arriveLineHeading);
+        tempPt.pathPtType_ = pathPtType::FORWARD;
+        storage_origin_path.push_back(tempPt);
+    }
+
+    auto C1_LAST_PT = local_C1path[num_size_C1-1];
+    auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
+            C1_LAST_PT,
+            IntersecPt,
+            arriveLineHeading);
+    tempPt.pathPtType_ = pathPtType::SWITCHPT;
+    storage_origin_path.push_back(tempPt);
+
+    for(int m =0 ;m <  num_size_C2 -1;m++){
+        auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
+                local_C2path[m],
+                IntersecPt,
+                arriveLineHeading);
+        tempPt.pathPtType_ = pathPtType::BACKWARD;
+        storage_origin_path.push_back(tempPt);
+    }
+
+    auto C2_LAST_PT = local_C2path[num_size_C2-1];
+    auto tempPt1 = normalMatrixTranslateInstance.reverseRotatePoint(
+            C2_LAST_PT,
+            IntersecPt,
+            arriveLineHeading);
+    tempPt1.pathPtType_ = pathPtType::SWITCHPT;
+    storage_origin_path.push_back(tempPt1);
+
+    for(int m =0 ;m <  num_size_C3;m++){
+        auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
+                local_C3path[m],
+                IntersecPt,
+                arriveLineHeading);
+        tempPt.pathPtType_ = pathPtType::FORWARD;
+        storage_origin_path.push_back(tempPt);
+    }
+    backshape_fishnail_curve_path_[curvePt] = storage_origin_path;
+}
+
+
+
 
 
 void pathPolygonPlan::cgalComputeParallelCurveMap(){

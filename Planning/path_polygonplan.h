@@ -269,6 +269,9 @@ namespace Route_Planning
              int & ridge_index,
              std::vector<pathInterface::pathPoint> & storageAllPath);
      void cgalComputeCustomAandB();                 //自定义的确定弯道A点和B点的方法
+     void cgalComputeEntraceCurvePath(std::vector<polygonPoint> & arriveLine,
+                                                       std::vector<polygonPoint> & leaveLine,
+                                                       polygonPoint    curvePt);
  private:
      std::vector<std::vector<polygonPoint>>   cgalPolypts_;         //内缩多边形的存储
      std::vector<std::vector<polygonPoint>>   cgalandboostPolypts_; //cgal和boost混合的内缩多边形存储

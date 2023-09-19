@@ -158,7 +158,7 @@ void cornerTuringTishNail::chooseOptimalpath(  polygonPoint A,
     computeCircleCenter(A,  B, angleInt, RC2, F1, F2);
     computeCircleC2Radius( A,B,angleInt,RC2,F1,F2);
     maxLengthCost = computeLengthCostPath();
-    for(int i = 1;i < 2;i++){
+    for(int i = 1;i < 5;i++){
         computeCircleCenter(A,  B, angleInt, RC2, F1, F2);   //重新计算C2的圆心
         cornerTuringPath(A,B,RC2,F3);
         std::cout << "the i is : " << i << std::endl;
@@ -195,37 +195,37 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
 
     //等分之后进行取点
     double angleC1diff = (C1alphaEnd - C1alphaStart)/100;
-    for(int i = 0;i <= 100;i++){
-        double C1alpha = C1alphaStart + i * angleC1diff;
-        polygonPoint  tempPt;
-        tempPt.x = pt1.x + sin(C1alpha) * CIRCLE_RIDIS_R;
-        tempPt.y = pt1.y + cos(C1alpha) * CIRCLE_RIDIS_R;
-        C1path_.push_back(tempPt);
-    }
+//    for(int i = 0;i <= 100;i++){
+//        double C1alpha = C1alphaStart + i * angleC1diff;
+//        polygonPoint  tempPt;
+//        tempPt.x = pt1.x + sin(C1alpha) * CIRCLE_RIDIS_R;
+//        tempPt.y = pt1.y + cos(C1alpha) * CIRCLE_RIDIS_R;
+//        C1path_.push_back(tempPt);
+//    }
 
     //处理C2
     double C2alphaStart = - M_PI + alphaXC12;
     double C2alphaEnd = alphaXC23;
-    double angleC2diff = (C2alphaEnd - C2alphaStart)/1000;
-    for(int i = 0; i <= 1000;i++){
-        double C2alpha = C2alphaStart + i * angleC2diff;
-        polygonPoint  tempPt;
-        tempPt.x = pt2.x + sin(C2alpha) * RC2;
-        tempPt.y = pt2.y + cos(C2alpha) * RC2;
-        C2path_.push_back(tempPt);
-    }
+//    double angleC2diff = (C2alphaEnd - C2alphaStart)/1000;
+//    for(int i = 0; i <= 1000;i++){
+//        double C2alpha = C2alphaStart + i * angleC2diff;
+//        polygonPoint  tempPt;
+//        tempPt.x = pt2.x + sin(C2alpha) * RC2;
+//        tempPt.y = pt2.y + cos(C2alpha) * RC2;
+//        C2path_.push_back(tempPt);
+//    }
 
     //处理C3
     double C3alphaStart = alphaXC23 + M_PI;
     double C3alphaEnd = M_PI/2 - alphaC3By;
-    double angleC3diff = (C3alphaEnd - C3alphaStart)/100;
-    for(int i = 0;i <= 100;i++){
-        double C3alpha = C3alphaStart + i * angleC3diff;
-        polygonPoint tempPt;
-        tempPt.x = pt3.x + sin(C3alpha) * CIRCLE_RIDIS_R;
-        tempPt.y = pt3.y + cos(C3alpha) * CIRCLE_RIDIS_R;
-        C3path_.push_back(tempPt);
-    }
+//    double angleC3diff = (C3alphaEnd - C3alphaStart)/100;
+//    for(int i = 0;i <= 100;i++){
+//        double C3alpha = C3alphaStart + i * angleC3diff;
+//        polygonPoint tempPt;
+//        tempPt.x = pt3.x + sin(C3alpha) * CIRCLE_RIDIS_R;
+//        tempPt.y = pt3.y + cos(C3alpha) * CIRCLE_RIDIS_R;
+//        C3path_.push_back(tempPt);
+//    }
 
     //C1、C2、C3的总长度
     double C1_allLength = CIRCLE_RIDIS_R * (C1alphaEnd - C1alphaStart);
@@ -287,8 +287,6 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
 //    C2file.writePts(fishNailC2path_);
 //    C3file.writePts(fishNailC3path_);
 
-
-
 }
 
 double cornerTuringTishNail::computeLengthCostPath(){
@@ -304,7 +302,6 @@ std::vector<polygonPoint>  cornerTuringTishNail::computeInterceptPath(std::vecto
     std::vector<polygonPoint>   allPath;
     for(auto i : path){
         double dis = common::commonMath::distance2(i,order_pt);
-        std::cout << "dis is : " << dis << std::endl;
         allPath.push_back(i);
         if(fabs(dis) < 0.15){
             break;

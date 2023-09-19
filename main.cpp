@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
                          std::ios::out);
     std::vector<pathInterface::pathPoint> cgal_routing_pts;
     std::vector<std::vector<pathInterface::pathPoint>>  cgal_all_path;
-    for(auto i  = 0 ; i < all_size ;i++){
+    for(auto i  = 0  ; i < all_size ;i++){
         cgal_routing_pts =
                 instance_pathPolygonPlan.cgalComputeRidgeRoutingpts(i);
         for (int i = 0; i < (int)cgal_routing_pts.size(); i++) {
