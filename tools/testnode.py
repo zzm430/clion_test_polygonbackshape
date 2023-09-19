@@ -120,17 +120,17 @@ convexHull = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/convexHull.
 convexHull_x = convexHull[0]
 convexHull_y = convexHull[1]
 
-C1path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C1path.txt')
-C1path_x = C1path[0]
-C1path_y = C1path[1]
+# C1path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C1path.txt')
+# C1path_x = C1path[0]
+# C1path_y = C1path[1]
 
-C2path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C2path.txt')
-C2path_x = C2path[0]
-C2path_y = C2path[1]
+# C2path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C2path.txt')
+# C2path_x = C2path[0]
+# C2path_y = C2path[1]
 
-C3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C3path.txt')
-C3path_x = C3path[0]
-C3path_y = C3path[1]
+# C3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C3path.txt')
+# C3path_x = C3path[0]
+# C3path_y = C3path[1]
 
 # cgal_show_ridge_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_show_ridge_path.txt')
 # cgal_show_ridge_path_x = cgal_show_ridge_path[0]
@@ -143,9 +143,9 @@ C3path_y = C3path[1]
 # ax.plot(test1_x,test1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 4.3,markersize=1)
 
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(C2path_x,C2path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(C3path_x,C3path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(C2path_x,C2path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(C3path_x,C3path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(testAB_x,testAB_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 # ax.plot(testABtransd_x,testABtransd_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 

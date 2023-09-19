@@ -2525,7 +2525,6 @@ void pathPolygonPlan::cgalComputeFishNailRidgePath(
             pathInterface::pathPoint   pathPointCurve;
             pathPointCurve.x = finalpath[j].x;
             pathPointCurve.y = finalpath[j].y;
-
            if(finalpath[j].pathPtType_ == pathPtType::FORWARD){
                pathPointCurve.path_point_mode2 =  pathInterface::pathPointMode2::FORWARD;
                pathPointCurve.path_point_mode1 = pathInterface::pathPointMode1::TURNING_AREA;
@@ -3947,27 +3946,6 @@ void pathPolygonPlan::cgalComputeParallelLinesHeading(
 }
 
 void pathPolygonPlan::cgalComputeAKeyptsMapping(){
-
-//    //从第3垄开始计算中间点位的起始和结束的位置
-//    for(int i = 2;i < num -1;i++){
-//        for(int j = 1;j < cgalbackShape_keypoints_[i].size() - 1;j++){
-//            auto fr_lt_pts =  common::commonMath::computeForwardAndBackPoints(
-//                    cgalbackShape_keypoints_[i],
-//                    cgalbackShape_keypoints_[i][j]);
-//            std::vector<polygonPoint>  arriveLine,leaveLine;
-//            arriveLine.push_back(fr_lt_pts[0]);
-//            arriveLine.push_back(cgalbackShape_keypoints_[i][j]);
-//            leaveLine.push_back(cgalbackShape_keypoints_[i][j]);
-//            leaveLine.push_back(fr_lt_pts[1]);
-//            cornerTuringLocation  cornerTuringLocationInstance(
-//                                     arriveLine,
-//                                     leaveLine);
-//            cornerTuringLocationInstance.decideLpAandLpB();
-//            cornerTuringLocationInstance.calculatePointsAandBForCurve();
-//            polygonPoint pt1 = cornerTuringLocationInstance.getCurveStartPtA();
-//            polygonPoint pt2 = cornerTuringLocationInstance.getCurveendPtB();
-//        }
-//    }
      switch (curveLocationChoose_){
          case curveLocationChoose::MODE_HEADLANDS_CURVE__START_END:{
                   cgalComputeHeadleadsAandB();
@@ -4079,9 +4057,9 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
     int num =  cgalbackShape_keypoints_.size();
 
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
-    for(int i = 0;i <  1;i++){
+    for(int i = 0;i <= num -1;i++){
         for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
-//            for(int j = 1 ; j < 2;j++){
+//            for(int j = 3 ; j < 4;j++){
             auto ordered_pt = cgalbackShape_keypoints_[i][j];
             //计算指定点的前后弯道关键点
             ridgeKeypoint tempPtInfo;
@@ -4109,16 +4087,12 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             double F2 = cornerTuringLocationtest.getCurveaboutF2();
             double F3 = cornerTuringLocationtest.getCurveaboutF3();
 
-//            newCornerTuringLocation cornerTuringLocationInstance(
-//                    arriveLine,
-//                    leaveLine);
             polygonPoint pt1 =  cornerTuringLocationtest.getCurveStartPtA();
             polygonPoint pt2 =  cornerTuringLocationtest.getCurveendPtB();
 
             double RC2 = CIRCLE_RIDIS_R + 0.5;
             cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2,F3);
             LOG(INFO) << "RC2 is : " << RC2;
-//            cornerTuringTishNailtest.cornerTuringPath(pt1,pt2,RC2,F3);
 
             std::vector<polygonPoint>  ptAB;
             ptAB.push_back(pt1);
@@ -4144,7 +4118,6 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
 
             //转换到世界坐标系下
             normalMatrixTranslate  normalMatrixTranslateInstance;
-//            std::vector<polygonPoint>  storage_transed_path;
 
             std::vector<polygonPoint>  storage_origin_path;
             int num_size_C1 = local_C1path.size();
@@ -4167,7 +4140,6 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                     arriveLineHeading);
             tempPt.pathPtType_ = pathPtType::SWITCHPT;
             storage_origin_path.push_back(tempPt);
-
 
             for(int m =0 ;m <  num_size_C2 -1;m++){
                 auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
@@ -4195,85 +4167,28 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                 storage_origin_path.push_back(tempPt);
             }
 
-
-            //转换到世界坐标系下
-//            normalMatrixTranslate  normalMatrixTranslateInstance;
-//            std::vector<polygonPoint>  storage_transed_path;
-//            for(auto m : storage_origin_path){
-//                auto tempPt = normalMatrixTranslateInstance.reverseRotatePoint(
-//                                             m,
-//                                             cgalbackShape_keypoints_[i][j],
-//                                             arriveLineHeading);
-//                storage_transed_path.push_back(tempPt);
-//            }
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[i][j]] = storage_origin_path;
-
-
-//            tempPtInfo.start_curve_point =
-//                    common::commonMath::findPointOnSegment(
-//                            forward_last_points[0],
-//                            cgalbackShape_keypoints_[i][j],
-//                            SET_STARTTURN_DISTANCE,
-//                            false);
-//            tempPtInfo.end_curve_point =
-//                    common::commonMath::findPointOnSegment(
-//                            cgalbackShape_keypoints_[i][j],
-//                            forward_last_points[1],
-//                            SET_ENDTURN_DISTANCE,
-//                            true);
-//
-//            double distanceB =  sqrt(pt2.x * pt2.x + pt2.y * pt2.y);
-//            //计算大地坐标系下的A和B点
-//            auto vector_pts =  common::commonMath::findPointExtendSegment(
-//                    forward_last_points[0],
-//                    cgalbackShape_keypoints_[i][j],
-//                    pt1.x,
-//                    true,
-//                    1);
-//            auto vector_ptsB = common::commonMath::findPointExtendSegment(
-//                    forward_last_points[1],
-//                    cgalbackShape_keypoints_[i][j],
-//                    distanceB,
-//                    true,
-//                    1);
-//
-//            LOG(INFO) <<"A and B is : " << pt1.x << " " << distanceB;
-//
-//            tempPtInfo.start_curve_point.x = vector_pts[0].x;
-//            tempPtInfo.start_curve_point.y = vector_pts[0].y;
-//            tempPtInfo.end_curve_point.x = vector_ptsB[0].x;
-//            tempPtInfo.end_curve_point.y = vector_ptsB[0].y;
-//
-////          tempPtInfo.start_curve_point.x = pt1.x;
-////          tempPtInfo.start_curve_point.y = pt1.y;
-////          tempPtInfo.end_curve_point.x = pt2.x;
-////          tempPtInfo.end_curve_point.y = pt2.y;
-//
-//            LOG(INFO) << "the start point is : " <<  tempPtInfo.start_curve_point.x << " "
-//                      << tempPtInfo.start_curve_point.y  ;
-//            LOG(INFO) << "the end point is 111: " << tempPtInfo.end_curve_point.x << " "
-//                      << tempPtInfo.end_curve_point.y ;
-//            backshape_keypts_info_[cgalbackShape_keypoints_[i][j]] = tempPtInfo;
 
         }
         //最后一个点单独处理,j = cgalbackShape_keypoints_[i].size() - 1
-        auto second_pt = cgalbackShape_keypoints_[i+1][1];
+        //如果走到回型最后一个圆圈需要特殊处理
+//        auto second_pt = cgalbackShape_keypoints_[i+1][1];
         ridgeKeypoint  tempLastPt;
         tempLastPt.start_dis = SET_STARTTURN_DISTANCE;
         tempLastPt.end_dis = SET_ENDTURN_DISTANCE;
         int numSize = cgalbackShape_keypoints_[i].size();
-        tempLastPt.start_curve_point =
-                common::commonMath::findPointOnSegment(
-                        cgalbackShape_keypoints_[i][numSize-2],
-                        cgalbackShape_keypoints_[i][numSize-1],
-                        SET_STARTTURN_DISTANCE,
-                        false);
-        tempLastPt.end_curve_point =
-                common::commonMath::findPointOnSegment(
-                        cgalbackShape_keypoints_[i][numSize-1],
-                        second_pt,
-                        SET_ENDTURN_DISTANCE,
-                        true);
+//        tempLastPt.start_curve_point =
+//                common::commonMath::findPointOnSegment(
+//                        cgalbackShape_keypoints_[i][numSize-2],
+//                        cgalbackShape_keypoints_[i][numSize-1],
+//                        SET_STARTTURN_DISTANCE,
+//                        false);
+//        tempLastPt.end_curve_point =
+//                common::commonMath::findPointOnSegment(
+//                        cgalbackShape_keypoints_[i][numSize-1],
+//                        second_pt,
+//                        SET_ENDTURN_DISTANCE,
+//                        true);
         backshape_keypts_info_[cgalbackShape_keypoints_[i][numSize-1]] = tempLastPt;
     }
 }

@@ -304,8 +304,9 @@ std::vector<polygonPoint>  cornerTuringTishNail::computeInterceptPath(std::vecto
     std::vector<polygonPoint>   allPath;
     for(auto i : path){
         double dis = common::commonMath::distance2(i,order_pt);
+        std::cout << "dis is : " << dis << std::endl;
         allPath.push_back(i);
-        if(fabs(dis) < 0.1){
+        if(fabs(dis) < 0.15){
             break;
         }
     }
@@ -318,7 +319,7 @@ polygonPoint  cornerTuringTishNail::computeCircleInterSectPt(
         polygonPoint pt2,
         const double& R1,
         double& R2){
-    double buffer_distance_1 = R1 ;             // radius of circle
+    double buffer_distance_1 = R1 ;                              // radius of circle
     double buffer_distance_2 = R2 ;
     boost::geometry::strategy::buffer::distance_symmetric<double> distance_strategy(buffer_distance_1);
     boost::geometry::strategy::buffer::join_round join_strategy;
@@ -369,9 +370,11 @@ polygonPoint  cornerTuringTishNail::computeCircleInterSectPt(
 std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC1path(){
     return fishNailC1path_;
 }
+
 std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC2path(){
     return fishNailC2path_;
 }
+
 std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC3path(){
     return fishNailC3path_;
 }
@@ -379,9 +382,11 @@ std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC3path(){
 std::vector<polygonPoint>   cornerTuringTishNail::getC1path(){
     return C1path_;
 }
+
 std::vector<polygonPoint>   cornerTuringTishNail::getC2path(){
     return C2path_;
 }
+
 std::vector<polygonPoint>   cornerTuringTishNail::getC3path(){
     return C3path_;
 }
