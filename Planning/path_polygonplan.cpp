@@ -4176,7 +4176,6 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
         if(i != num-1 ){                       //当不是回型最后一笼的处理
             std::vector<polygonPoint> last_arriveline;
             std::vector<polygonPoint> last_leaveline;
-
             last_arriveline.push_back(cgalbackShape_keypoints_[i][spiral_size-2]);
             last_arriveline.push_back(cgalbackShape_keypoints_[i][spiral_size-1]);
             last_leaveline.push_back(cgalbackShape_keypoints_[i+1][0]);
@@ -4185,13 +4184,10 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                     last_arriveline,
                     last_leaveline,
                     cgalbackShape_keypoints_[i][spiral_size - 1]);
-        }else{                                 //回型最后一个点不做处理,直接映射
-            ridgeKeypoint tempPtInfo;
-            tempPtInfo.start_dis = SET_STARTTURN_DISTANCE;
-            tempPtInfo.end_dis  = SET_ENDTURN_DISTANCE;
-
+        }else{
+            //暂时回型最后一个点不做处理
+            //DoNothing
         }
-
     }
 }
 
