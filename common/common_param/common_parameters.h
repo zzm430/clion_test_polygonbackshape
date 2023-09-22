@@ -7,8 +7,6 @@
 #define  INNER_RECT_GRID_DENSITY 2     //利用柱状直方图计算最大内接矩形的精度 >=1
 
 
-
-
 //debug
 //#define  DEBUG                       //用于opencv相关dubeg
 
@@ -22,7 +20,7 @@
 #define RIDGE_WIDTH_LENGTH        4       //垄宽设置
 #define MAX_TRAVERSALS_NUMBERS    500     //最大遍历次数
 #define CHOOSE_NARROW_TYPE                //定义则选择点内缩，未定义选择边内缩
-#define JUDGE_CLOCKWISE            true   //判断回字形按照顺时针走还是逆时针
+#define JUDGE_CLOCKWISE            false   //判断回字形按照顺时针走还是逆时针,true为顺时针，false为逆时针
 #define  SET_STARTTURN_DISTANCE   6       //设置起始转弯距离
 #define  SET_ENDTURN_DISTANCE     6       //末尾转弯距离设置
 #define  SET_CONVERTDIRECTION_DIST 0.1    //设置转换方向点的间距
@@ -32,6 +30,8 @@
 #define  SET_VIRTUAL_LINE_LENGTH  2500    //设置虚拟线的长度
 #define  SET_POLY_TRANSFER_THR     2      //设置开始走平行路线的阈值
 #define  SET_FLAG_INNER_SKELETON_PATH  false //设置是否走内部直骨架路径
+#define  SET_HEADLAND_WIDTH_WHL   0       //地头宽度
+
 //LOG以及相关txt信息输出
 #define DEBUG_MIDDLE_INFO                 //控制输出的txt文件debug使用
 
@@ -41,7 +41,7 @@
 #define LWORK                     0.5       //车体相关参数3
 #define WWORK                     4         //垄宽
 #define OFFWORK                   0         //偏移量农具
-
+#define MINEFF                    0.97      //带有农具时农具有效工作宽度的系数
 #define DIS_1                     1.1        //农具到车后轮中心的距离
 #define DIS_2                     1.6        //包含农具到车后轮中心的距离
 
