@@ -132,16 +132,16 @@ void cornerTuringCCPAAlgorithm::calculateNewFieldBorder(){
 void cornerTuringCCPAAlgorithm::calculatePath(){
 
     double circleC1_R,circleC2_R, circleC3_R,circleCV_R;
-    if(JUDGE_CLOCKWISE){
-        circleC1_R = Rsw_ - (-0.5 * WWORK + OFFWORK) + (Nswath_ - 1) * WWORK;
-        circleC2_R = Rsw_ + SET_HEADLAND_WIDTH_WHL + (-0.5 * WWORK + OFFWORK) - (Nswath_ - 1) * WWORK;
-        circleC3_R = Rsw_ - (-0.5 * WWORK + OFFWORK) + (Nswath_ - 1) * WWORK;
-        circleCV_R = Rsw_ - (-0.5 * WWORK + OFFWORK) + (Nswath_ - 1) * WWORK;
-    }else{
+    if(JUDGE_CLOCKWISE){  //逆时针
         circleC1_R = Rsw_ + (0.5 * WWORK + OFFWORK) + (Nswath_ - 1) * WWORK;
         circleC2_R = Rsw_ + SET_HEADLAND_WIDTH_WHL - (0.5 * WWORK + OFFWORK) - (Nswath_ - 1) * WWORK;
         circleC3_R = Rsw_ +  (0.5 * WWORK + OFFWORK) +  (Nswath_ - 1) * WWORK;
         circleCV_R = Rsw_ + (0.5 * WWORK + OFFWORK) +  (Nswath_ - 1) * WWORK;
+    }else{
+        circleC1_R = Rsw_ - (-0.5 * WWORK + OFFWORK) + (Nswath_ - 1) * WWORK;
+        circleC2_R = Rsw_ + SET_HEADLAND_WIDTH_WHL + (-0.5 * WWORK + OFFWORK) - (Nswath_ - 1) * WWORK;
+        circleC3_R = Rsw_ - (-0.5 * WWORK + OFFWORK) + (Nswath_ - 1) * WWORK;
+        circleCV_R = Rsw_ - (-0.5 * WWORK + OFFWORK) + (Nswath_ - 1) * WWORK;
     }
 
     if(!arriveAndLeaveAngleType_){
