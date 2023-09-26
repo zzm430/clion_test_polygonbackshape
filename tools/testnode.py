@@ -49,9 +49,9 @@ test1 = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/test1.txt')
 test1_x = test1[0]
 test1_y = test1[1]
 
-testABtransd = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testABtransd.txt')
-testABtransd_x = testABtransd[0]
-testABtransd_y = testABtransd[1]
+# testABtransd = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testABtransd.txt')
+# testABtransd_x = testABtransd[0]
+# testABtransd_y = testABtransd[1]
 
 # test_move_pts = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_move_pts.txt')
 # test_move_pts_x = test_move_pts[0]
@@ -69,11 +69,9 @@ testABtransd_y = testABtransd[1]
 # test_skeleton_4_x = test_skeleton_4[0]
 # test_skeleton_4_y = test_skeleton_4[1]
 
-
 test_skeleton_6 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_6.txt')
 test_skeleton_6_x = test_skeleton_6[0]
 test_skeleton_6_y = test_skeleton_6[1]
-
 
 test_virtual_origin_poly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_virtual_origin_poly.txt')
 test_virtual_origin_poly_x = test_virtual_origin_poly[0]
@@ -111,7 +109,6 @@ a = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt')
 #     y_values = [segment[0][1], segment[1][1]]
 #     plt.plot(x_values, y_values,color='black',linewidth= 0.3,markersize=1)
 
-
 entrance_lines = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_pts_entrance.txt')
 entrance_lines_x = entrance_lines[0]
 entrance_lines_y = entrance_lines[1]
@@ -120,17 +117,30 @@ convexHull = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/convexHull.
 convexHull_x = convexHull[0]
 convexHull_y = convexHull[1]
 
-# C1path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C1path.txt')
-# C1path_x = C1path[0]
-# C1path_y = C1path[1]
+C1path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C1path.txt')
+C1path_x = C1path[0]
+C1path_y = C1path[1]
 
-# C2path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C2path.txt')
-# C2path_x = C2path[0]
-# C2path_y = C2path[1]
+C2path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C2path.txt')
+C2path_x = C2path[0]
+C2path_y = C2path[1]
 
-# C3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C3path.txt')
-# C3path_x = C3path[0]
-# C3path_y = C3path[1]
+C3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C3path.txt')
+C3path_x = C3path[0]
+C3path_y = C3path[1]
+CCPA1path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA1path.txt')
+CCPA1path_x = CCPA1path[0]
+CCPA1path_y = CCPA1path[1]
+CCPA2path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA2path.txt')
+CCPA2path_x = CCPA2path[0]
+CCPA2path_y = CCPA2path[1]
+CCPA3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA3path.txt')
+CCPA3path_x = CCPA3path[0]
+CCPA3path_y = CCPA3path[1]
+
+# ax.plot(CCPA1path_x,CCPA1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(CCPA2path_x,CCPA2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(CCPA3path_x,CCPA3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 
 # cgal_show_ridge_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_show_ridge_path.txt')
 # cgal_show_ridge_path_x = cgal_show_ridge_path[0]
@@ -143,17 +153,19 @@ convexHull_y = convexHull[1]
 # ax.plot(test1_x,test1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 4.3,markersize=1)
 
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-# ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-# ax.plot(C2path_x,C2path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-# ax.plot(C3path_x,C3path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(C2path_x,C2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(C3path_x,C3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(testAB_x,testAB_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 # ax.plot(testABtransd_x,testABtransd_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 
 # ax.plot(convexHull_x,convexHull_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-# for i in range(len(a)):
-#     plt.plot(a[i,0],a[i,1],'ro', markersize=3)
-#     plt.text(a[i, 0] + 0.2, a[i, 1] + 0.2, f"({a[i, 0]}, {a[i, 1]})")
-# plt.plot(a[0,0],a[0,1],'ro')
+
+for i in range(len(a)):
+    plt.plot(a[i,0],a[i,1],'ro', markersize=3)
+    # plt.text(a[i, 0] + 0.2, a[i, 1] + 0.2, f"({a[i, 0]}, {a[i, 1]})")
+plt.plot(a[0,0],a[0,1],'ro')
+
 # ax.plot(test_txt_x,test_txt_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.8,markersize=1)
 # ax.plot(entrance_lines_x,entrance_lines_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
 
@@ -179,8 +191,8 @@ ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints 
 #
 # ax.plot(DD_x,DD_y,color='r',markerfacecolor='green',marker='o',label='realline data')
 
-for a, b in zip(CC_x,CC_y):
-        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+# for a, b in zip(CC_x,CC_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # for a, b in zip(entrance_lines_x,entrance_lines_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 # #
@@ -199,6 +211,7 @@ for a, b in zip(CC_x,CC_y):
 
 # for a, b in zip(test1_x,test1_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+
 # # 绘制线段
 # for i in range(0, len(lineshow[0])-1, 2):
 #     x = [lineshow[0][i], lineshow[0][i+1]]

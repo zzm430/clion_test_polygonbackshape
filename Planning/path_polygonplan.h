@@ -40,6 +40,10 @@
 #include "common/print/normaPrint.h"
 #include "Planning/diffMode_Choose.h"
 #include "Planning/normalMatrix_Translate.h"
+#include "Geometry/cornerTuring_Implement_Radius.h"
+#include "Geometry/cornerTuring_C_CPA_Algorithm.h"
+#include "common/common_param/common_typedef.h"
+
 namespace aiforce{
 namespace Route_Planning
 {
@@ -48,35 +52,6 @@ namespace Route_Planning
     typedef boost::geometry::model::polygon<point> polygon;
     typedef boost::geometry::model::linestring<point> linestring_type;
     typedef boost::geometry::model::segment<point> Segment;
-
-    struct Kernel : public CGAL::Cartesian<double> {};
-
-    typedef Kernel::Point_2                           Point_2;
-    typedef Kernel::Line_2                            Line_2;
-    typedef Kernel::Segment_2                         Segment_2;
-    typedef CGAL::Polygon_2<Kernel>                   Polygon_2;
-
-    typedef CGAL::Exact_predicates_inexact_constructions_kernel K ;
-    typedef K::FT                             cgal_FT ;
-    typedef K::Point_2                        cgal_Point ;
-    typedef CGAL::Polygon_2<K>                cgal_Polygon_2 ;
-    typedef CGAL::Straight_skeleton_2<K>      cgal_Ss ;
-    typedef boost::shared_ptr<cgal_Ss>        cgal_SsPtr ;
-    typedef K::Segment_2                      cgal_Segment_2;
-    typedef Kernel::Bounded_side              cgal_Bounded_side;
-    typedef CGAL::Convex_hull_traits_adapter_2<K,
-            CGAL::Pointer_property_map<cgal_Point>::type > Convex_hull_traits_2;
-
-    typedef boost::shared_ptr<cgal_Polygon_2> cgal_PolygonPtr ;
-    typedef std::vector<cgal_PolygonPtr>      cgal_PolygonPtrVector ;
-
-    typedef CGAL::Partition_traits_2<K>                         Traits;
-    typedef Traits::Point_2                               partition_Point_2;
-    typedef Traits::Polygon_2                             partition_Polygon_2;      // a polygon of indices
-    typedef std::list<partition_Polygon_2>                partition_Polygon_list;
-    //半边数据结构
-    typedef CGAL::HalfedgeDS_default<K> cgal_HalfedgeDS;
-
 
     enum class lastPolyIdentify:uint8_t {
        POLY_FOUR_AND_THREE = 0,  //四边形内嵌三角形

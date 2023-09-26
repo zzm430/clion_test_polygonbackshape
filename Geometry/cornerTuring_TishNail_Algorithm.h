@@ -9,6 +9,7 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Circular_kernel_intersections.h>
 #include <CGAL/Exact_circular_kernel_2.h>
+#include <CGAL/intersections.h>
 #include <boost/geometry.hpp>
 #include <boost/geometry/io/io.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -19,9 +20,18 @@
 #include "common/common_param/common_parameters.h"
 #include "common/print/normaPrint.h"
 #include "common/math/common_math.h"
+#include "common/common_param/common_typedef.h"
 
+//FT-CPA专用
 typedef boost::geometry::model::d2::point_xy<double> pointBoost;
 typedef boost::geometry::model::polygon<pointBoost> polygonBoost;
+
+
+typedef struct
+{
+    polygonPoint c;
+    float r;
+}CIRCLE;
 
 class cornerTuringTishNail{
 public:
@@ -39,11 +49,17 @@ public:
                            polygonPoint B,
                            double RC2,
                            double F3);
+    void IntersectionOf2Circles(CIRCLE c1, CIRCLE c2, polygonPoint &P1, polygonPoint &P2);
     polygonPoint  computeCircleInterSectPt(
             polygonPoint pt1,
             polygonPoint pt2,
             const double& R1,
             double& R2);
+    std::vector<polygonPoint>  computeCircleInterSectPts(
+            polygonPoint circle_1,
+            polygonPoint circle_2,
+            double circle_1_R,
+            double circle_2_R);
     std::vector<polygonPoint> computeInterceptPath(std::vector<polygonPoint> & path,
                                                                           polygonPoint  order_pt);
     void computeCircleCenter( polygonPoint A,
@@ -65,6 +81,9 @@ public:
                              double F1,
                              double F2,
                               double F3);
+    std::vector<polygonPoint>  calculateCircleLinesInsectPts(
+            std::vector<polygonPoint> & lines1,
+            std::vector<polygonPoint> & lines2);
     double computeLengthCostPath();
     std::vector<polygonPoint>   getFishNailC1path();
     std::vector<polygonPoint>   getFishNailC2path();

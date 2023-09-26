@@ -48,6 +48,7 @@ public:
       double getCurveaboutF2();
       double getCurveaboutF3();
       double getCurveArrriveLineHeading();
+      double getCurveArrriveLineHeading2();
 
 private:
     angleType  angleType_;                   //angleInt的类型
@@ -58,7 +59,8 @@ private:
     double         F1_;
     double         F2_;
     double         F3_;
-    double         arriveLineHeading_;
+    double         arriveLineHeading_;         //以x轴为正方向
+    double         arriveLineHeading2_;        //以正比方向
 
 
 };

@@ -24,6 +24,7 @@ cornerTuringLocation::cornerTuringLocation(
    if(angle_1 < 0){
        angle_1 += 360;
    }
+    arriveLineHeading2_ = angle_1;
    double angle_2 = common::commonMath::computeTwolineAngleDu(vector_2,reference_vector);
    if(angle_2 < 0){
        angle_2 += 360;
@@ -198,4 +199,8 @@ double cornerTuringLocation::getCurveaboutF3(){
 
 double cornerTuringLocation::getCurveArrriveLineHeading() {
     return arriveLineHeading_;
+}
+
+double cornerTuringLocation::getCurveArrriveLineHeading2() {
+    return arriveLineHeading2_;
 }

@@ -550,7 +550,7 @@ namespace common{
            //存储采样点的容器
            std::vector<polygonPoint> sample_points;
 
-           for(int i = 1;i < num_samples ;i++){
+           for(int i = 1;i < num_samples -1 ;i++){
                double current_angle = start_angle + i * angle_increment;
                double x = circle_center.x + radis * std::sin(current_angle);
                double y = circle_center.y + radis * std::cos(current_angle);
@@ -559,16 +559,16 @@ namespace common{
            }
 
            //对最后一段进行10等分做特殊处理
-//           double temp_last_start_angle = start_angle + (num_samples - 2) * angle_increment;
-//           double last_angle_increment =
-//                         angle_increment/100;
-//           for(int i = 1;i < 100;i++){
-//               double current_angle = temp_last_start_angle + last_angle_increment * i;
-//               double x = circle_center.x + radis * std::sin(current_angle);
-//               double y = circle_center.y + radis * std::cos(current_angle);
-//               polygonPoint  tempPt(x,y);
-//               sample_points.push_back(tempPt);
-//           }
+           double temp_last_start_angle = start_angle + (num_samples - 1) * angle_increment;
+           double last_angle_increment =
+                        angle_increment/100;
+          for(int i = 1;i < 100;i++){
+               double current_angle = temp_last_start_angle + last_angle_increment * i;
+              double x = circle_center.x + radis * std::sin(current_angle);
+              double y = circle_center.y + radis * std::cos(current_angle);
+               polygonPoint  tempPt(x,y);
+              sample_points.push_back(tempPt);
+           }
            return sample_points;  //C1、C2、C3的总长度
         }
 

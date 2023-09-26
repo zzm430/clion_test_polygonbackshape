@@ -22,7 +22,6 @@ ax=f.add_subplot(111)
 # ax.plot(c_x,c_y,color='y',markerfacecolor='red',marker='o',label='update1 data')
 plt.plot(a[0,0],a[0,1],'ro')
 
-
 #使用plt.plot函数绘制起点和终点，并使用plt.arrow函数在其上添加一条箭头表示前进方向
 # plt.arrow(a[0,0], a[0,1], 1.0 * math.cos(a[0,2]), 1.0 * math.sin(a[0,2]),
 #                   fc="r", ec="k", head_width=0.5, head_length=0.5)

@@ -25,9 +25,9 @@ public:
 
     virtual  ~polygonPoint(){};
 
-    polygonPoint(long double f, long double g):Point(f,g){}
+    polygonPoint( double f, double g):Point(f,g){}
 
-    polygonPoint(long double f, long double g,double heading):Point(f,g,heading){}
+    polygonPoint( double f,  double g,double heading):Point(f,g,heading){}
 
     bool operator == ( const polygonPoint& other) const{
         return (fabs(x - other.x) < 0.001 &&

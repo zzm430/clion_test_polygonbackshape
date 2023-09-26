@@ -10,11 +10,15 @@ cornerTuringCCPAAlgorithm::cornerTuringCCPAAlgorithm(
                                                   double angleInt,
                                                   double Rsw,
                                                   double Nswath,
-                                                  bool arriveAndLeaveAngleType)
+                                                  bool arriveAndLeaveAngleType,
+                                                  polygonPoint fieldCornerPt,
+                                                  double arriveLineHeading)
                                                   :angleInt_(angleInt),
                                                    Rsw_(Rsw),
                                                    Nswath_(Nswath),
-                                                   arriveAndLeaveAngleType_(arriveAndLeaveAngleType){
+                                                   arriveAndLeaveAngleType_(arriveAndLeaveAngleType),
+                                                   fieldCornerPt_(fieldCornerPt),
+                                                   arriveLineHeading_(arriveLineHeading){
     double angleC;
     if(JUDGE_CLOCKWISE){
         if(angleInt_>= M_PI) {
@@ -178,6 +182,15 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
                                                             angleC3_end,
                                                             circleC3_R,
                                                             circleC3_center_);
+        //如果angleInt > M_PI,则将路径点y值全部乘以-1
+        if(angleInt_> M_PI){
+            correctForCornerOrientation(C1_pts);
+            correctForCornerOrientation(C2_pts);
+            correctForCornerOrientation(C3_pts);
+            reprojectionCCA(C1_pts);
+            reprojectionCCA(C2_pts);
+            reprojectionCCA(C3_pts);
+        }
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA1path.txt";
         std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA2path.txt";
         std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA3path.txt";
@@ -207,6 +220,39 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
 
     }
 
+}
+
+
+void cornerTuringCCPAAlgorithm::reprojectionCCA(std::vector<polygonPoint> & pts){
+//    for(auto& i : pts){
+//        i.x = fieldCornerPt_.x + i.x * cos(arriveLineHeading_ - 0.5 * M_PI)
+//                + i.y * sin(arriveLineHeading_ - 0.5 * M_PI);
+//        i.y = fieldCornerPt_.y - i.x * sin(arriveLineHeading_ - 0.5 * M_PI)
+//                + i.y * cos(arriveLineHeading_ - 0.5 * M_PI);
+//    }
+    // 将坐标转换为相对于新坐标系的偏移量
+    for(auto& i : pts){
+        double offsetX = i.x;
+        double offsetY = i.y;
+
+        // 计算逆向旋转后的坐标
+        double reversedX = offsetX * cos(arriveLineHeading_) -  offsetY * sin(arriveLineHeading_);
+        double reversedY = offsetY * cos(arriveLineHeading_) +  offsetX * sin(arriveLineHeading_) ;
+
+        // 将逆向旋转后的坐标转换为原始坐标系
+        polygonPoint reversedPoint;
+        reversedPoint.x = reversedX + fieldCornerPt_.x;
+        reversedPoint.y = reversedY + fieldCornerPt_.y;
+        i.x = reversedPoint.x;
+        i.y = reversedPoint.y;
+    }
+
+}
+
+void   cornerTuringCCPAAlgorithm::correctForCornerOrientation(std::vector<polygonPoint> & vecPts){
+    for(auto& i: vecPts){
+        i.y = i.y * (-1);
+    }
 }
 
 polygonPoint cornerTuringCCPAAlgorithm::getCircleC1Center() {

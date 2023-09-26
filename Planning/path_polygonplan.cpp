@@ -4057,7 +4057,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
     int num =  cgalbackShape_keypoints_.size();
 
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
-    for(int i = 0;i <= num-1 ;i++){
+    for(int i = 0;i <= 1 ;i++){
 //        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
         for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1  ;j++){
 //            for(int j = 3 ; j < 4;j++){
@@ -4081,6 +4081,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             cornerTuringLocationtest.calculatePointsAandBForCurve();
             double angleInt = cornerTuringLocationtest.getCurveAngleInt();
             double arriveLineHeading = cornerTuringLocationtest.getCurveArrriveLineHeading();
+            double arriveLineHeading2 = cornerTuringLocationtest.getCurveArrriveLineHeading2();
             arriveLineHeading = arriveLineHeading * M_PI / 180;
             //这里按照逆时针考虑的，所以取负
             arriveLineHeading = -arriveLineHeading;
@@ -4088,10 +4089,30 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             double F2 = cornerTuringLocationtest.getCurveaboutF2();
             double F3 = cornerTuringLocationtest.getCurveaboutF3();
 
+            //添加验证C-CPA代码
+            if(j == 5 && i == 1){
+                cornerTuringImplementRadius cornerTuringImplementRadius1;
+                cornerTuringImplementRadius1.calculateMiniTuringRadiusConsiderImplement();
+                auto Rsw = cornerTuringImplementRadius1.getRsw();
+                cornerTuringCCPAAlgorithm  cornerTuringCCPAAlgorithm1(
+                                                                        angleInt,
+                                                                        Rsw,
+                                                                        15,
+                                                                        false,
+                                                                        cgalbackShape_keypoints_[i][j],
+                                                                        arriveLineHeading);
+                cornerTuringCCPAAlgorithm1.calculateAngleCC2();
+                cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
+                cornerTuringCCPAAlgorithm1.calculatePath();
+                std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+                std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
+
+            }
+
             polygonPoint pt1 =  cornerTuringLocationtest.getCurveStartPtA();
             polygonPoint pt2 =  cornerTuringLocationtest.getCurveendPtB();
 
-            double RC2 = CIRCLE_RIDIS_R ;
+            double RC2 = 6.5 ;
             cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2,F3);
             LOG(INFO) << "RC2 is : " << RC2;
 
@@ -4117,6 +4138,10 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
 //            auto local_C2path = cornerTuringTishNailtest.getC2path();
 //            auto local_C3path = cornerTuringTishNailtest.getC3path();
 
+            std::vector<polygonPoint> temp_test_C1Path ;
+            std::vector<polygonPoint> temp_test_C2Path;
+            std::vector<polygonPoint> temp_test_C3Path;
+
             //转换到世界坐标系下
             normalMatrixTranslate  normalMatrixTranslateInstance;
 
@@ -4131,6 +4156,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                         cgalbackShape_keypoints_[i][j],
                         arriveLineHeading);
                 tempPt.pathPtType_ = pathPtType::FORWARD;
+                temp_test_C1Path.push_back(tempPt);
                 storage_origin_path.push_back(tempPt);
             }
 
@@ -4140,6 +4166,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                     cgalbackShape_keypoints_[i][j],
                     arriveLineHeading);
             tempPt.pathPtType_ = pathPtType::SWITCHPT;
+            temp_test_C1Path.push_back(tempPt);
             storage_origin_path.push_back(tempPt);
 
             for(int m =0 ;m <  num_size_C2 -1;m++){
@@ -4148,6 +4175,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                         cgalbackShape_keypoints_[i][j],
                         arriveLineHeading);
                 tempPt.pathPtType_ = pathPtType::BACKWARD;
+                temp_test_C2Path.push_back(tempPt);
                 storage_origin_path.push_back(tempPt);
             }
 
@@ -4157,6 +4185,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                     cgalbackShape_keypoints_[i][j],
                     arriveLineHeading);
             tempPt1.pathPtType_ = pathPtType::SWITCHPT;
+            temp_test_C2Path.push_back(tempPt);
             storage_origin_path.push_back(tempPt1);
 
             for(int m =0 ;m <  num_size_C3;m++){
@@ -4165,10 +4194,38 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                         cgalbackShape_keypoints_[i][j],
                         arriveLineHeading);
                 tempPt.pathPtType_ = pathPtType::FORWARD;
+                temp_test_C3Path.push_back(tempPt);
                 storage_origin_path.push_back(tempPt);
             }
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[i][j]] = storage_origin_path;
+
+
+            //将A、B点转入到世界坐标系下
+            std::string ptname = "/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt";
+            auto & ptsshow =
+                    common::Singleton::GetInstance<filePrint2>(ptname);
+
+            for(auto it : ptAB){
+                auto tempfg = normalMatrixTranslateInstance.reverseRotatePoint(
+                        it,
+                        cgalbackShape_keypoints_[i][j],
+                        arriveLineHeading);
+                ptsshow.writePt(tempfg);
+            }
+
+            if(j == 2){
+                std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
+                std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
+                std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
+                normalPrint C1file(C1name);
+                normalPrint C2file(C2name);
+                normalPrint C3file(C3name);
+                C1file.writePts(temp_test_C1Path);
+                C2file.writePts(temp_test_C2Path);
+                C3file.writePts(temp_test_C3Path);
+            }
         }
+
         //最后一个点单独处理,j = cgalbackShape_keypoints_[i].size() - 1
         //如果走到回型最后一个圆圈需要特殊处理
 //        auto second_pt = cgalbackShape_keypoints_[i+1][1];

@@ -17,11 +17,15 @@ public:
             double angleInt,
             double Rsw,
             double Nswath,
-            bool arriveAndLeaveAngleType);
+            bool arriveAndLeaveAngleType,
+            polygonPoint fieldCornerPt,
+            double arriveLineHeading);
     void calculateAngleCC2();
     void calculateCirclesCenter();
     void calculateNewFieldBorder();
     void calculatePath();
+    void correctForCornerOrientation(std::vector<polygonPoint> & vecPts);
+    void reprojectionCCA(std::vector<polygonPoint> & pts);
     polygonPoint  getCircleC1Center();
     polygonPoint  getCircleC2Center();
     polygonPoint  getCircleC3Center();
@@ -39,7 +43,8 @@ private:
     polygonPoint   circleC3_center_;
     polygonPoint   circleCV_center_;
     bool   arriveAndLeaveAngleType_;       //true为凹角 ,false为凸角
-
+    polygonPoint   fieldCornerPt_;         //相对坐标原点
+    double   arriveLineHeading_;
 };
 
 

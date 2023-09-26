@@ -11,9 +11,9 @@ class Point {
 public:
     Point():x(0),y(0),heading(0),flag(false){}
 
-    Point(long double a, long double b):x(a),y(b){}
+    Point( double a,  double b):x(a),y(b){}
 
-    Point(long double a,long double b,long double c):x(a),y(b),heading(c){}
+    Point( double a, double b, double c):x(a),y(b),heading(c){}
 
      bool operator==(const Point& other) const{
         return (fabs(x - other.x) < 0.1 &&
@@ -27,8 +27,8 @@ public:
             return y < other.y;
         }
     }
-    long double x;
-    long double y;
+    double x;
+    double y;
     double  heading;
     bool  flag;
 };

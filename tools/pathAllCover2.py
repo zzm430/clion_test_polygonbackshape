@@ -17,7 +17,7 @@ for line in lines:
 line = LineString(coordinates)
 
 # 计算缓冲区对象
-buffered_line = line.buffer(2, cap_style="square")
+buffered_line = line.buffer(1, cap_style="square")
 
 fig, ax = plt.subplots(figsize=(5, 5))
 
