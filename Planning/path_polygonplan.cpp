@@ -4112,16 +4112,13 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             polygonPoint pt1 =  cornerTuringLocationtest.getCurveStartPtA();
             polygonPoint pt2 =  cornerTuringLocationtest.getCurveendPtB();
 
-            double RC2 = 6.5 ;
+            double RC2 = 6 ;
             cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2,F3);
             LOG(INFO) << "RC2 is : " << RC2;
 
             std::vector<polygonPoint>  ptAB;
             ptAB.push_back(pt1);
             ptAB.push_back(pt2);
-            normalPrint   printAB("/home/zzm/Desktop/test_path_figure-main/src/testAB.txt");
-            printAB.writePts(ptAB);
-
             normalMatrixTranslate   testtemp;
             for(auto it : ptAB){
                auto pt = testtemp.reverseRotatePoint(it,cgalbackShape_keypoints_[i][j],
@@ -4230,7 +4227,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
         //如果走到回型最后一个圆圈需要特殊处理
 //        auto second_pt = cgalbackShape_keypoints_[i+1][1];
         int spiral_size = cgalbackShape_keypoints_[i].size();
-        if(i != num-1 ){                       //当不是回型最后一笼的处理
+        if(i != num-1 ){                                         //当不是回型最后一笼的处理
             std::vector<polygonPoint> last_arriveline;
             std::vector<polygonPoint> last_leaveline;
             last_arriveline.push_back(cgalbackShape_keypoints_[i][spiral_size-2]);

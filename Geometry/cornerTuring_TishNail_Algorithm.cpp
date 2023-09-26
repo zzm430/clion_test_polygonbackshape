@@ -186,47 +186,25 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     double alphaC3By = atan((B.y - pt3.y)/(B.x - pt3.x));
     double alphaC21y = atan((pt2.x - pt1.x)/(pt2.y - pt1.y));
 
-    //求3个圆之间的交点
-    auto insect1_2 = computeCircleInterSectPt(pt1,pt2,CIRCLE_RIDIS_R,RC2);  //C1,C2之间的交点
-    auto insect3_2 = computeCircleInterSectPt(pt3,pt2,CIRCLE_RIDIS_R,RC2);  //C2,C3之间的交点
+//    //求3个圆之间的交点
+//    auto insect1_2 = computeCircleInterSectPt(pt1,pt2,CIRCLE_RIDIS_R,RC2);  //C1,C2之间的交点
+//    auto insect3_2 = computeCircleInterSectPt(pt3,pt2,CIRCLE_RIDIS_R,RC2);  //C2,C3之间的交点
 
     //处理C1
     double C1alphaStart = (1 - F3 ) * M_PI ;
     double C1alphaEnd  = alphaXC12 ;
-
     //等分之后进行取点
     double angleC1diff = (C1alphaEnd - C1alphaStart)/100;
-//    for(int i = 0;i <= 100;i++){
-//        double C1alpha = C1alphaStart + i * angleC1diff;
-//        polygonPoint  tempPt;
-//        tempPt.x = pt1.x + sin(C1alpha) * CIRCLE_RIDIS_R;
-//        tempPt.y = pt1.y + cos(C1alpha) * CIRCLE_RIDIS_R;
-//        C1path_.push_back(tempPt);
-//    }
 
     //处理C2
     double C2alphaStart = - M_PI + alphaXC12;
     double C2alphaEnd = alphaXC23;
-//    double angleC2diff = (C2alphaEnd - C2alphaStart)/1000;
-//    for(int i = 0; i <= 1000;i++){
-//        double C2alpha = C2alphaStart + i * angleC2diff;
-//        polygonPoint  tempPt;
-//        tempPt.x = pt2.x + sin(C2alpha) * RC2;
-//        tempPt.y = pt2.y + cos(C2alpha) * RC2;
-//        C2path_.push_back(tempPt);
-//    }
+
 
     //处理C3
     double C3alphaStart = alphaXC23 + M_PI;
     double C3alphaEnd = M_PI/2 - alphaC3By;
-//    double angleC3diff = (C3alphaEnd - C3alphaStart)/100;
-//    for(int i = 0;i <= 100;i++){
-//        double C3alpha = C3alphaStart + i * angleC3diff;
-//        polygonPoint tempPt;
-//        tempPt.x = pt3.x + sin(C3alpha) * CIRCLE_RIDIS_R;
-//        tempPt.y = pt3.y + cos(C3alpha) * CIRCLE_RIDIS_R;
-//        C3path_.push_back(tempPt);
-//    }
+
 
     //C1、C2、C3的总长度
     double C1_allLength = CIRCLE_RIDIS_R * (C1alphaEnd - C1alphaStart);
@@ -327,12 +305,10 @@ std::vector<polygonPoint>  cornerTuringTishNail::computeCircleInterSectPts(
 //计算出c1和c2圆心的距离,并向该方向延长半径的长度
     std::vector<polygonPoint> insecPts;
     auto pt = common::commonMath::findPointOnSegment(circle_1,circle_2,circle_1_R,true);
-    std::cout << "the pt is : " << pt.x << " " << pt.y << std::endl;
     insecPts.push_back(pt);
+//    double distance2 = common::commonMath::distance2(circle_1,circle_2);
+//    double c1_c2_r_plus = circle_1_R + circle_2_R;
 
-    double distance2 = common::commonMath::distance2(circle_1,circle_2);
-    double c1_c2_r_plus = circle_1_R + circle_2_R;
-    std::cout << "c1_c2_r_plus is : " << c1_c2_r_plus << " distance2 is : " << distance2 << std::endl;
 
      //求两个圆的交点
 //    polygonPoint p1,p2;
@@ -346,7 +322,6 @@ std::vector<polygonPoint>  cornerTuringTishNail::computeCircleInterSectPts(
 //    IntersectionOf2Circles(m1,m2,p1,p2);
 //    std::cout << "the p1 is : " << p1.x << " " << p1.y << std::endl;
 //    std::cout << "the p2 is : "  << p2.x << " " << p2.y << std::endl;
-
     return  insecPts;
 }
 
