@@ -48,7 +48,7 @@ private:
     double ridgeNumber_;
     double ptIndex_;
     std::vector<polygonPoint> arriveLine_;
-    std::vector<polygonPoint> leaveLine_,
+    std::vector<polygonPoint> leaveLine_;
 };
 
 #endif //POLYGONBACKSHAPE_CURVEDECISIONMANAGER_H
