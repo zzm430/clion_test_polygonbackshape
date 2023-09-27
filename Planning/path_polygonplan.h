@@ -4,6 +4,12 @@
 #include <cmath>
 #include <unordered_map>
 #include <iostream>
+#include <numeric>
+#include <list>
+#include <boost/shared_ptr.hpp>
+#include <common/print/print.h>
+#include <unordered_set>
+#include <unordered_map>
 #include <boost/geometry.hpp>
 #include <boost/geometry/algorithms/buffer.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
@@ -17,7 +23,6 @@
 #include <CGAL/intersections.h>
 #include <common/utilpath/path_interface.h>
 #include <Geometry/reeds_shepp.h>
-#include "common/common_param/common_parameters.h"
 #include <common/plot/plotter.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/create_straight_skeleton_2.h>
@@ -27,12 +32,7 @@
 #include <CGAL/property_map.h>
 #include <CGAL/convex_hull_2.h>
 #include <CGAL/Convex_hull_traits_adapter_2.h>
-#include <numeric>
-#include <list>
-#include <boost/shared_ptr.hpp>
-#include <common/print/print.h>
-#include <unordered_set>
-#include <unordered_map>
+#include "common/common_param/common_parameters.h"
 #include "common/utilpath/path_polygonPoint.h"
 #include "Geometry/cornerTuring_location.h"
 #include "Geometry/newCornerTuring_location.h"
@@ -43,6 +43,7 @@
 #include "Geometry/cornerTuring_Implement_Radius.h"
 #include "Geometry/cornerTuring_C_CPA_Algorithm.h"
 #include "common/common_param/common_typedef.h"
+#include "Planning/curveDecisionManager.h"
 
 namespace aiforce{
 namespace Route_Planning
@@ -167,7 +168,6 @@ namespace Route_Planning
      std::vector<std::vector<polygonPoint>>  backShape_keypoints_;    //回字形的关键点位信息[第几垄][对应的关键点位们]
      std::vector<std::vector<polygonPoint>>  filtered_backshape_keypoints_;  //过滤后的关键点信息
      std::unordered_map<polygonPoint,ridgeKeypoint,polyPointHash>  backshape_keypts_info_; //获取关键点的映射信息
-     std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> backshape_fishnail_curve_path_;  //关键点映射到fishnail路径点
      std::vector<pathInterface::pathPoint>      ridge_routing_points_;           //每垄的routing信息
 
  private:                                                              //用于4边形内嵌3角形
@@ -262,7 +262,7 @@ namespace Route_Planning
      std::vector<polygonPoint>        entrance_pts_;        //回字形的入口点位信息
      std::vector<std::vector<polygonPoint>>      cgalIncreaseptPolypts_;  //增加入口点的内缩多边形
      std::vector<std::vector<polygonPoint>>      cgalSequencedPolypts_;   //增加入口点并已入口点为起点存储的内缩多边形
-     std::vector<std::vector<polygonPoint>>      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]
+
      std::map<polygonPoint,std::vector<polygonPoint>>    cgalPtMaping_;    //直骨架点位映射
      int mode_choose_ = 0;                                          //分裂多边形分裂 mode_choose_ = 1 ,2
      cgalLastPolyIdentify             cgalLastPolyType_;
@@ -273,6 +273,10 @@ namespace Route_Planning
      std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> last_inner_skeleton_keypts_; //获取关键点的映射信息
      curveModeChoose   curveModeChoose_;                             //弯道模式选择
      curveLocationChoose  curveLocationChoose_;                      //弯道起始点和结束点选择方式
+     curveDecisionManager curveDecisionManager_;                     //弯道管理决策器
+ public:
+     std::vector<std::vector<polygonPoint>>      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]
+     std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> backshape_fishnail_curve_path_;  //关键点映射到fishnail路径点
  };
 }
 }

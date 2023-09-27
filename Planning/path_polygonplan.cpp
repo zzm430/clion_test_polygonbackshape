@@ -3807,7 +3807,6 @@ void pathPolygonPlan::cgalUpdatePolygonPointsINcrease(){
             break;
         }
     }
-
 }
 
 void pathPolygonPlan::cgalUpatePolygonPointsSequence(){
@@ -4090,7 +4089,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             double F3 = cornerTuringLocationtest.getCurveaboutF3();
 
             //添加验证C-CPA代码
-            if(j == 5 && i == 1){
+            if(j == 2 && i == 0){
                 cornerTuringImplementRadius cornerTuringImplementRadius1;
                 cornerTuringImplementRadius1.calculateMiniTuringRadiusConsiderImplement();
                 auto Rsw = cornerTuringImplementRadius1.getRsw();
@@ -4104,7 +4103,6 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
                 cornerTuringCCPAAlgorithm1.calculateAngleCC2();
                 cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
                 cornerTuringCCPAAlgorithm1.calculatePath();
-                std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
                 std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
 
             }
@@ -4114,7 +4112,6 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
 
             double RC2 = 6 ;
             cornerTuringTishNail cornerTuringTishNailtest(pt1,pt2,angleInt,RC2,F1,F2,F3);
-            LOG(INFO) << "RC2 is : " << RC2;
 
             std::vector<polygonPoint>  ptAB;
             ptAB.push_back(pt1);
@@ -4123,7 +4120,7 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             for(auto it : ptAB){
                auto pt = testtemp.reverseRotatePoint(it,cgalbackShape_keypoints_[i][j],
                                             arriveLineHeading);
-                LOG(INFO)  << "the pt transd   is : " << pt.x << " " << pt.y ;
+//                LOG(INFO)  << "the pt transd   is : " << pt.x << " " << pt.y ;
             }
 
             //计算关键点对应的鱼尾路径点并一一对应存储
