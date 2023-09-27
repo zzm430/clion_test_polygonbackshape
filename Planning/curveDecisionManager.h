@@ -32,15 +32,14 @@ public:
                        double ridgeNumber,
                        double ptIndex,
                        std::vector<polygonPoint> arriveLine,
-                       std::vector<polygonPoint> leaveLine,
-                       aiforce::Route_Planning::pathPolygonPlan & path_frame);
-    void processCurvePath(aiforce::Route_Planning::pathPolygonPlan & path_frame);
+                       std::vector<polygonPoint> leaveLine);
+    void processCurvePath();
     void processCurveType();
-    void processBorderlessFishNail(aiforce::Route_Planning::pathPolygonPlan & path_frame);
-    void processCCPA(aiforce::Route_Planning::pathPolygonPlan & path_frame);
-    void processFTCPACC(aiforce::Route_Planning::pathPolygonPlan & path_frame);
-    void processCCCURVE(aiforce::Route_Planning::pathPolygonPlan & path_frame);
-    void processREEDSHEPP(aiforce::Route_Planning::pathPolygonPlan & path_frame);
+    void processBorderlessFishNail();
+    void processCCPA();
+    void processFTCPACC();
+    void processCCCURVE();
+    void processREEDSHEPP();
     void changeState(CurveDecision  state);
 
 private:

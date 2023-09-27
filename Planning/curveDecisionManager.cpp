@@ -12,8 +12,7 @@ void curveDecisionManager::setCurvePara(
                                 double ridgeNumber,
                                 double ptIndex,
                                 std::vector<polygonPoint> arriveLine,
-                                std::vector<polygonPoint> leaveLine,
-                                aiforce::Route_Planning::pathPolygonPlan & path_frame){
+                                std::vector<polygonPoint> leaveLine){
     angleInt_ = angleInt;
     ridgeNumber_ = ridgeNumber;
     ptIndex_ = ptIndex;
@@ -45,8 +44,7 @@ void curveDecisionManager::processCurveType(){
     }
 }
 
-void curveDecisionManager::processCurvePath(
-                 aiforce::Route_Planning::pathPolygonPlan & path_frame){
+void curveDecisionManager::processCurvePath(){
     switch(curveType_){
         case CurveDecision::BORDERLESS_FISHNAIL: {
             processBorderlessFishNail();
@@ -75,8 +73,7 @@ void curveDecisionManager::processCurvePath(
 }
 
 
-void curveDecisionManager::processBorderlessFishNail(
-        aiforce::Route_Planning::pathPolygonPlan & path_frame){
+void curveDecisionManager::processBorderlessFishNail(){
 
     cornerTuringLocation   cornerTuringLocationtest(arriveLine_,
                                                     leaveLine_);
@@ -206,7 +203,7 @@ void curveDecisionManager::processBorderlessFishNail(
     }
 }
 
-void curveDecisionManager::processCCPA(aiforce::Route_Planning::pathPolygonPlan & path_frame){
+void curveDecisionManager::processCCPA(){
     cornerTuringLocation   cornerTuringLocationtest(arriveLine_,
                                                     leaveLine_);
     cornerTuringLocationtest.decideLpAandLpB();
@@ -238,15 +235,15 @@ void curveDecisionManager::processCCPA(aiforce::Route_Planning::pathPolygonPlan 
     }
 }
 
-void curveDecisionManager::processFTCPACC(aiforce::Route_Planning::pathPolygonPlan & path_frame){
+void curveDecisionManager::processFTCPACC(){
 
 }
 
-void curveDecisionManager::processCCCURVE(aiforce::Route_Planning::pathPolygonPlan & path_frame){
+void curveDecisionManager::processCCCURVE(){
 
 }
 
-void curveDecisionManager::processREEDSHEPP(aiforce::Route_Planning::pathPolygonPlan & path_frame){
+void curveDecisionManager::processREEDSHEPP(){
 
 }
 
