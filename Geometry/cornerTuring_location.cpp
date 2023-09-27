@@ -45,12 +45,12 @@ cornerTuringLocation::cornerTuringLocation(
    if(angle_diff < 0){
        angle_diff += 360;
    }
-   LOG(INFO) << "the angle 1 2 is : "
-             << angle_1
-             << " "
-             << angle_2;
-   LOG(INFO) << "angle diff is : "
-             << angle_diff;
+//   LOG(INFO) << "the angle 1 2 is : "
+//             << angle_1
+//             << " "
+//             << angle_2;
+//   LOG(INFO) << "angle diff is : "
+//             << angle_diff;
    if(angle_diff >0 && angle_diff < 90){
        angleType_ = angleType::FIRST_QUADRANT;
        LOG(INFO) << "FIRST_QUADRANT";
@@ -77,11 +77,10 @@ cornerTuringLocation::cornerTuringLocation(
        LOG(INFO) << "FOURTH_QUADRANT";
    }
    angleInt_ = angle_diff ;
+    LOG(INFO) << "the arrive line and leave line angle du is  : "
+              << angleInt_;
    angleInt_ = angleInt_ * M_PI / 180;
-   LOG(INFO) << "the arrive line and leave line angle is : "
-             << angleInt_
-             << " du is : "
-             << angleInt_ ;
+
 };
 
 void cornerTuringLocation::decideLpAandLpB(){

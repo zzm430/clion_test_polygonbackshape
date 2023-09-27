@@ -158,8 +158,6 @@ void cornerTuringTishNail::chooseOptimalpath(  polygonPoint A,
                                                double F2,
                                                double F3){
     double maxLengthCost = DBL_MAX ;
-//    computeCircleCenter(A,  B, angleInt, RC2, F1, F2);
-//    computeCircleC2Radius( A, B, angleInt,RC2,F1,F2);
     for(int i = 1;i < 30;i++){
         computeCircleCenter(A,  B, angleInt, RC2, F1, F2);       //计算C2的圆心
         cornerTuringPath(A,B,RC2,F3);
@@ -185,10 +183,6 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     double alphaXC23 = atan2((pt3.y - pt2.y),(pt2.x - pt3.x));
     double alphaC3By = atan((B.y - pt3.y)/(B.x - pt3.x));
     double alphaC21y = atan((pt2.x - pt1.x)/(pt2.y - pt1.y));
-
-//    //求3个圆之间的交点
-//    auto insect1_2 = computeCircleInterSectPt(pt1,pt2,CIRCLE_RIDIS_R,RC2);  //C1,C2之间的交点
-//    auto insect3_2 = computeCircleInterSectPt(pt3,pt2,CIRCLE_RIDIS_R,RC2);  //C2,C3之间的交点
 
     //处理C1
     double C1alphaStart = (1 - F3 ) * M_PI ;
