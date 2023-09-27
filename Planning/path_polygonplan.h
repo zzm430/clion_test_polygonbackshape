@@ -7,7 +7,6 @@
 #include <numeric>
 #include <list>
 #include <boost/shared_ptr.hpp>
-#include <common/print/print.h>
 #include <unordered_set>
 #include <unordered_map>
 #include <boost/geometry.hpp>
@@ -32,6 +31,7 @@
 #include <CGAL/property_map.h>
 #include <CGAL/convex_hull_2.h>
 #include <CGAL/Convex_hull_traits_adapter_2.h>
+#include <common/print/print.h>
 #include "common/common_param/common_parameters.h"
 #include "common/utilpath/path_polygonPoint.h"
 #include "Geometry/cornerTuring_location.h"
