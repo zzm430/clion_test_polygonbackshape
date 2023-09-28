@@ -5,6 +5,7 @@
 #include <Geometry/newCornerTuring_location.h>
 #include "path_polygonplan.h"
 
+
 namespace aiforce{
 namespace Route_Planning{
 
@@ -82,6 +83,14 @@ void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
 //              << "]";
 //    LOG(INFO) << "the count narrow polygon nubmers is : "
 //              << count_narrow_polygon_numbers_;
+}
+
+pathPolygonPlan::pathPolygonPlan(){
+    curveDecisionManager_ = new curveDecisionManager();
+}
+
+pathPolygonPlan::~pathPolygonPlan(){
+    delete curveDecisionManager_;
 }
 
 void pathPolygonPlan::initialize() {

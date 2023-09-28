@@ -11,7 +11,6 @@
 #include "Geometry/cornerTuring_TishNail_Algorithm.h"
 #include "Geometry/cornerTuring_location.h"
 #include "common/utilpath/path_polygonPoint.h"
-#include "Planning/path_polygonplan.h"
 
 enum  class CurveDecision : uint8_t {
     IDLE = 0,
@@ -49,6 +48,8 @@ private:
     double ptIndex_;
     std::vector<polygonPoint> arriveLine_;
     std::vector<polygonPoint> leaveLine_;
+    std::vector<std::vector<polygonPoint>>      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]
+    std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> backshape_fishnail_curve_path_;  //关键点映射到fishnail路径点
 };
 
 #endif //POLYGONBACKSHAPE_CURVEDECISIONMANAGER_H

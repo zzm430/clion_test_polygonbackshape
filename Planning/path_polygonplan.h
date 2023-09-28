@@ -70,8 +70,8 @@ namespace Route_Planning
 
  class pathPolygonPlan  {
  public:
-     pathPolygonPlan(){}
-     virtual ~pathPolygonPlan(){}
+     pathPolygonPlan();
+     virtual ~pathPolygonPlan();
 
 //     virtual void initiate();
     struct lineKb{
@@ -137,9 +137,6 @@ namespace Route_Planning
      virtual void  computeKeypointsHeading();        //计算最后一笼点位的heading
      virtual void computeLastRidgeRoutingFourAndThree(std::vector<pathInterface::pathPoint> &storageAllPath,
                                                       int ridge_index); //计算最后一笼属于四边形内嵌三角形的情况path生成
-
-
-
      const std::vector<std::vector<polygonPoint>> getNarrowPolygonPoints() const; //得到缩小后多边形点位信息
      const polygonPoint  getMinPolygonCentroid() const;               //得到最小多边形的质心
      const int  countNarrowPolygonNumbers() const;                    //得到缩小后的多边形数目
@@ -273,7 +270,6 @@ namespace Route_Planning
      std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> last_inner_skeleton_keypts_; //获取关键点的映射信息
      curveModeChoose   curveModeChoose_;                             //弯道模式选择
      curveLocationChoose  curveLocationChoose_;                      //弯道起始点和结束点选择方式
-     curveDecisionManager curveDecisionManager_;                     //弯道管理决策器
  public:
      std::vector<std::vector<polygonPoint>>      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]
      std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> backshape_fishnail_curve_path_;  //关键点映射到fishnail路径点
