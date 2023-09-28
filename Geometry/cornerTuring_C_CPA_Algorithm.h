@@ -19,6 +19,7 @@ public:
             double Nswath,
             bool arriveAndLeaveAngleType,
             polygonPoint fieldCornerPt,
+            polygonPoint referencePt,
             double arriveLineHeading);
     void calculateAngleCC2();
     void calculateCirclesCenter();
@@ -26,6 +27,7 @@ public:
     void calculatePath();
     void correctForCornerOrientation(std::vector<polygonPoint> & vecPts);
     void reprojectionCCA(std::vector<polygonPoint> & pts);
+    std::vector<polygonPoint>  getAllPath();
     polygonPoint  getCircleC1Center();
     polygonPoint  getCircleC2Center();
     polygonPoint  getCircleC3Center();
@@ -43,8 +45,10 @@ private:
     polygonPoint   circleC3_center_;
     polygonPoint   circleCV_center_;
     bool   arriveAndLeaveAngleType_;       //true为凹角 ,false为凸角
-    polygonPoint   fieldCornerPt_;         //相对坐标原点
+    polygonPoint   fieldCornerPt_;         //映射的原始坐标点
+    polygonPoint   referencePt_;           //用于从局部更新到全局的基准点
     double   arriveLineHeading_;
+    std::vector<polygonPoint>  storage_allPath_;  //存储世界坐标系下path信息
 };
 
 

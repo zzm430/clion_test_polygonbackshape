@@ -4152,24 +4152,24 @@ void pathPolygonPlan::cgalComputeHeadleadsAandB(){
             double F2 = cornerTuringLocationtest.getCurveaboutF2();
             double F3 = cornerTuringLocationtest.getCurveaboutF3();
 
-            //添加验证C-CPA代码
-            if(j == 2 && i == 0){
-                cornerTuringImplementRadius cornerTuringImplementRadius1;
-                cornerTuringImplementRadius1.calculateMiniTuringRadiusConsiderImplement();
-                auto Rsw = cornerTuringImplementRadius1.getRsw();
-                cornerTuringCCPAAlgorithm  cornerTuringCCPAAlgorithm1(
-                                                                        angleInt,
-                                                                        Rsw,
-                                                                        15,
-                                                                        false,
-                                                                        cgalbackShape_keypoints_[i][j],
-                                                                        arriveLineHeading);
-                cornerTuringCCPAAlgorithm1.calculateAngleCC2();
-                cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
-                cornerTuringCCPAAlgorithm1.calculatePath();
-                std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
-
-            }
+//            //添加验证C-CPA代码
+//            if(j == 2 && i == 0){
+//                cornerTuringImplementRadius cornerTuringImplementRadius1;
+//                cornerTuringImplementRadius1.calculateMiniTuringRadiusConsiderImplement();
+//                auto Rsw = cornerTuringImplementRadius1.getRsw();
+//                cornerTuringCCPAAlgorithm  cornerTuringCCPAAlgorithm1(
+//                                                                        angleInt,
+//                                                                        Rsw,
+//                                                                        15,
+//                                                                        false,
+//                                                                        cgalbackShape_keypoints_[i][j],
+//                                                                        arriveLineHeading);
+//                cornerTuringCCPAAlgorithm1.calculateAngleCC2();
+//                cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
+//                cornerTuringCCPAAlgorithm1.calculatePath();
+//                std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
+//
+//            }
 
             polygonPoint pt1 =  cornerTuringLocationtest.getCurveStartPtA();
             polygonPoint pt2 =  cornerTuringLocationtest.getCurveendPtB();

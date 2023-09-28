@@ -51,22 +51,26 @@ void curveDecisionManager::processCurveType(){
         if(ridgeNumber_ < 2){                //第1垄和第2垄弯道处理
             if(angleInt_> 0 && angleInt_ < 30){
                 curveType_ = CurveDecision::CONVEX_CORNER;
-            }else if(angleInt_ > 30 < angleInt_ < 180){
+            }else if(angleInt_ > 30  && angleInt_ < 150){
                 curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleInt_ > 180 < angleInt_ < 210){
+            }else if(angleInt_ > 150  &&  angleInt_ < 210){
                 curveType_ = CurveDecision::CONCAVE_CORNER;
-            }else if(angleInt_ > 210 < angleInt_ < 360){
+            }else if(angleInt_ > 210  &&  angleInt_ < 330){
                 curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
+            }else if(angleInt_ > 330 &&  angleInt_ < 360){
+                curveType_ = CurveDecision::CONCAVE_CORNER;
             }
         }else{                            //当大于第2垄时弯道处理
             if(angleInt_> 0 && angleInt_ < 30){
                 curveType_ = CurveDecision::CONVEX_CORNER;
-            }else if(angleInt_ > 30 < angleInt_ < 180){
+            }else if(angleInt_ > 30  && angleInt_ < 150){
                 curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleInt_ > 180 < angleInt_ < 210){
+            }else if(angleInt_ > 150  &&  angleInt_ < 210){
                 curveType_ = CurveDecision::CONCAVE_CORNER;
-            }else if(angleInt_ > 210 < angleInt_ < 360){
+            }else if(angleInt_ > 210  &&  angleInt_ < 330){
                 curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
+            }else if(angleInt_ > 330 &&  angleInt_ < 360){
+                curveType_ = CurveDecision::CONCAVE_CORNER;
             }
         }
     }else{
@@ -352,8 +356,46 @@ void curveDecisionManager::processBorderlessFishNail(polygonPoint curvePt){
 }
 
 void curveDecisionManager::processCCPA(){
-    cornerTuringLocation   cornerTuringLocationtest(arriveLine_,
-                                                    leaveLine_);
+    //外扩arriveLine\leaveLine (垄宽/2)
+    auto tempLeaveLine  = leaveLine_;
+    std::reverse(tempLeaveLine.begin(),tempLeaveLine.end());
+    auto  extendArriveLine = common::commonMath::computeLineTranslationPoints(
+            arriveLine_,
+            tempLeaveLine,
+            RIDGE_WIDTH_LENGTH/2);
+    auto tempArriveLine = arriveLine_;
+    std::reverse(tempArriveLine.begin(),tempArriveLine.end());
+    auto extendLeaveLine = common::commonMath::computeLineTranslationPoints(
+            leaveLine_,
+            tempArriveLine,
+            RIDGE_WIDTH_LENGTH/2);
+    //将extendArriveLine 和extendLeaveLine两端延长10m
+    auto extendArriveLine_1 = common::commonMath::findPointExtendSegment2(
+                                                                        extendArriveLine[0],
+                                                                        extendArriveLine[1],
+                                                                        10);
+    auto extendLeaveLine_1 =  common::commonMath::findPointExtendSegment2(
+                                                                        extendLeaveLine[0],
+                                                                        extendLeaveLine[1],
+                                                                        10);
+    //计算extendArriveLine 和extendLeaveLine的交点
+    Segment seg1(pointbst(extendArriveLine_1[0].x, extendArriveLine_1[0].y),
+                 pointbst(extendArriveLine_1[1].x, extendArriveLine_1[1].y));
+    Segment seg2(pointbst(extendLeaveLine_1[0].x, extendLeaveLine_1[0].y),
+                  pointbst(extendLeaveLine_1[1].x, extendLeaveLine_1[1].y));
+    std::deque<pointbst> output1;
+    boost::geometry::intersection(seg1, seg2, output1);
+    if (!output1.empty()){
+        std::cout << "Intersection point: ("
+                  << output1.front().x()
+                  << ", "
+                  << output1.front().y()
+                  << ")"
+                  << std::endl;
+    }
+    polygonPoint  referencePt(output1.front().x(),output1.front().y());
+    cornerTuringLocation   cornerTuringLocationtest(extendArriveLine,
+                                                    extendLeaveLine);
     cornerTuringLocationtest.decideLpAandLpB();
     cornerTuringLocationtest.calculatePointsAandBForCurve();
     double angleInt = cornerTuringLocationtest.getCurveAngleInt();
@@ -364,21 +406,25 @@ void curveDecisionManager::processCCPA(){
     arriveLineHeading = -arriveLineHeading;
 
     //添加验证C-CPA代码
-    cornerTuringImplementRadius cornerTuringImplementRadiusInstance;
-    cornerTuringImplementRadiusInstance.calculateMiniTuringRadiusConsiderImplement();
-    auto Rsw = cornerTuringImplementRadiusInstance.getRsw();
-    cornerTuringCCPAAlgorithm  cornerTuringCCPAAlgorithm1(
-            angleInt,
-            Rsw,
-            15,
-            false,
-            cgalbackShape_keypoints_[ridgeNumber_][ptIndex_],
-            arriveLineHeading);
-    cornerTuringCCPAAlgorithm1.calculateAngleCC2();
-    cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
-    cornerTuringCCPAAlgorithm1.calculatePath();
-    std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
-
+    if(ridgeNumber_ == 0 && ptIndex_ == 2){
+        cornerTuringImplementRadius cornerTuringImplementRadiusInstance;
+        cornerTuringImplementRadiusInstance.calculateMiniTuringRadiusConsiderImplement();
+        auto Rsw = cornerTuringImplementRadiusInstance.getRsw();
+        cornerTuringCCPAAlgorithm  cornerTuringCCPAAlgorithm1(
+                angleInt,
+                Rsw,
+                1,
+                false,
+                cgalbackShape_keypoints_[ridgeNumber_][ptIndex_],
+                referencePt,
+                arriveLineHeading);
+        cornerTuringCCPAAlgorithm1.calculateAngleCC2();
+        cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
+        cornerTuringCCPAAlgorithm1.calculatePath();
+        std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
+        auto all_path = cornerTuringCCPAAlgorithm1.getAllPath();
+        backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+    }
 }
 
 void curveDecisionManager::processFTCPACC(){
