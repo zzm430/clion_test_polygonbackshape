@@ -23,6 +23,20 @@
 #include <CGAL/Circular_kernel_intersections.h>
 #include <CGAL/Exact_circular_kernel_2.h>
 
+#include <boost/geometry.hpp>
+#include <boost/geometry/algorithms/buffer.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/geometries.hpp>
+
+
+
+typedef double coordinate_type;
+typedef boost::geometry::model::d2::point_xy<coordinate_type> pointbst;
+typedef boost::geometry::model::polygon<pointbst> polygon;
+typedef boost::geometry::model::linestring<pointbst> linestring_type;
+typedef boost::geometry::model::segment<pointbst> Segment;
+
 struct  Kernel : public CGAL::Cartesian<double> {};
 typedef Kernel::Point_2                           Point_2;
 typedef Kernel::Line_2                            Line_2;

@@ -85,7 +85,7 @@ inner_skeleton_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/in
 inner_skeleton_path_x = inner_skeleton_path[0]
 inner_skeleton_path_y = inner_skeleton_path[1]
 
-a = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt')
+# a = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt')
 
 # lineshow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/lineshow.txt')
 # lineshow_x = lineshow[0]
@@ -128,6 +128,7 @@ convexHull_y = convexHull[1]
 # C3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C3path.txt')
 # C3path_x = C3path[0]
 # C3path_y = C3path[1]
+
 CCPA1path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA1path.txt')
 CCPA1path_x = CCPA1path[0]
 CCPA1path_y = CCPA1path[1]

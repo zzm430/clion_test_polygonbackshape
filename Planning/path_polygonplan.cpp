@@ -39,7 +39,7 @@ void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
         boost::geometry::model::multi_polygon<polygon> mpol;
         polygon instance_polygon;
         for (auto it = points.rbegin(); it != points.rend(); it++) {
-            point instance_point;
+            pointbst instance_point;
             instance_point.x((*it).x);
             instance_point.y((*it).y);
             instance_polygon.outer().push_back(instance_point);
@@ -86,11 +86,11 @@ void pathPolygonPlan::computeNarrowPolygons(std::vector<Point> &points) {
 }
 
 pathPolygonPlan::pathPolygonPlan(){
-    curveDecisionManager_ = new curveDecisionManager();
+
 }
 
 pathPolygonPlan::~pathPolygonPlan(){
-    delete curveDecisionManager_;
+
 }
 
 void pathPolygonPlan::initialize() {
@@ -264,10 +264,10 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                     polygon pt_poly;
                     for(int j = 0;j < bufferspiltPolysAandBs_.size();j++){
                         for(auto it :bufferspiltPolysAandBs_[j][0]){
-                            pt_poly.outer().push_back(point(it.x,it.y));
+                            pt_poly.outer().push_back(pointbst(it.x,it.y));
                         }
                         bool flag =  boost::geometry::within(
-                                point(offset_polygons[i]->begin()->x(),
+                                pointbst(offset_polygons[i]->begin()->x(),
                                  offset_polygons[i]->begin()->y()), pt_poly);
                         if(flag){
                             for(auto it : *offset_polygons[i]){
@@ -336,17 +336,17 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         int polys_size = cgalPolypts_.size();
         std::map<int,std::vector<polygonPoint>>   find_entrance_pts;
         for(int i = 0;i < polys_size;i++){
-            std::vector<point> output;
+            std::vector<pointbst> output;
             std::vector<polygonPoint> trans_output;
             for(int j = 0;j < entrance_lines_.size();j++){
                   if( j % 2 == 0){
                       polygon  poly;
                       for(auto it :cgalPolypts_[i]){
-                          poly.outer().push_back(point(it.x,it.y));
+                          poly.outer().push_back(pointbst(it.x,it.y));
                       }
                       linestring_type  line;
-                      line.push_back(point(entrance_lines_[j].x,entrance_lines_[j].y));
-                      line.push_back(point(entrance_lines_[j + 1].x,entrance_lines_[j + 1].y));
+                      line.push_back(pointbst(entrance_lines_[j].x,entrance_lines_[j].y));
+                      line.push_back(pointbst(entrance_lines_[j + 1].x,entrance_lines_[j + 1].y));
                       boost::geometry::intersection(line,poly,output);
                       if(output.size() == 0){
                           continue;
@@ -485,11 +485,11 @@ void pathPolygonPlan::processSpiltPolys(){
         for(int it = 0; it < bufferspiltPolysAandBs_.size();it++){
             polygon poly_m;
             for(auto m : bufferspiltPolysAandBs_[it][0]){
-                poly_m.outer().push_back(point(m.x,m.y));
+                poly_m.outer().push_back(pointbst(m.x,m.y));
             }
             auto n_size = entrance_lines_.size();
             distance = boost::geometry::distance(
-                    point(entrance_lines_[n_size - 1].x,entrance_lines_[n_size -1].y),
+                    pointbst(entrance_lines_[n_size - 1].x,entrance_lines_[n_size -1].y),
                     poly_m);
             LOG(INFO) << "the distance is : " << distance;
             polys_map[distance] = it;
@@ -681,7 +681,7 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
     polygon  poly_f;
     std::reverse(stor_poly.begin(),stor_poly.end());
     for(auto it : stor_poly){
-        poly_f.outer().push_back(point(it.x,it.y));
+        poly_f.outer().push_back(pointbst(it.x,it.y));
     }
     //将最长边往最远点移动一定距离
     auto longest_pts = common::commonMath::computeLineTranslationPoints(
@@ -690,10 +690,10 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
             RIDGE_WIDTH_LENGTH/2);
 
     linestring_type  line;
-    line.push_back(point(longest_pts[0].x,
+    line.push_back(pointbst(longest_pts[0].x,
                          longest_pts[0].y));
-    line.push_back(point(longest_pts[1].x,longest_pts[1].y));
-    std::vector<point> output;
+    line.push_back(pointbst(longest_pts[1].x,longest_pts[1].y));
+    std::vector<pointbst> output;
     boost::geometry::intersection(line,poly_f,output);
     polygonPoint  vector_1,vector_2;
     polygonPoint  judgeDirection;
@@ -730,13 +730,13 @@ void pathPolygonPlan::computeLeaveSituation(int last_ordered_poly_index){
         polygon  poly;
         std::reverse(stor_poly.begin(),stor_poly.end());
         for(auto it : stor_poly){
-            poly.outer().push_back(point(it.x,it.y));
+            poly.outer().push_back(pointbst(it.x,it.y));
         }
         linestring_type  line;
-        line.push_back(point(points[0].x,
+        line.push_back(pointbst(points[0].x,
                              points[0].y));
-        line.push_back(point(points[1].x,points[1].y));
-        std::vector<point> output;
+        line.push_back(pointbst(points[1].x,points[1].y));
+        std::vector<pointbst> output;
         boost::geometry::intersection(line,poly,output);
         LOG(INFO) << "output size is :" << output.size();
         if(output.size() != 2){
@@ -914,7 +914,7 @@ void pathPolygonPlan::computeLeaveSituation(std::vector<polygonPoint> & origin_p
     polygon  poly_f;
     std::reverse(stor_poly.begin(),stor_poly.end());
     for(auto it : stor_poly){
-        poly_f.outer().push_back(point(it.x,it.y));
+        poly_f.outer().push_back(pointbst(it.x,it.y));
     }
     //将最长边往最远点移动一定距离
     auto longest_pts = common::commonMath::computeLineTranslationPoints(
@@ -923,10 +923,10 @@ void pathPolygonPlan::computeLeaveSituation(std::vector<polygonPoint> & origin_p
             RIDGE_WIDTH_LENGTH/2);
 
     linestring_type  line;
-    line.push_back(point(longest_pts[0].x,
+    line.push_back(pointbst(longest_pts[0].x,
                          longest_pts[0].y));
-    line.push_back(point(longest_pts[1].x,longest_pts[1].y));
-    std::vector<point> output;
+    line.push_back(pointbst(longest_pts[1].x,longest_pts[1].y));
+    std::vector<pointbst> output;
     boost::geometry::intersection(line,poly_f,output);
     polygonPoint  vector_1,vector_2;
     polygonPoint  judgeDirection;
@@ -962,13 +962,13 @@ void pathPolygonPlan::computeLeaveSituation(std::vector<polygonPoint> & origin_p
         polygon  poly;
         std::reverse(stor_poly.begin(),stor_poly.end());
         for(auto it : stor_poly){
-            poly.outer().push_back(point(it.x,it.y));
+            poly.outer().push_back(pointbst(it.x,it.y));
         }
         linestring_type  line;
-        line.push_back(point(points[0].x,
+        line.push_back(pointbst(points[0].x,
                              points[0].y));
-        line.push_back(point(points[1].x,points[1].y));
-        std::vector<point> output;
+        line.push_back(pointbst(points[1].x,points[1].y));
+        std::vector<pointbst> output;
         boost::geometry::intersection(line,poly,output);
         LOG(INFO) << "output size is :" << output.size();
         if(output.size() != 2){
@@ -1150,7 +1150,7 @@ void pathPolygonPlan::computeLeaveSituation(){
         polygon  poly_f;
         std::reverse(stor_poly.begin(),stor_poly.end());
         for(auto it : stor_poly){
-            poly_f.outer().push_back(point(it.x,it.y));
+            poly_f.outer().push_back(pointbst(it.x,it.y));
         }
         //将最长边往最远点移动一定距离
         auto longest_pts = common::commonMath::computeLineTranslationPoints(
@@ -1159,10 +1159,10 @@ void pathPolygonPlan::computeLeaveSituation(){
                 RIDGE_WIDTH_LENGTH/2);
 
         linestring_type  line;
-        line.push_back(point(longest_pts[0].x,
+        line.push_back(pointbst(longest_pts[0].x,
                              longest_pts[0].y));
-        line.push_back(point(longest_pts[1].x,longest_pts[1].y));
-        std::vector<point> output;
+        line.push_back(pointbst(longest_pts[1].x,longest_pts[1].y));
+        std::vector<pointbst> output;
         boost::geometry::intersection(line,poly_f,output);
         polygonPoint  vector_1,vector_2;
         polygonPoint  judgeDirection;
@@ -1198,13 +1198,13 @@ void pathPolygonPlan::computeLeaveSituation(){
             polygon  poly;
             std::reverse(stor_poly.begin(),stor_poly.end());
             for(auto it : stor_poly){
-                poly.outer().push_back(point(it.x,it.y));
+                poly.outer().push_back(pointbst(it.x,it.y));
             }
             linestring_type  line;
-            line.push_back(point(points[0].x,
+            line.push_back(pointbst(points[0].x,
                                  points[0].y));
-            line.push_back(point(points[1].x,points[1].y));
-            std::vector<point> output;
+            line.push_back(pointbst(points[1].x,points[1].y));
+            std::vector<pointbst> output;
             boost::geometry::intersection(line,poly,output);
             LOG(INFO) << "output size is :" << output.size();
             if(output.size() != 2){
@@ -1270,7 +1270,7 @@ void pathPolygonPlan::judgePolysSample(int* record_spilt_index,bool&  have_spilt
     for(int i = 0;i < pt_number ;i++){
         polygon temp;
         for(auto it = cgalPolypts_[i].rbegin()  ;it != cgalPolypts_[i].rend();it++){
-            temp.outer().push_back(point(it->x,it->y));
+            temp.outer().push_back(pointbst(it->x,it->y));
         }
         bool issample =  boost::geometry::is_valid(temp);
         temp.outer().clear();
@@ -1294,7 +1294,7 @@ void pathPolygonPlan::spiltPolyTo2(
         point&                            spilt_first_poly_center){
     if(have_spilt_poly){
         for(auto f = spilt_origin_poly.rbegin();f != spilt_origin_poly.rend();f++){
-            spilt_ori.outer().push_back(point(f->x,f->y));
+            spilt_ori.outer().push_back(pointbst(f->x,f->y));
         }
         for(int i = 1; i <= MAX_TRAVERSALS_NUMBERS;i++){
             buffer_distance = i * -RIDGE_WIDTH_LENGTH ;
@@ -1353,10 +1353,10 @@ void pathPolygonPlan::spiltPolyTo2(
                        !spilt_second_poly_pts.empty()){
                         polygon pt_poly;
                         for(auto it : storage_spilt_first_polys[0]){
-                            pt_poly.outer().push_back(point(it.x,it.y));
+                            pt_poly.outer().push_back(pointbst(it.x,it.y));
                         }
 
-                        bool flag =  boost::geometry::within(point(spilt_first_poly_pts[0].x,
+                        bool flag =  boost::geometry::within(pointbst(spilt_first_poly_pts[0].x,
                                                                    spilt_first_poly_pts[0].y), pt_poly);
                         if(flag){
                             storage_spilt_first_polys.push_back(spilt_first_poly_pts);
@@ -1369,10 +1369,10 @@ void pathPolygonPlan::spiltPolyTo2(
                              spilt_second_poly_pts.empty()){
                         polygon pt_poly;
                         for(auto it : storage_spilt_first_polys[0]){
-                            pt_poly.outer().push_back(point(it.x,it.y));
+                            pt_poly.outer().push_back(pointbst(it.x,it.y));
                         }
 
-                        bool flag =  boost::geometry::within(point(spilt_first_poly_pts[0].x,
+                        bool flag =  boost::geometry::within(pointbst(spilt_first_poly_pts[0].x,
                                                                    spilt_first_poly_pts[0].y), pt_poly);
                         if(flag){
                             storage_spilt_first_polys.push_back(spilt_first_poly_pts);
@@ -1383,10 +1383,10 @@ void pathPolygonPlan::spiltPolyTo2(
                              spilt_first_poly_pts.empty()){
                         polygon pt_poly;
                         for(auto it : storage_spilt_first_polys[0]){
-                            pt_poly.outer().push_back(point(it.x,it.y));
+                            pt_poly.outer().push_back(pointbst(it.x,it.y));
                         }
 
-                        bool flag =  boost::geometry::within(point(spilt_first_poly_pts[0].x,
+                        bool flag =  boost::geometry::within(pointbst(spilt_first_poly_pts[0].x,
                                                                    spilt_first_poly_pts[0].y), pt_poly);
                         if(flag){
                             storage_spilt_first_polys.push_back(spilt_second_poly_pts);
@@ -1411,16 +1411,16 @@ void pathPolygonPlan::computeEntranceLines(std::vector<Point> &points){
     //找到延伸的线段与地块的交点
     polygon  poly;
     for(auto it : points){
-        poly.outer().push_back(point(it.x,it.y));
+        poly.outer().push_back(pointbst(it.x,it.y));
     }
     linestring_type  line;
-    line.push_back(point(
+    line.push_back(pointbst(
             vector_1[0].x,
             vector_1[0].y));
-    line.push_back(point(
+    line.push_back(pointbst(
             lastPoly_innerpts_[1].x,
             lastPoly_innerpts_[1].y));
-    std::vector<point> output;
+    std::vector<pointbst> output;
     boost::geometry::intersection(line,poly,output);
     polygonPoint orderd_pt(output[0].x(),output[0].y());
     //找到对应该点的前后点位
@@ -1477,92 +1477,92 @@ void pathPolygonPlan::computeLastRidgeInnerPoints(std::vector<polygonPoint> & po
 
 
 
-void pathPolygonPlan::dealWithLastSeveralPolygons(){
-      auto num = storageNarrowPolygonPoints_.size();
-    LOG(INFO) << "--------------------------------------------------------------";
-      if(storageNarrowPolygonPoints_[num-1].size() == 6){
-         last_polys_type_ = lastPolyIdentify::POLY_FIVE;
-         LOG(INFO) << "the last poly type is : poly_five !";
-         return;
-      }
-      if(storageNarrowPolygonPoints_[num-1].size() == 5){
-          last_polys_type_ = lastPolyIdentify::POLY_FOUR;
-          LOG(INFO) << "the last poly type is : poly_four !";
-          return;
-      }
-      for(int i = 1;i <= num; i++)
-      {
-          auto poly_pts_size = storageNarrowPolygonPoints_[i-1].size();
-          if(poly_pts_size == 5 ){
-              if(poly_pts_size == 5 &&
-                 storageNarrowPolygonPoints_[i].size() == 4){
-                  //内缩到出现三角形,目前只考虑内缩四边形内的第一个三角形
-                  boost::geometry::strategy::buffer::distance_symmetric<coordinate_type>
-                          distance_strategy(-RIDGE_WIDTH_LENGTH/2);
-                  boost::geometry::strategy::buffer::join_round join_strategy(0.01);
-
-                  boost::geometry::strategy::buffer::end_round end_strategy;
-                  boost::geometry::strategy::buffer::point_circle circle_strategy;
-                  boost::geometry::strategy::buffer::side_straight side_strategy;
-
-                  // Declare output
-                  boost::geometry::model::multi_polygon<polygon> result;
-                  boost::geometry::model::multi_polygon<polygon> mpol;
-                  polygon instance_polygon;
-
-                  for (auto it: storageNarrowPolygonPoints_[i-1]) {
-                      point instance_point;
-                      instance_point.x(it.x);
-                      instance_point.y(it.y);
-                      instance_polygon.outer().push_back(instance_point);
-                  }
-                  mpol.push_back(instance_polygon);
-                  boost::geometry::buffer(mpol, result,
-                                          distance_strategy, side_strategy,
-                                          join_strategy, end_strategy, circle_strategy);
-                  std::vector<polygonPoint> poly_res;
-                  for(auto j = result.begin()->outer().begin();
-                      j != result.begin()->outer().end();
-                      j ++){
-                      polygonPoint  temp_point;
-                      temp_point.x = j->x();
-                      temp_point.y = j->y();
-                      poly_res.push_back(temp_point);
-                  }
-                  if(poly_res.size() == 4){
-                      LOG(INFO) << "the last poly type is : poly_four_and_three !";
-                      last_polys_type_ = lastPolyIdentify::POLY_FOUR_AND_THREE;
-                      last_several_polygons_.push_back(storageNarrowPolygonPoints_[i-1]);
-                      record_poly_index_ = i;
-                  } else {
-                      LOG(INFO) << "the shape of quadrangle after being retracted is quadrangle !";
-                      LOG(INFO) << "the quadrangle size is : " << poly_res.size();
-                      last_polys_type_ = lastPolyIdentify::POLY_FOUR_AND_FOUR;
-                      last_several_polygons_.push_back(storageNarrowPolygonPoints_[i-1]);
-                      record_poly_index_ = i;
-                  }
-                  LOG(INFO) << "the record poly index is : " << record_poly_index_;
-                  last_several_polygons_.push_back(poly_res);
-              }
-          }
-      }
-      LOG(INFO) <<  "--------------------------------------------------------------";
-      std::ofstream  tempfile;
-      tempfile.open("/home/zzm/Desktop/test_path_figure-main/src/templastridge.txt",std::ios::out);
-      for(auto it :last_several_polygons_){
-          for(auto j : it){
-              tempfile << " " << j.x;
-          }
-      }
-      tempfile << std::endl;
-      for(auto it : last_several_polygons_){
-          for(auto j: it){
-              tempfile << " " << j.y;
-          }
-      }
-      tempfile << std::endl;
-      tempfile.close();
-}
+//void pathPolygonPlan::dealWithLastSeveralPolygons(){
+//      auto num = storageNarrowPolygonPoints_.size();
+//    LOG(INFO) << "--------------------------------------------------------------";
+//      if(storageNarrowPolygonPoints_[num-1].size() == 6){
+//         last_polys_type_ = lastPolyIdentify::POLY_FIVE;
+//         LOG(INFO) << "the last poly type is : poly_five !";
+//         return;
+//      }
+//      if(storageNarrowPolygonPoints_[num-1].size() == 5){
+//          last_polys_type_ = lastPolyIdentify::POLY_FOUR;
+//          LOG(INFO) << "the last poly type is : poly_four !";
+//          return;
+//      }
+//      for(int i = 1;i <= num; i++)
+//      {
+//          auto poly_pts_size = storageNarrowPolygonPoints_[i-1].size();
+//          if(poly_pts_size == 5 ){
+//              if(poly_pts_size == 5 &&
+//                 storageNarrowPolygonPoints_[i].size() == 4){
+//                  //内缩到出现三角形,目前只考虑内缩四边形内的第一个三角形
+//                  boost::geometry::strategy::buffer::distance_symmetric<coordinate_type>
+//                          distance_strategy(-RIDGE_WIDTH_LENGTH/2);
+//                  boost::geometry::strategy::buffer::join_round join_strategy(0.01);
+//
+//                  boost::geometry::strategy::buffer::end_round end_strategy;
+//                  boost::geometry::strategy::buffer::point_circle circle_strategy;
+//                  boost::geometry::strategy::buffer::side_straight side_strategy;
+//
+//                  // Declare output
+//                  boost::geometry::model::multi_polygon<polygon> result;
+//                  boost::geometry::model::multi_polygon<polygon> mpol;
+//                  polygon instance_polygon;
+//
+//                  for (auto it: storageNarrowPolygonPoints_[i-1]) {
+//                      point instance_point;
+//                      instance_point.x(it.x);
+//                      instance_point.y(it.y);
+//                      instance_polygon.outer().push_back(instance_point);
+//                  }
+//                  mpol.push_back(instance_polygon);
+//                  boost::geometry::buffer(mpol, result,
+//                                          distance_strategy, side_strategy,
+//                                          join_strategy, end_strategy, circle_strategy);
+//                  std::vector<polygonPoint> poly_res;
+//                  for(auto j = result.begin()->outer().begin();
+//                      j != result.begin()->outer().end();
+//                      j ++){
+//                      polygonPoint  temp_point;
+//                      temp_point.x = j->x();
+//                      temp_point.y = j->y();
+//                      poly_res.push_back(temp_point);
+//                  }
+//                  if(poly_res.size() == 4){
+//                      LOG(INFO) << "the last poly type is : poly_four_and_three !";
+//                      last_polys_type_ = lastPolyIdentify::POLY_FOUR_AND_THREE;
+//                      last_several_polygons_.push_back(storageNarrowPolygonPoints_[i-1]);
+//                      record_poly_index_ = i;
+//                  } else {
+//                      LOG(INFO) << "the shape of quadrangle after being retracted is quadrangle !";
+//                      LOG(INFO) << "the quadrangle size is : " << poly_res.size();
+//                      last_polys_type_ = lastPolyIdentify::POLY_FOUR_AND_FOUR;
+//                      last_several_polygons_.push_back(storageNarrowPolygonPoints_[i-1]);
+//                      record_poly_index_ = i;
+//                  }
+//                  LOG(INFO) << "the record poly index is : " << record_poly_index_;
+//                  last_several_polygons_.push_back(poly_res);
+//              }
+//          }
+//      }
+//      LOG(INFO) <<  "--------------------------------------------------------------";
+//      std::ofstream  tempfile;
+//      tempfile.open("/home/zzm/Desktop/test_path_figure-main/src/templastridge.txt",std::ios::out);
+//      for(auto it :last_several_polygons_){
+//          for(auto j : it){
+//              tempfile << " " << j.x;
+//          }
+//      }
+//      tempfile << std::endl;
+//      for(auto it : last_several_polygons_){
+//          for(auto j: it){
+//              tempfile << " " << j.y;
+//          }
+//      }
+//      tempfile << std::endl;
+//      tempfile.close();
+//}
 
 void pathPolygonPlan::computeLastRidgeSituation(){
     switch (last_polys_type_){
@@ -1738,13 +1738,13 @@ void pathPolygonPlan::computeLastRidgePoints4and4(){
         polygon  poly;
         std::reverse(stor_pts.begin(),stor_pts.end());
         for(auto it : stor_pts){
-            poly.outer().push_back(point(it.x,it.y));
+            poly.outer().push_back(pointbst(it.x,it.y));
         }
         linestring_type  line;
-        line.push_back(point(points[0].x,
+        line.push_back(pointbst(points[0].x,
                              points[0].y));
-        line.push_back(point(points[1].x,points[1].y));
-        std::vector<point> output;
+        line.push_back(pointbst(points[1].x,points[1].y));
+        std::vector<pointbst> output;
         boost::geometry::intersection(line,poly,output);
         LOG(INFO) << "output size is :" << output.size();
         if(output.size() != 2){
@@ -2032,13 +2032,13 @@ void pathPolygonPlan::computeLastRidgePoints4and3(){
         polygon poly;
         std::reverse(stor_pts.begin(),stor_pts.end());
         for(auto it : stor_pts){
-            poly.outer().push_back(point(it.x,it.y));
+            poly.outer().push_back(pointbst(it.x,it.y));
         }
         linestring_type line;
-        line.push_back(point(points[0].x,
+        line.push_back(pointbst(points[0].x,
                              points[0].y));
-        line.push_back(point(points[1].x,points[1].y));
-        std::vector<point> output;
+        line.push_back(pointbst(points[1].x,points[1].y));
+        std::vector<pointbst> output;
         boost::geometry::intersection(line,poly,output);
         LOG(INFO) << "output size is :" << output.size();
         if(output.size() != 2){
@@ -3659,14 +3659,14 @@ void pathPolygonPlan::findSuitableEntrance(std::vector<Point> points ){
             //计算该线段与原始多边形的交点
             polygon  poly;
             for(auto it : points){
-                poly.outer().push_back(point(it.x,it.y));
+                poly.outer().push_back(pointbst(it.x,it.y));
             }
             linestring_type  line;
-            line.push_back(point(i.points[i.points.size()-1].x,
+            line.push_back(pointbst(i.points[i.points.size()-1].x,
                                  i.points[i.points.size()-1].y));
-            line.push_back(point(temp_x,
+            line.push_back(pointbst(temp_x,
                                  temp_y));
-            std::vector<point> output;
+            std::vector<pointbst> output;
             boost::geometry::intersection(line,poly,output);
 
             //线段最内部的点
@@ -3691,15 +3691,15 @@ const std::vector<Point> pathPolygonPlan::getLineOriginEntrance() const {
 void pathPolygonPlan::computePolygonsAndLineNode(Point node) {
     //创建线段
      linestring_type  line;
-     line.push_back(point(min_polygon_centroid_.x,
+     line.push_back(pointbst(min_polygon_centroid_.x,
                                min_polygon_centroid_.y));
-     line.push_back(point(node.x,node.y));
+     line.push_back(pointbst(node.x,node.y));
      //计算该线段和多边形的交点们
      for(int i = 0; i < count_narrow_polygon_numbers_;i++ ){
          for(auto it = storageNarrowPolygonPoints2_[i].begin();
                   it != storageNarrowPolygonPoints2_[i].end();
                   it++){
-             std::vector<point> tempPoints;
+             std::vector<pointbst> tempPoints;
              boost::geometry::intersection(line, *it,tempPoints );
              for(auto i_idx : tempPoints){
                      polygonPoint tempPoint;
@@ -3715,14 +3715,14 @@ void pathPolygonPlan::computePolygonsAndLineNode(Point node) {
 //给出一个线段，求该线段与内缩多边形们的交点
 void  pathPolygonPlan::computePolygonsAndLineNode(std::vector<Point> linePoints) {
     linestring_type  line;
-    line.push_back(point(linePoints[0].x,linePoints[0].y));
-    line.push_back(point(linePoints[1].x,linePoints[1].y));
+    line.push_back(pointbst(linePoints[0].x,linePoints[0].y));
+    line.push_back(pointbst(linePoints[1].x,linePoints[1].y));
 
     for(int i = 0; i < count_narrow_polygon_numbers_;i++){
         for(auto it = storageNarrowPolygonPoints2_[i].begin();
                  it != storageNarrowPolygonPoints2_[i].end();
                  it++){
-            std::vector<point> tempPoints;
+            std::vector<pointbst> tempPoints;
             boost::geometry::intersection(line,*it,tempPoints);
             for(auto i_idx: tempPoints){
                 polygonPoint tempPoint;
@@ -3954,19 +3954,74 @@ void pathPolygonPlan::cgalComputeParallelLinesHeading(
 }
 
 void pathPolygonPlan::cgalComputeAKeyptsMapping(){
-     switch (curveLocationChoose_){
-         case curveLocationChoose::MODE_HEADLANDS_CURVE__START_END:{
-                  cgalComputeHeadleadsAandB();
-             break;
-         }
-         case curveLocationChoose::MODE_CUSTOM_CURVE_START_END:{
-                 cgalComputeCustomAandB();
-             break;
-         }
-         default:{
-             break;
-         }
-     }
+
+    int num =  cgalbackShape_keypoints_.size();
+    //第一垄到 num -1 垄统一处理，最后一笼单独处理
+    for(int i = 0;i <= 1 ;i++){
+//        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
+        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1  ;j++){
+//            for(int j = 3 ; j < 4;j++){
+            auto ordered_pt = cgalbackShape_keypoints_[i][j];
+            //计算指定点的前后弯道关键点
+            ridgeKeypoint tempPtInfo;
+            auto forward_last_points =                     //注意点的顺序
+                    common::commonMath::computeForwardAndBackPoints(
+                            cgalbackShape_keypoints_[i],
+                            cgalbackShape_keypoints_[i][j]);
+            std::vector<polygonPoint>  arriveLine,leaveLine;
+            arriveLine.push_back(forward_last_points[0]);
+            arriveLine.push_back(cgalbackShape_keypoints_[i][j]);
+            leaveLine.push_back(cgalbackShape_keypoints_[i][j]);
+            leaveLine.push_back(forward_last_points[1]);
+            curveDecisionManager curveDecisionManagerInstance(
+                                                             i,
+                                                             j,
+                                                             arriveLine,
+                                                             leaveLine,
+                                                             cgalbackShape_keypoints_,
+                                                             backshape_fishnail_curve_path_);
+            curveDecisionManagerInstance.processCurveType();
+            curveDecisionManagerInstance.processCurvePath();
+        }
+
+        //最后一个点单独处理,j = cgalbackShape_keypoints_[i].size() - 1
+        //如果走到回型最后一个圆圈需要特殊处理
+//        auto second_pt = cgalbackShape_keypoints_[i+1][1];
+        int spiral_size = cgalbackShape_keypoints_[i].size();
+        if(i != num-1 ){                                         //当不是回型最后一笼的处理
+            std::vector<polygonPoint> last_arriveline;
+            std::vector<polygonPoint> last_leaveline;
+            last_arriveline.push_back(cgalbackShape_keypoints_[i][spiral_size-2]);
+            last_arriveline.push_back(cgalbackShape_keypoints_[i][spiral_size-1]);
+            last_leaveline.push_back(cgalbackShape_keypoints_[i+1][0]);
+            last_leaveline.push_back(cgalbackShape_keypoints_[i+1][1]);
+            curveDecisionManager curveDecisionManagerInstance(
+                                                             i,
+                                                             spiral_size-1,
+                                                             last_arriveline,
+                                                             last_leaveline,
+                                                             cgalbackShape_keypoints_,
+                                                             backshape_fishnail_curve_path_);
+            curveDecisionManagerInstance.processCurveType();
+            curveDecisionManagerInstance.processBorderlessFishNail(cgalbackShape_keypoints_[i][spiral_size-1]);
+        }else{
+            //暂时回型最后一个点不做处理
+            //DoNothing
+        }
+    }
+//     switch (curveLocationChoose_){
+//         case curveLocationChoose::MODE_HEADLANDS_CURVE__START_END:{
+//                  cgalComputeHeadleadsAandB();
+//             break;
+//         }
+//         case curveLocationChoose::MODE_CUSTOM_CURVE_START_END:{
+//                 cgalComputeCustomAandB();
+//             break;
+//         }
+//         default:{
+//             break;
+//         }
+//     }
 
     //最后一笼的单独处理
     cgalComputeParallelCurveMap();
@@ -4257,16 +4312,15 @@ void pathPolygonPlan::cgalComputeEntraceCurvePath(std::vector<polygonPoint> & ar
     auto ordered_pt = curvePt;  //这里的curvePt指的是弯道需要的映射点并不是交点
     //计算指定点的前后弯道关键点
     ridgeKeypoint tempPtInfo;
-    tempPtInfo.start_dis = SET_STARTTURN_DISTANCE;
-    tempPtInfo.end_dis  = SET_ENDTURN_DISTANCE;
+
 
     //将arriveline 和leaveline延长一定距离，并求交点
     auto extend_arriveline = common::commonMath::findPointExtendSegment2(arriveLine[0],arriveLine[1],10);
     auto extend_leaveline = common::commonMath::findPointExtendSegment2(leaveLine[0],leaveLine[1],10);
 
-    Segment seg1(point(extend_arriveline[0].x, extend_arriveline[0].y), point(extend_arriveline[1].x, extend_arriveline[1].y));
-    Segment seg2(point(extend_leaveline[0].x, extend_leaveline[0].y), point(extend_leaveline[1].x, extend_leaveline[1].y));
-    std::deque<point> output1;
+    Segment seg1(pointbst(extend_arriveline[0].x, extend_arriveline[0].y), pointbst(extend_arriveline[1].x, extend_arriveline[1].y));
+    Segment seg2(pointbst(extend_leaveline[0].x, extend_leaveline[0].y), pointbst(extend_leaveline[1].x, extend_leaveline[1].y));
+    std::deque<pointbst> output1;
     boost::geometry::intersection(seg1, seg2, output1);
 
     if (!output1.empty()){

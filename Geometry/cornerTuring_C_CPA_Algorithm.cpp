@@ -217,9 +217,7 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA4path.txt";
         normalPrint C4file(C4name);
         C4file.writePts(CV_pts);
-
     }
-
 }
 
 

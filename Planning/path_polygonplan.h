@@ -9,11 +9,6 @@
 #include <boost/shared_ptr.hpp>
 #include <unordered_set>
 #include <unordered_map>
-#include <boost/geometry.hpp>
-#include <boost/geometry/algorithms/buffer.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/geometries.hpp>
 #include <CGAL/Cartesian.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/point_generators_2.h>
@@ -48,12 +43,6 @@
 namespace aiforce{
 namespace Route_Planning
 {
-    typedef double coordinate_type;
-    typedef boost::geometry::model::d2::point_xy<coordinate_type> point;
-    typedef boost::geometry::model::polygon<point> polygon;
-    typedef boost::geometry::model::linestring<point> linestring_type;
-    typedef boost::geometry::model::segment<point> Segment;
-
     enum class lastPolyIdentify:uint8_t {
        POLY_FOUR_AND_THREE = 0,  //四边形内嵌三角形
        POLY_FOUR_AND_FOUR,       //四边形内嵌四边形
@@ -122,7 +111,7 @@ namespace Route_Planning
      virtual void  filteredBackShapeKeyPoints();  //删除关键点中的重复点
      virtual void  computeKeypointsRelativeInfo();  //计算后续用于弯道处理信息
      virtual std::vector<pathInterface::pathPoint> computeRidgeRoutingpts(int ridge_index); //根据垄号计算routingpath信息
-     virtual void dealWithLastSeveralPolygons();   //根据最后几垄的情况分类处理
+//     virtual void dealWithLastSeveralPolygons();   //根据最后几垄的情况分类处理
      virtual void computeLastRidgePoints4and3();     //提供用于处理最后几垄的关键点4边行内嵌3角形信息
      virtual void computeLastRidgeKeyPoints4and3(int count_flag);  //计算得到最后几垄的关键点4边行内嵌3角形信息
      virtual void computeLastRidgePoints4and4();     //提供用于处理最后的4边形内嵌4边形信息
