@@ -6,7 +6,6 @@ find_package(CGAL REQUIRED)
 find_package(Matlab REQUIRED)
 #find_package(PythonLibs REQUIRED)
 
-
 if(CGAL_FOUND)
     message(STATUS "Found CGAL library")
 else()
@@ -46,7 +45,10 @@ add_executable(polygonbackshape
              common/print/filePrint2.h Geometry/cornerTuring_TishNail_Algorithm.h
              Geometry/cornerTuring_TishNail_Algorithm.cpp common/print/normaPrint.h
              Planning/normalMatrix_Translate.h Planning/normalMatrix_Translate.cpp
-              Planning/diffMode_Choose.h Geometry/cornerTuring_Implement_Radius.h Geometry/cornerTuring_Implement_Radius.cpp Geometry/cornerTuring_C_CPA_Algorithm.h Geometry/cornerTuring_C_CPA_Algorithm.cpp common/common_param/common_typedef.h Planning/curveDecisionManager.h Planning/curveDecisionManager.cpp)
+              Planning/diffMode_Choose.h Geometry/cornerTuring_Implement_Radius.h
+              Geometry/cornerTuring_Implement_Radius.cpp Geometry/cornerTuring_C_CPA_Algorithm.h
+              Geometry/cornerTuring_C_CPA_Algorithm.cpp common/common_param/common_typedef.h
+              Planning/curveDecisionManager.h Planning/curveDecisionManager.cpp)
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
