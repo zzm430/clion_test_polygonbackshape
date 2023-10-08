@@ -37,6 +37,7 @@ cornerTuringCCPAAlgorithm::cornerTuringCCPAAlgorithm(
     }
     angleOC_ = 2 * M_PI - angleC;
     angleC_= angleC;
+    std::cout <<"the angle c is : " << angleC_ * 180/M_PI << std::endl;
 }
 
 
@@ -68,7 +69,6 @@ void cornerTuringCCPAAlgorithm::calculateCirclesCenter(){
 
 
 void cornerTuringCCPAAlgorithm::calculateNewFieldBorder(){
-
     if(!arriveAndLeaveAngleType_){
         double angleC1_start = M_PI;
         double angleC1_end = 0.5 * M_PI + angleCC2_;
@@ -147,15 +147,25 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
     }
 
     if(!arriveAndLeaveAngleType_){
-        double angleC1_start = M_PI;
-        double angleC1_end = 0.5 * M_PI + angleCC2_;
+//        double angleC1_start = M_PI;
+//        double angleC1_end = 0.5 * M_PI + angleCC2_;
+//
+//        double angleC2_start = -0.5 * M_PI + angleCC2_;
+//        double angleC2_end = 1.5 * M_PI - angleCC2_ - angleOC_;
+//
+//        double angleC3_start = 2.5 * M_PI - angleCC2_ - angleOC_;
+//        double angleC3_end = angleC_;
+        double angleC1_start = 0;
+        double angleC1_end = 2 * M_PI;
 
-        double angleC2_start = -0.5 * M_PI + angleCC2_;
-        double angleC2_end = 1.5 * M_PI - angleCC2_ - angleOC_;
+        double angleC2_start = 0;
+        double angleC2_end = 2* M_PI;
 
-        double angleC3_start = 2.5 * M_PI - angleCC2_ - angleOC_;
-        double angleC3_end = angleC_;
+        double angleC3_start = 0;
+        double angleC3_end = 2 * M_PI;
 
+        std::cout << "circle 1  ,circle 2, circle 3 R is : "<< circleC1_R << " " << circleC2_R << " " << " "
+                  << circleC3_R << std::endl;
         double C1_allLength = circleC1_R * (angleC1_end - angleC1_start);
         double C2_allLength = circleC2_R * (angleC2_end - angleC2_start);
         double C3_allLength = circleC3_R  * (angleC3_end - angleC3_start);
@@ -180,15 +190,22 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
                                                             angleC3_end,
                                                             circleC3_R,
                                                             circleC3_center_);
+        std::vector<polygonPoint>  tempStoragetestpts;
+
+        tempStoragetestpts.push_back(circleC1_center_);
+        tempStoragetestpts.push_back(circleC2_center_);
+        tempStoragetestpts.push_back(circleC3_center_);
+
         //如果angleInt > M_PI,则将路径点y值全部乘以-1
-        if(angleInt_> M_PI){
-            correctForCornerOrientation(C1_pts);
-            correctForCornerOrientation(C2_pts);
-            correctForCornerOrientation(C3_pts);
+
+//            correctForCornerOrientation(C1_pts);
+//            correctForCornerOrientation(C2_pts);
+//            correctForCornerOrientation(C3_pts);
             reprojectionCCA(C1_pts);
             reprojectionCCA(C2_pts);
             reprojectionCCA(C3_pts);
-        }
+            reprojectionCCA(tempStoragetestpts);
+
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA1path.txt";
         std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA2path.txt";
         std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA3path.txt";
@@ -199,6 +216,18 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         C2file.writePts(C2_pts);
         C3file.writePts(C3_pts);
         //后续需要裁剪处理
+
+        std::ofstream  testfp;
+        testfp.open("/home/zzm/Desktop/test_path_figure-main/src/test1007.txt",std::ios::out);
+        for(auto i : tempStoragetestpts){
+            testfp << " " << i.x ;
+        }
+        testfp << std::endl;
+        for(auto j : tempStoragetestpts){
+            testfp << " " << j.y;
+        }
+        testfp << std::endl;
+        testfp.close();
 
         for(auto i: C1_pts){
             storage_allPath_.push_back(i);
@@ -239,6 +268,7 @@ void cornerTuringCCPAAlgorithm::reprojectionCCA(std::vector<polygonPoint> & pts)
 //                + i.y * cos(arriveLineHeading_ - 0.5 * M_PI);
 //    }
     // 将坐标转换为相对于新坐标系的偏移量
+
     for(auto& i : pts){
         double offsetX = i.x;
         double offsetY = i.y;
@@ -260,6 +290,7 @@ void cornerTuringCCPAAlgorithm::reprojectionCCA(std::vector<polygonPoint> & pts)
 void   cornerTuringCCPAAlgorithm::correctForCornerOrientation(std::vector<polygonPoint> & vecPts){
     for(auto& i: vecPts){
         i.y = i.y * (-1);
+//        i.y = i.y * (1);
     }
 }
 

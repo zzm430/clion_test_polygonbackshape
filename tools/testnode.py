@@ -85,8 +85,8 @@ inner_skeleton_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/in
 inner_skeleton_path_x = inner_skeleton_path[0]
 inner_skeleton_path_y = inner_skeleton_path[1]
 
+a = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/test.txt')
 # a = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt')
-
 # lineshow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/lineshow.txt')
 # lineshow_x = lineshow[0]
 # lineshow_y = lineshow[1]
@@ -139,9 +139,30 @@ CCPA3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA3path.tx
 CCPA3path_x = CCPA3path[0]
 CCPA3path_y = CCPA3path[1]
 
-ax.plot(CCPA1path_x,CCPA1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(CCPA2path_x,CCPA2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(CCPA3path_x,CCPA3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# CCPA1path1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA1border.txt')
+# CCPA1path1_x = CCPA1path1[0]
+# CCPA1path1_y = CCPA1path1[1]
+# CCPA2path1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA2border.txt')
+# CCPA2path1_x = CCPA2path1[0]
+# CCPA2path1_y = CCPA2path1[1]
+# CCPA3path1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA3border.txt')
+# CCPA3path1_x = CCPA3path1[0]
+# CCPA3path1_y = CCPA3path1[1]
+
+lineshow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeaveline.txt')
+
+test1007 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test1007.txt')
+test1007_x = test1007[0]
+test1007_y = test1007[1]
+
+ax.plot(test1007_x,test1007_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+ax.plot(CCPA1path_x,CCPA1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)
+ax.plot(CCPA2path_x,CCPA2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)
+ax.plot(CCPA3path_x,CCPA3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)
+#
+# ax.plot(CCPA1path1_x,CCPA1path1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(CCPA2path1_x,CCPA2path1_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(CCPA3path1_x,CCPA3path1_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 
 # cgal_show_ridge_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/cgal_show_ridge_path.txt')
 # cgal_show_ridge_path_x = cgal_show_ridge_path[0]
@@ -162,10 +183,10 @@ ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints 
 
 # ax.plot(convexHull_x,convexHull_y,color='blue',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 
-# for i in range(len(a)):
-#     plt.plot(a[i,0],a[i,1],'ro', markersize=3)
-#     # plt.text(a[i, 0] + 0.2, a[i, 1] + 0.2, f"({a[i, 0]}, {a[i, 1]})")
-# plt.plot(a[0,0],a[0,1],'ro')
+for i in range(len(a)):
+    plt.plot(a[i,0],a[i,1],'ro', markersize=3)
+    # plt.text(a[i, 0] + 0.2, a[i, 1] + 0.2, f"({a[i, 0]}, {a[i, 1]})")
+plt.plot(a[0,0],a[0,1],'ro')
 
 # ax.plot(test_txt_x,test_txt_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.8,markersize=1)
 # ax.plot(entrance_lines_x,entrance_lines_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
@@ -214,11 +235,11 @@ ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints 
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
 # # 绘制线段
-# for i in range(0, len(lineshow[0])-1, 2):
-#     x = [lineshow[0][i], lineshow[0][i+1]]
-#     y = [lineshow[1][i], lineshow[1][i+1]]
-#     plt.plot(x, y)
-#     plt.text(lineshow[0][i], lineshow[1][i], f"({lineshow[0][i]}, {lineshow[1][i]})")
+for i in range(0, len(lineshow[0])-1, 2):
+    x = [lineshow[0][i], lineshow[0][i+1]]
+    y = [lineshow[1][i], lineshow[1][i+1]]
+    plt.plot(x, y)
+    plt.text(lineshow[0][i], lineshow[1][i], f"({lineshow[0][i]}, {lineshow[1][i]})")
 
 ax.set_xlabel('x label')
 ax.set_ylabel('y label')

@@ -20,6 +20,17 @@ cornerTuringLocation::cornerTuringLocation(
    vector_2.y = leaveLine[1].y - leaveLine[0].y;
    reference_vector.x = 0;
    reference_vector.y = 1;
+
+    //计算CCPA转弯需要的angle
+    double angle_temp_1 = common::commonMath::computeTwolineAngleDu(reference_vector, vector_1);
+    double angle_temp_2 = common::commonMath::computeTwolineAngleDu(reference_vector, vector_2);
+    double diff_angle = angle_temp_1 * M_PI / 180 - angle_temp_2 * M_PI / 180;
+    if(diff_angle > 0){
+        CCPAAngleInt_= diff_angle;
+    }else{
+        CCPAAngleInt_ = diff_angle + 2 * M_PI;
+    }
+   //
    double angle_1 = common::commonMath::computeTwolineAngleDu(vector_1,reference_vector);
    if(angle_1 < 0){
        angle_1 += 360;
@@ -40,11 +51,24 @@ cornerTuringLocation::cornerTuringLocation(
    }
    //此方向为顺时针
    arriveLineHeading_ = angle_x;
+
+   //计算鱼尾需要的angle
+    double fish_angle_temp_1 = common::commonMath::computeTwolineAngleDu(vector_1,reference_vector);
+    double fish_angle_temp_2 = common::commonMath::computeTwolineAngleDu(vector_2,reference_vector);
+
+    double fish_diff_angle = fish_angle_temp_1 * M_PI / 180 - fish_angle_temp_2 * M_PI / 180;
+    if(fish_diff_angle > 0){
+        fishAngleInt_= diff_angle;
+    }else{
+        fishAngleInt_ = diff_angle + 2 * M_PI;
+    }
+
    //按照逆时针处理
-   double angle_diff = angle_1 - angle_2;
-   if(angle_diff < 0){
-       angle_diff += 360;
-   }
+//   double angle_diff = angle_1 - angle_2;
+//   if(angle_diff < 0){
+//       angle_diff += 360;
+//   }
+     double angle_diff = fish_diff_angle * M_PI / 180;
 //   LOG(INFO) << "the angle 1 2 is : "
 //             << angle_1
 //             << " "
@@ -76,10 +100,12 @@ cornerTuringLocation::cornerTuringLocation(
        F3_ = 1;
        LOG(INFO) << "FOURTH_QUADRANT";
    }
-   angleInt_ = angle_diff ;
+   angleInt_ = fish_diff_angle ;
     LOG(INFO) << "the arrive line and leave line angle du is  : "
               << angleInt_;
-   angleInt_ = angleInt_ * M_PI / 180;
+    LOG(INFO) << "the CCPA angle is : "
+              << CCPAAngleInt_;
+   angleInt_ = fish_diff_angle ;
 
 };
 

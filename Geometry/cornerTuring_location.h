@@ -49,7 +49,8 @@ public:
       double getCurveaboutF3();
       double getCurveArrriveLineHeading();
       double getCurveArrriveLineHeading2();
-
+      double CCPAAngleInt_;
+      double fishAngleInt_;
 private:
     angleType  angleType_;                   //angleInt的类型
     double angleInt_;                        //向量的夹脚angleInt
@@ -60,7 +61,7 @@ private:
     double         F2_;
     double         F3_;
     double         arriveLineHeading_;         //以x轴为正方向
-    double         arriveLineHeading2_;        //以正比方向
+    double         arriveLineHeading2_;        //以正比为正方向
 
 
 };

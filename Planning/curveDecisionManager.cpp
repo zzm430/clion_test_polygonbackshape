@@ -358,26 +358,46 @@ void curveDecisionManager::processBorderlessFishNail(polygonPoint curvePt){
 void curveDecisionManager::processCCPA(){
     //外扩arriveLine\leaveLine (垄宽/2)
     auto tempLeaveLine  = leaveLine_;
-    std::reverse(tempLeaveLine.begin(),tempLeaveLine.end());
+    std::cout << "leave line 0 and 1 is : " << leaveLine_[0].x << " " << leaveLine_[0].y << std::endl;
+
+    //利用leaveline[0]计算垂足点
+    auto footPt_1 = common::commonMath::computeFootPoint(
+                                               leaveLine_[1],
+                                               arriveLine_[0],
+                                               arriveLine_[1]);
+
+    auto footPt_2 = common::commonMath::computeFootPoint(
+                                               arriveLine_[0],
+                                               leaveLine_[0],
+                                               leaveLine_[1]);
+
+    std::vector<polygonPoint>   direction_line_1,direction_line_2;
+    direction_line_1.push_back(footPt_1);
+    direction_line_1.push_back(leaveLine_[1]);
+
+    direction_line_2.push_back(footPt_2);
+    direction_line_2.push_back(arriveLine_[0]);
+
     auto  extendArriveLine = common::commonMath::computeLineTranslationPoints(
             arriveLine_,
-            tempLeaveLine,
+            direction_line_1,
             RIDGE_WIDTH_LENGTH/2);
     auto tempArriveLine = arriveLine_;
-    std::reverse(tempArriveLine.begin(),tempArriveLine.end());
+
     auto extendLeaveLine = common::commonMath::computeLineTranslationPoints(
             leaveLine_,
-            tempArriveLine,
+            direction_line_2,
             RIDGE_WIDTH_LENGTH/2);
     //将extendArriveLine 和extendLeaveLine两端延长10m
     auto extendArriveLine_1 = common::commonMath::findPointExtendSegment2(
                                                                         extendArriveLine[0],
                                                                         extendArriveLine[1],
                                                                         10);
-    auto extendLeaveLine_1 =  common::commonMath::findPointExtendSegment2(
+    auto  extendLeaveLine_1 =  common::commonMath::findPointExtendSegment2(
                                                                         extendLeaveLine[0],
                                                                         extendLeaveLine[1],
                                                                         10);
+   
     //计算extendArriveLine 和extendLeaveLine的交点
     Segment seg1(pointbst(extendArriveLine_1[0].x, extendArriveLine_1[0].y),
                  pointbst(extendArriveLine_1[1].x, extendArriveLine_1[1].y));
@@ -399,6 +419,7 @@ void curveDecisionManager::processCCPA(){
     cornerTuringLocationtest.decideLpAandLpB();
     cornerTuringLocationtest.calculatePointsAandBForCurve();
     double angleInt = cornerTuringLocationtest.getCurveAngleInt();
+    double tempfg = cornerTuringLocationtest.CCPAAngleInt_;
     double arriveLineHeading = cornerTuringLocationtest.getCurveArrriveLineHeading();
     double arriveLineHeading2 = cornerTuringLocationtest.getCurveArrriveLineHeading2();
     arriveLineHeading = arriveLineHeading * M_PI / 180;
@@ -406,20 +427,36 @@ void curveDecisionManager::processCCPA(){
     arriveLineHeading = -arriveLineHeading;
 
     //添加验证C-CPA代码
-    if(ridgeNumber_ == 0 && ptIndex_ == 2){
+    if(ridgeNumber_ == 0 && ptIndex_ == 3){
+        //扩展线段显示
+        std::ofstream   temp;
+        temp.open("/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeaveline.txt",
+                  std::ios::out);
+//        temp << " " << extendArriveLine_1[0].x << " " << extendArriveLine_1[1].x <<
+//             " " << extendLeaveLine_1[0].x << " " << extendLeaveLine_1[1].x << std::endl;
+//        temp << " " << extendArriveLine_1[0].y << " " << extendArriveLine_1[1].y <<
+//             " " << extendLeaveLine_1[0].y << " " << extendLeaveLine_1[1].y << std::endl;
+        temp << " " << extendArriveLine[0].x << " " << extendArriveLine[1].x <<
+             " " << extendLeaveLine[0].x << " " << extendLeaveLine[1].x << std::endl;
+        temp << " " << extendArriveLine[0].y << " " << extendArriveLine[1].y <<
+             " " << extendLeaveLine[0].y << " " << extendLeaveLine[1].y << std::endl;
+        temp.close();
+
         cornerTuringImplementRadius cornerTuringImplementRadiusInstance;
         cornerTuringImplementRadiusInstance.calculateMiniTuringRadiusConsiderImplement();
         auto Rsw = cornerTuringImplementRadiusInstance.getRsw();
+        std::cout << "the angle int 1007  is : " << angleInt;
         cornerTuringCCPAAlgorithm  cornerTuringCCPAAlgorithm1(
-                angleInt,
+                tempfg,
                 Rsw,
-                1,
+                0,
                 false,
                 cgalbackShape_keypoints_[ridgeNumber_][ptIndex_],
                 referencePt,
                 arriveLineHeading);
         cornerTuringCCPAAlgorithm1.calculateAngleCC2();
         cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
+        cornerTuringCCPAAlgorithm1.calculateNewFieldBorder();
         cornerTuringCCPAAlgorithm1.calculatePath();
         std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
         auto all_path = cornerTuringCCPAAlgorithm1.getAllPath();
