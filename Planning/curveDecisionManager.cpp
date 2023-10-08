@@ -419,7 +419,7 @@ void curveDecisionManager::processCCPA(){
     cornerTuringLocationtest.decideLpAandLpB();
     cornerTuringLocationtest.calculatePointsAandBForCurve();
     double angleInt = cornerTuringLocationtest.getCurveAngleInt();
-    double tempfg = cornerTuringLocationtest.CCPAAngleInt_;
+    double tempfg = cornerTuringLocationtest.getCurveCCPAAngleInt();
     double arriveLineHeading = cornerTuringLocationtest.getCurveArrriveLineHeading();
     double arriveLineHeading2 = cornerTuringLocationtest.getCurveArrriveLineHeading2();
     arriveLineHeading = arriveLineHeading * M_PI / 180;

@@ -44,16 +44,17 @@ public:
       polygonPoint   getCurveStartPtA();
       polygonPoint   getCurveendPtB();
       double getCurveAngleInt();
+      double getCurveCCPAAngleInt();
       double getCurveaboutF1();
       double getCurveaboutF2();
       double getCurveaboutF3();
       double getCurveArrriveLineHeading();
       double getCurveArrriveLineHeading2();
-      double CCPAAngleInt_;
-      double fishAngleInt_;
+
 private:
     angleType  angleType_;                   //angleInt的类型
-    double angleInt_;                        //向量的夹脚angleInt
+    double angleInt_;                        //向量的夹脚angleInt,用于鱼尾算法
+    double CCPAAngleInt_;                    //用于CCPA算法(angleInt)
     cornerAngleInfoMap cornerAngleInfoMap_;  //弯道中间信息
     polygonPoint   A_;                       //弯道起始点，以交点作为坐标原点
     polygonPoint   B_;                       //弯道终点，以交点作为坐标原点

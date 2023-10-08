@@ -30,16 +30,16 @@ cornerTuringLocation::cornerTuringLocation(
     }else{
         CCPAAngleInt_ = diff_angle + 2 * M_PI;
     }
-   //
-   double angle_1 = common::commonMath::computeTwolineAngleDu(vector_1,reference_vector);
-   if(angle_1 < 0){
-       angle_1 += 360;
-   }
-    arriveLineHeading2_ = angle_1;
-   double angle_2 = common::commonMath::computeTwolineAngleDu(vector_2,reference_vector);
-   if(angle_2 < 0){
-       angle_2 += 360;
-   }
+//   //
+//   double angle_1 = common::commonMath::computeTwolineAngleDu(vector_1,reference_vector);
+//   if(angle_1 < 0){
+//       angle_1 += 360;
+//   }
+//    arriveLineHeading2_ = angle_1;
+//   double angle_2 = common::commonMath::computeTwolineAngleDu(vector_2,reference_vector);
+//   if(angle_2 < 0){
+//       angle_2 += 360;
+//   }
 
    //计算arriveline与x轴正向的夹角
    polygonPoint  refer_x_vector;
@@ -52,23 +52,29 @@ cornerTuringLocation::cornerTuringLocation(
    //此方向为顺时针
    arriveLineHeading_ = angle_x;
 
-   //计算鱼尾需要的angle
+    //计算鱼尾需要的angle
     double fish_angle_temp_1 = common::commonMath::computeTwolineAngleDu(vector_1,reference_vector);
     double fish_angle_temp_2 = common::commonMath::computeTwolineAngleDu(vector_2,reference_vector);
-
+    double fishAngleInt;
     double fish_diff_angle = fish_angle_temp_1 * M_PI / 180 - fish_angle_temp_2 * M_PI / 180;
     if(fish_diff_angle > 0){
-        fishAngleInt_= diff_angle;
+        fishAngleInt = fish_diff_angle;
     }else{
-        fishAngleInt_ = diff_angle + 2 * M_PI;
+        fishAngleInt = fish_diff_angle + 2 * M_PI;
     }
+
+    //temp code
+//    double angle_diff1 = angle_1 - angle_2;
+//   if(angle_diff1 < 0){
+//       angle_diff1 += 360;
+//   }
 
    //按照逆时针处理
 //   double angle_diff = angle_1 - angle_2;
 //   if(angle_diff < 0){
 //       angle_diff += 360;
 //   }
-     double angle_diff = fish_diff_angle * M_PI / 180;
+     double angle_diff = fishAngleInt * M_PI / 180;
 //   LOG(INFO) << "the angle 1 2 is : "
 //             << angle_1
 //             << " "
@@ -100,12 +106,13 @@ cornerTuringLocation::cornerTuringLocation(
        F3_ = 1;
        LOG(INFO) << "FOURTH_QUADRANT";
    }
-   angleInt_ = fish_diff_angle ;
+   angleInt_ = fishAngleInt ;
     LOG(INFO) << "the arrive line and leave line angle du is  : "
-              << angleInt_;
+              << angleInt_ * 180 / M_PI;
     LOG(INFO) << "the CCPA angle is : "
               << CCPAAngleInt_;
-   angleInt_ = fish_diff_angle ;
+//   LOG(INFO) << "the origin curve angle is : " << angle_diff1;
+//   angleInt_ = fish_diff_angle ;
 
 };
 
@@ -228,4 +235,8 @@ double cornerTuringLocation::getCurveArrriveLineHeading() {
 
 double cornerTuringLocation::getCurveArrriveLineHeading2() {
     return arriveLineHeading2_;
+}
+
+double cornerTuringLocation::getCurveCCPAAngleInt(){
+    return CCPAAngleInt_;
 }
