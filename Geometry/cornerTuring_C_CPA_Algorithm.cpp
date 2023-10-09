@@ -1,6 +1,8 @@
 //
 // Created by zzm on 23-9-22.
 //
+
+//此C-CPA算法目前只支持逆时针
 #include<math.h>
 #include "cornerTuring_C_CPA_Algorithm.h"
 #include "common/utilpath/path_polygonPoint.h"
@@ -151,23 +153,23 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
     }
 
     if(!arriveAndLeaveAngleType_){
-//        double angleC1_start = M_PI;
-//        double angleC1_end = 0.5 * M_PI + angleCC2_;
+        double angleC1_start = M_PI;
+        double angleC1_end = 0.5 * M_PI + angleCC2_;
+
+        double angleC2_start = -0.5 * M_PI + angleCC2_;
+        double angleC2_end = 1.5 * M_PI - angleCC2_ - angleOC_;
+
+        double angleC3_start = 2.5 * M_PI - angleCC2_ - angleOC_;
+        double angleC3_end = angleC_;
+
+//        double angleC1_start = 0;
+//        double angleC1_end = 2 * M_PI;
 //
-//        double angleC2_start = -0.5 * M_PI + angleCC2_;
-//        double angleC2_end = 1.5 * M_PI - angleCC2_ - angleOC_;
+//        double angleC2_start = 0;
+//        double angleC2_end = 2* M_PI;
 //
-//        double angleC3_start = 2.5 * M_PI - angleCC2_ - angleOC_;
-//        double angleC3_end = angleC_;
-
-        double angleC1_start = 0;
-        double angleC1_end = 2 * M_PI;
-
-        double angleC2_start = 0;
-        double angleC2_end = 2* M_PI;
-
-        double angleC3_start = 0;
-        double angleC3_end = 2 * M_PI;
+//        double angleC3_start = 0;
+//        double angleC3_end = 2 * M_PI;
 
         std::cout << "circle 1  ,circle 2, circle 3 R is : "<< circleC1_R << " " << circleC2_R << " " << " "
                   << circleC3_R << std::endl;

@@ -43,8 +43,8 @@ public:
       void calculatePointsAandBForCurve();
       polygonPoint   getCurveStartPtA();
       polygonPoint   getCurveendPtB();
-      double getCurveAngleInt();
-      double getCurveCCPAAngleInt();
+      double getCurveAngleInt();         //用于鱼尾算法的angleInt
+      double getCurveCCPAAngleInt();     //用于C-CPA算法的angleInt
       double getCurveaboutF1();
       double getCurveaboutF2();
       double getCurveaboutF3();
