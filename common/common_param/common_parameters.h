@@ -30,7 +30,7 @@
 #define  SET_VIRTUAL_LINE_LENGTH  2500    //设置虚拟线的长度
 #define  SET_POLY_TRANSFER_THR     2      //设置开始走平行路线的阈值
 #define  SET_FLAG_INNER_SKELETON_PATH  false //设置是否走内部直骨架路径
-#define  SET_HEADLAND_WIDTH_WHL   0       //地头宽度
+#define  SET_HEADLAND_WIDTH_WHL   4       //地头宽度
 
 //LOG以及相关txt信息输出
 #define DEBUG_MIDDLE_INFO                 //控制输出的txt文件debug使用
@@ -44,7 +44,6 @@
 #define MINEFF                    0.97      //带有农具时农具有效工作宽度的系数
 #define DIS_1                     1.1        //农具到车后轮中心的距离
 #define DIS_2                     1.6        //包含农具到车后轮中心的距离
-
 
 
 //鱼尾弯道参数

@@ -3960,7 +3960,7 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
     for(int i = 0;i <= 1 ;i++){
 //        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
         for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1  ;j++){
-//            for(int j = 3 ; j < 4;j++){
+//            for(int j = 1 ; j < 2;j++){
             auto ordered_pt = cgalbackShape_keypoints_[i][j];
             //计算指定点的前后弯道关键点
             ridgeKeypoint tempPtInfo;

@@ -114,9 +114,11 @@ void cornerTuringCCPAAlgorithm::calculateNewFieldBorder(){
         C2file.writePts(C2_pts);
         C3file.writePts(C3_pts);
         //后续需要对这个路径进行裁剪
-    }else{
+    } else {
         double angleCV_start = M_PI;
         double angleCV_end = angleC_;
+//        double angleCV_start = 0;
+//        double angleCV_end = 2 * M_PI;
 
         double C4_allLength = (Rsw_ + SET_HEADLAND_WIDTH_WHL)  * (angleCV_end - angleCV_start);
 
@@ -126,6 +128,8 @@ void cornerTuringCCPAAlgorithm::calculateNewFieldBorder(){
                                                             angleCV_end,
                                                             Rsw_ + SET_HEADLAND_WIDTH_WHL,
                                                             circleCV_center_);
+
+        reprojectionCCA(CV_pts);
         std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA4border.txt";
         normalPrint C1file(C4name);
         C1file.writePts(CV_pts);
@@ -147,22 +151,23 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
     }
 
     if(!arriveAndLeaveAngleType_){
-        double angleC1_start = M_PI;
-        double angleC1_end = 0.5 * M_PI + angleCC2_;
-
-        double angleC2_start = -0.5 * M_PI + angleCC2_;
-        double angleC2_end = 1.5 * M_PI - angleCC2_ - angleOC_;
-
-        double angleC3_start = 2.5 * M_PI - angleCC2_ - angleOC_;
-        double angleC3_end = angleC_;
-//        double angleC1_start = 0;
-//        double angleC1_end = 2 * M_PI;
+//        double angleC1_start = M_PI;
+//        double angleC1_end = 0.5 * M_PI + angleCC2_;
 //
-//        double angleC2_start = 0;
-//        double angleC2_end = 2* M_PI;
+//        double angleC2_start = -0.5 * M_PI + angleCC2_;
+//        double angleC2_end = 1.5 * M_PI - angleCC2_ - angleOC_;
 //
-//        double angleC3_start = 0;
-//        double angleC3_end = 2 * M_PI;
+//        double angleC3_start = 2.5 * M_PI - angleCC2_ - angleOC_;
+//        double angleC3_end = angleC_;
+
+        double angleC1_start = 0;
+        double angleC1_end = 2 * M_PI;
+
+        double angleC2_start = 0;
+        double angleC2_end = 2* M_PI;
+
+        double angleC3_start = 0;
+        double angleC3_end = 2 * M_PI;
 
         std::cout << "circle 1  ,circle 2, circle 3 R is : "<< circleC1_R << " " << circleC2_R << " " << " "
                   << circleC3_R << std::endl;
@@ -190,8 +195,8 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
                                                             angleC3_end,
                                                             circleC3_R,
                                                             circleC3_center_);
-        std::vector<polygonPoint>  tempStoragetestpts;
 
+        std::vector<polygonPoint>  tempStoragetestpts;
         tempStoragetestpts.push_back(circleC1_center_);
         tempStoragetestpts.push_back(circleC2_center_);
         tempStoragetestpts.push_back(circleC3_center_);
@@ -201,10 +206,10 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
 //            correctForCornerOrientation(C1_pts);
 //            correctForCornerOrientation(C2_pts);
 //            correctForCornerOrientation(C3_pts);
-            reprojectionCCA(C1_pts);
-            reprojectionCCA(C2_pts);
-            reprojectionCCA(C3_pts);
-            reprojectionCCA(tempStoragetestpts);
+         reprojectionCCA(C1_pts);
+         reprojectionCCA(C2_pts);
+         reprojectionCCA(C3_pts);
+         reprojectionCCA(tempStoragetestpts);
 
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA1path.txt";
         std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA2path.txt";
@@ -238,17 +243,31 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         for(auto i: C3_pts){
             storage_allPath_.push_back(i);
         }
-    }else{
+    } else {
+//        double angleCV_start = 0;
+//        double angleCV_end = 2 * M_PI;
+
         double angleCV_start = M_PI;
         double angleCV_end = angleC_;
-        double C4_allLength = (Rsw_ + SET_HEADLAND_WIDTH_WHL)  * (angleCV_end - angleCV_start);
+        double C4_allLength = circleCV_R  * (angleCV_end - angleCV_start);
         auto CV_pts = common::commonMath::equalIntervalDiff(C4_allLength,
                                                             FISHNail_DIFF_DIS,
                                                             angleCV_start,
                                                             angleCV_end,
                                                             circleCV_R,
                                                             circleCV_center_);
-        std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA4path.txt";
+
+        reprojectionCCA(CV_pts);
+        std::vector<polygonPoint>  temp_storage;
+        temp_storage.push_back(circleCV_center_);
+        reprojectionCCA(temp_storage);
+        std::cout << "the circlecv  111 center is : " << temp_storage[0].x << " " << temp_storage[0].y << std::endl;
+
+        for(auto i: CV_pts){
+            storage_allPath_.push_back(i);
+        }
+
+        std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA4path111.txt";
         normalPrint C4file(C4name);
         C4file.writePts(CV_pts);
     }
@@ -268,7 +287,6 @@ void cornerTuringCCPAAlgorithm::reprojectionCCA(std::vector<polygonPoint> & pts)
 //                + i.y * cos(arriveLineHeading_ - 0.5 * M_PI);
 //    }
     // 将坐标转换为相对于新坐标系的偏移量
-
     for(auto& i : pts){
         double offsetX = i.x;
         double offsetY = i.y;

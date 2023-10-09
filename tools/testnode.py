@@ -117,6 +117,15 @@ convexHull = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/convexHull.
 convexHull_x = convexHull[0]
 convexHull_y = convexHull[1]
 
+
+CCPA4path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA4path111.txt')
+CCPA4path_x = CCPA4path[0]
+CCPA4path_y = CCPA4path[1]
+
+CCPA4border = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA4border.txt')
+CCPA4border_x = CCPA4border[0]
+CCPA4border_y = CCPA4border[1]
+
 # C1path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C1path.txt')
 # C1path_x = C1path[0]
 # C1path_y = C1path[1]
@@ -128,7 +137,7 @@ convexHull_y = convexHull[1]
 # C3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/C3path.txt')
 # C3path_x = C3path[0]
 # C3path_y = C3path[1]
-
+#
 CCPA1path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA1path.txt')
 CCPA1path_x = CCPA1path[0]
 CCPA1path_y = CCPA1path[1]
@@ -155,11 +164,14 @@ test1007 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test1007.txt'
 test1007_x = test1007[0]
 test1007_y = test1007[1]
 
-ax.plot(test1007_x,test1007_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+# ax.plot(test1007_x,test1007_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+
 ax.plot(CCPA1path_x,CCPA1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)
 ax.plot(CCPA2path_x,CCPA2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)
 ax.plot(CCPA3path_x,CCPA3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)
-#
+
+ax.plot(CCPA4path_x,CCPA4path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.1,markersize=1)
+
 # ax.plot(CCPA1path1_x,CCPA1path1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(CCPA2path1_x,CCPA2path1_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(CCPA3path1_x,CCPA3path1_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
@@ -175,6 +187,8 @@ ax.plot(CCPA3path_x,CCPA3path_y,color='r',markerfacecolor='green',marker='o',lab
 # ax.plot(test1_x,test1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 4.3,markersize=1)
 
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+
+ax.plot(CCPA4border_x,CCPA4border_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 # ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(C2path_x,C2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(C3path_x,C3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
