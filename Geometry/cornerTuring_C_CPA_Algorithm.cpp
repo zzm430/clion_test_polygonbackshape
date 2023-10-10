@@ -3,6 +3,7 @@
 //
 
 //此C-CPA算法目前只支持逆时针
+
 #include<math.h>
 #include "cornerTuring_C_CPA_Algorithm.h"
 #include "common/utilpath/path_polygonPoint.h"
@@ -304,7 +305,6 @@ void cornerTuringCCPAAlgorithm::reprojectionCCA(std::vector<polygonPoint> & pts)
         i.x = reversedPoint.x;
         i.y = reversedPoint.y;
     }
-
 }
 
 void   cornerTuringCCPAAlgorithm::correctForCornerOrientation(std::vector<polygonPoint> & vecPts){

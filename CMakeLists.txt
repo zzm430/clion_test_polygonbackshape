@@ -48,7 +48,7 @@ add_executable(polygonbackshape
               Planning/diffMode_Choose.h Geometry/cornerTuring_Implement_Radius.h
               Geometry/cornerTuring_Implement_Radius.cpp Geometry/cornerTuring_C_CPA_Algorithm.h
               Geometry/cornerTuring_C_CPA_Algorithm.cpp common/common_param/common_typedef.h
-              Planning/curveDecisionManager.h Planning/curveDecisionManager.cpp)
+              Planning/curveDecisionManager.h Planning/curveDecisionManager.cpp Geometry/cornerTuring_FT_CPA_CC_Algorithm.h Geometry/cornerTuring_FT_CPA_CC_Algorithm.cpp)
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})

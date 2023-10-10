@@ -90,7 +90,11 @@ void curveDecisionManager::processCurvePath(){
             break;
         }
         case CurveDecision::CONCAVE_CORNER:{
-            processCCPA();
+            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
+                processFTCPACC();
+            }else{
+                processCCPA();
+            }
             break;
         }
         case CurveDecision::FT_CPA_CC:{
@@ -398,7 +402,7 @@ void curveDecisionManager::processCCPA(){
             leaveLine_,
             direction_line_2,
             RIDGE_WIDTH_LENGTH/2);
-    //将extendArriveLine 和extendLeaveLine两端延长10m
+    //将extendArriveLine 和extendLeaveLine两端延长20m
     auto extendArriveLine_1 = common::commonMath::findPointExtendSegment2(
                                                                         extendArriveLine[0],
                                                                         extendArriveLine[1],
@@ -472,7 +476,7 @@ void curveDecisionManager::processCCPA(){
             auto all_path = cornerTuringCCPAAlgorithm1.getAllPath();
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
         }
-    }else if(curveType_ == CurveDecision::CONVEX_CORNER){
+    } else if(curveType_ == CurveDecision::CONVEX_CORNER) {
         if(ridgeNumber_ == 0 && ptIndex_ == 1 ){
             std::ofstream   temp;
             temp.open("/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeaveline1.txt",
@@ -511,6 +515,13 @@ void curveDecisionManager::processCCPA(){
 
 void curveDecisionManager::processFTCPACC(){
 
+    if(ridgeNumber_ == 0 && ptIndex_ == 2){
+        cornerTuringFTCPACCAlgorithm cornerTuringFTCPACCAlgorithmInstance(
+                arriveLine_,
+                leaveLine_);
+        auto all_path = cornerTuringFTCPACCAlgorithmInstance.getPath();
+        backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+    }
 }
 
 void curveDecisionManager::processCCCURVE(){

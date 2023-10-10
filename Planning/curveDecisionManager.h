@@ -10,9 +10,11 @@
 #include "Geometry/cornerTuring_C_CPA_Algorithm.h"
 #include "Geometry/cornerTuring_TishNail_Algorithm.h"
 #include "Geometry/cornerTuring_location.h"
+#include "Geometry/cornerTuring_FT_CPA_CC_Algorithm.h"
 #include "common/utilpath/path_polygonPoint.h"
 #include "common/common_param/common_typedef.h"
 #include "common/common_param/common_parameters.h"
+
 
 enum  class CurveDecision : uint8_t {
     IDLE = 0,
