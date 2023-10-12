@@ -138,7 +138,6 @@ void cornerTuringFTCPACCAlgorithm::reprojectionFTCPACC(std::vector<polygonPoint>
     for(auto& i : pts){
         double offsetX = i.x;
         double offsetY = i.y;
-
         // 计算逆向旋转后的坐标
         double reversedX = offsetX * cos(arriveLineHeading_) -  offsetY * sin(arriveLineHeading_);
         double reversedY = offsetY * cos(arriveLineHeading_) +  offsetX * sin(arriveLineHeading_) ;

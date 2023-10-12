@@ -1,7 +1,6 @@
 //
 // Created by zzm on 23-9-25.
 //
-
 #ifndef POLYGONBACKSHAPE_COMMON_TYPEDEF_H
 #define POLYGONBACKSHAPE_COMMON_TYPEDEF_H
 #include <CGAL/Cartesian.h>
@@ -28,8 +27,6 @@
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
-
-
 
 typedef double coordinate_type;
 typedef boost::geometry::model::d2::point_xy<coordinate_type> pointbst;

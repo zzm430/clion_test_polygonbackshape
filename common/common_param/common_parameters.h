@@ -36,14 +36,22 @@
 #define DEBUG_MIDDLE_INFO                 //控制输出的txt文件debug使用
 
 //回型部分弯道起始点和终点相关参数设置
-#define DCRI                      0.8       //车体相关参数1
-#define DWA                       0.3       //车体相关参数2
-#define LWORK                     0.5       //车体相关参数3
-#define WWORK                     4         //垄宽
-#define OFFWORK                   0         //偏移量农具
-#define MINEFF                    0.975      //带有农具时农具有效工作宽度的系数,动态可调,能动态更改圆的半径
-#define DIS_1                     1.1        //农具到车后轮中心的距离
-#define DIS_2                     1.6        //包含农具到车后轮中心的距离
+#define WROBOT                    1.8       //widtth of robot
+#define DCRF                      1.5        //distance center of rotation to front side
+#define DCRR                      0.8        //distance center of rotation to rear hitch
+#define DCRI                      0.8       //车体相关参数1,distance center of rotation to implement
+#define DWA                       0.3       //车体相关参数2,distance to working area
+#define LIM                       0.8       //implement length
+#define LWORK                     0.5       //车体相关参数3, working length
+#define WIM                       4         //Implement width
+#define WWORK                     4         //垄宽,working width
+#define OFFIM                     0         //implement offset
+#define OFFWORK                   0         //偏移量农具, working offset
+#define MINEFF                    0.975     //带有农具时农具有效工作宽度的系数,动态可调,能动态更改圆的半径
+#define DIS_1                     1.1       //农具到车后轮中心的距离
+#define DIS_2                     1.6       //包含农具到车后轮中心的距离
+
+
 
 
 //鱼尾弯道参数
