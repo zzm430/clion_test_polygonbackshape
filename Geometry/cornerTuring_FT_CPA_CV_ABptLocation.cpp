@@ -3,7 +3,6 @@
 //
 #include "Geometry/cornerTuring_FT_CPA_CV_ABptLocation.h"
 #include "common/math/common_math.h"
-
 turingFtcpacvLocation::turingFtcpacvLocation(
              std::vector<polygonPoint> arriveLine,
               std::vector<polygonPoint> leaveLine,
@@ -11,6 +10,10 @@ turingFtcpacvLocation::turingFtcpacvLocation(
                                   leaveLine_(leaveLine),
                                   Nlp_(ridgeNumber),
                                   Nap_(ridgeNumber){
+
+
+
+
     //arriveLine描述起始向量
     //leaveLine描述结束向量
     polygonPoint vector_1,vector_2,reference_vector;
@@ -20,6 +23,18 @@ turingFtcpacvLocation::turingFtcpacvLocation(
     vector_2.y = leaveLine_[1].y - leaveLine_[0].y;
     reference_vector.x = 0;
     reference_vector.y = 1;
+
+    //计算arriveline与x轴正向的夹角
+    polygonPoint  refer_x_vector;
+    refer_x_vector.x = 1;
+    refer_x_vector.y = 0;
+
+    double angle_x = common::commonMath::computeTwolineAngleDu(vector_1,refer_x_vector);
+    if(angle_x < 0){
+        angle_x += 360;
+    }
+    //此方向为顺时针
+    arriveLineHeading_ = angle_x;
 
     double fish_angle_temp_1 = common::commonMath::computeTwolineAngleDu(vector_1,reference_vector);
     double fish_angle_temp_2 = common::commonMath::computeTwolineAngleDu(vector_2,reference_vector);
@@ -61,9 +76,9 @@ turingFtcpacvLocation::turingFtcpacvLocation(
         tempB.x = - DCRI - DWA ;
         tempB.y = 0.5 * WWORK + OFFWORK;
         cornerAngleInfo_.LpA_WORKAREA_ = tempA;
-        cornerAngleInfo_.LpA_WORKAREA_ = tempB;
+        cornerAngleInfo_.LpB_WORKAREA_ = tempB;
         LOG(INFO) << "FT-CPA-CV's angleInt is in FIRST_QUADRANT";
-    }else if(angle_diff >=90  && angle_diff < 180){
+    } else if(angle_diff >=90  && angle_diff < 180){
         polygonPoint temp_lpA_robot,temp_lpB_robot,temp_lpA_im,temp_lpB_im;
         temp_lpA_robot.x = DCRF;
         temp_lpA_robot.y = 0.5 * WROBOT;
@@ -81,8 +96,8 @@ turingFtcpacvLocation::turingFtcpacvLocation(
         cornerAngleInfo_.WLB_ = (-0.5 * WIM + OFFIM) - Nap_ * WWORK;
         cornerAngleInfo_.F1_ = 1;
         //free space使用
-        cornerAngleInfo_.WLA_ = 0.5 * WWORK + OFFWORK;
-        cornerAngleInfo_.WLB_ = (-0.5 * WWORK + OFFWORK);
+        cornerAngleInfo_.WLA_FS_ = 0.5 * WWORK + OFFWORK;
+        cornerAngleInfo_.WLB_FS_ = (-0.5 * WWORK + OFFWORK);
         cornerAngleInfo_.F1_WORKAREA_ = -1;
         polygonPoint  tempA,tempB;
         tempA.x = - DCRI - DWA - LWORK;
@@ -92,7 +107,7 @@ turingFtcpacvLocation::turingFtcpacvLocation(
         cornerAngleInfo_.LpA_WORKAREA_ = tempA;
         cornerAngleInfo_.LpB_WORKAREA_ = tempB;
         LOG(INFO) << "FT-CPA-CV's angleInt is in SECOND_QUADRANT";
-    }else if(angle_diff >180  && angle_diff < 270){
+    } else if(angle_diff >180  && angle_diff < 270){
         polygonPoint temp_lpA_robot,temp_lpB_robot,temp_lpA_im,temp_lpB_im;
         temp_lpA_robot.x = DCRF;
         temp_lpA_robot.y = -0.5 * WROBOT;
@@ -110,8 +125,8 @@ turingFtcpacvLocation::turingFtcpacvLocation(
         cornerAngleInfo_.WLB_ = (0.5 * WIM + OFFIM) + Nap_ * WWORK;
         cornerAngleInfo_.F1_ = -1;
         //free space FT-CPA 使用
-        cornerAngleInfo_.WLA_ = -0.5 * WWORK + OFFWORK;
-        cornerAngleInfo_.WLB_ = 0.5 * WWORK + OFFWORK;
+        cornerAngleInfo_.WLA_FS_ = -0.5 * WWORK + OFFWORK;
+        cornerAngleInfo_.WLB_FS_ = 0.5 * WWORK + OFFWORK;
         cornerAngleInfo_.F1_WORKAREA_ = 1;
         polygonPoint  tempA,tempB;
         tempA.x = - DCRI - DWA - LWORK;
@@ -121,7 +136,7 @@ turingFtcpacvLocation::turingFtcpacvLocation(
         cornerAngleInfo_.LpA_WORKAREA_ = tempA;
         cornerAngleInfo_.LpB_WORKAREA_ = tempB;
         LOG(INFO) << "FT-CPA-CV's angleInt is in THIRD_QUADRANT";
-    }else{
+    } else {
         polygonPoint temp_lpA_robot,temp_lpB_robot,temp_lpA_im,temp_lpB_im;
         temp_lpA_robot.x = DCRF;
         temp_lpA_robot.y = 0.5 * WROBOT;
@@ -139,8 +154,8 @@ turingFtcpacvLocation::turingFtcpacvLocation(
         cornerAngleInfo_.WLB_ = (0.5 * WIM + OFFIM) + Nap_ * WWORK;
         cornerAngleInfo_.F1_ = 1;
         //free space FT-CPA 使用
-        cornerAngleInfo_.WLA_ = -0.5 * WWORK + OFFWORK;
-        cornerAngleInfo_.WLB_ = (0.5 * WWORK + OFFWORK)
+        cornerAngleInfo_.WLA_FS_ = -0.5 * WWORK + OFFWORK;
+        cornerAngleInfo_.WLB_FS_ = (0.5 * WWORK + OFFWORK)
                                    - cos(angleInt_) * cos(angleInt_) * WWORK;
         cornerAngleInfo_.F1_WORKAREA_ = -1;
         polygonPoint  tempA,tempB;
@@ -226,6 +241,34 @@ polygonPoint   turingFtcpacvLocation::getCurveendPtB(){
        return B_;
 }
 
+polygonPoint  turingFtcpacvLocation::getCurveStartPtARobot(){
+       return A_robot_;
+}
+
+polygonPoint turingFtcpacvLocation::getCurveendPtBRobot(){
+       return B_robot_;
+}
+
+polygonPoint turingFtcpacvLocation::getCurveStartPtAIm(){
+      return A_im_;
+}
+
+polygonPoint turingFtcpacvLocation::getCurveEndPtBIm(){
+      return B_im_;
+}
+
+polygonPoint turingFtcpacvLocation::getCurveStartPtAWorkarea(){
+      return A_WORKAREA_;
+}
+
+polygonPoint turingFtcpacvLocation::getCurveEndPtBWorkarea(){
+     return B_WORKAREA_;
+}
+
 double turingFtcpacvLocation::getCurveAngleInt(){
        return angleInt_;
+}
+
+double    turingFtcpacvLocation::getArriveLineHeading(){
+      return arriveLineHeading_;
 }

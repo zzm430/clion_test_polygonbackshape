@@ -11,6 +11,7 @@
 #include "Geometry/cornerTuring_TishNail_Algorithm.h"
 #include "Geometry/cornerTuring_location.h"
 #include "Geometry/cornerTuring_FT_CPA_CC_Algorithm.h"
+#include "Geometry/cornerTuring_FT_CPA_CV_ABptLocation.h"
 #include "common/utilpath/path_polygonPoint.h"
 #include "common/common_param/common_typedef.h"
 #include "common/common_param/common_parameters.h"
@@ -42,6 +43,7 @@ public:
     void processBorderlessFishNail(polygonPoint curvePt);
     void processCCPA();
     void processFTCPACC();
+    void processFTCPACV();
     void processCCCURVE();
     void processREEDSHEPP();
     void changeState(CurveDecision  state);

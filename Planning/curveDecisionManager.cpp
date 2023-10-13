@@ -28,7 +28,6 @@ void curveDecisionManager::processCurveType(){
     vector_1.y = arriveLine_[1].y - arriveLine_[0].y;
     vector_2.x = leaveLine_[1].x - leaveLine_[0].x;
     vector_2.y = leaveLine_[1].y - leaveLine_[0].y;
-
     double angle = common::commonMath::computeTwolineAngleDu(vector_2,vector_1);
     if(angle < 0){
         angle += 360;
@@ -86,7 +85,11 @@ void curveDecisionManager::processCurvePath(){
             break;
         }
         case CurveDecision::CONVEX_CORNER:{
-            processCCPA();
+            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
+                processFTCPACV();
+            }else{
+                processCCPA();
+            }
             break;
         }
         case CurveDecision::CONCAVE_CORNER:{
@@ -229,7 +232,7 @@ void curveDecisionManager::processBorderlessFishNail(){
         ptsshow.writePt(tempfg);
     }
 
-    if(ptIndex_ == 2){
+    if(ptIndex_ == 5 && ridgeNumber_ == 0){
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
         std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
         std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
@@ -514,13 +517,66 @@ void curveDecisionManager::processCCPA(){
 }
 
 void curveDecisionManager::processFTCPACC(){
-
     if(ridgeNumber_ == 0 && ptIndex_ == 2){
         cornerTuringFTCPACCAlgorithm cornerTuringFTCPACCAlgorithmInstance(
                 arriveLine_,
                 leaveLine_);
         auto all_path = cornerTuringFTCPACCAlgorithmInstance.getPath();
         backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+    }
+}
+
+void curveDecisionManager::processFTCPACV(){
+    if(ridgeNumber_ == 0 && ptIndex_ == 1){
+        turingFtcpacvLocation turingFtcpacvLocationInstance(
+                arriveLine_,
+                leaveLine_,
+                ridgeNumber_);
+        turingFtcpacvLocationInstance.calculatePointsAandBForCurve();
+        auto pt1 = turingFtcpacvLocationInstance.getCurveStartPtA();
+        auto pt2 = turingFtcpacvLocationInstance.getCurveendPtB();
+        auto pt3 = turingFtcpacvLocationInstance.getCurveStartPtARobot();
+        auto pt4 = turingFtcpacvLocationInstance.getCurveendPtBRobot();
+        auto pt5 = turingFtcpacvLocationInstance.getCurveStartPtAIm();
+        auto pt6 = turingFtcpacvLocationInstance.getCurveEndPtBIm();
+        auto pt7 = turingFtcpacvLocationInstance.getCurveStartPtAWorkarea();
+        auto pt8 = turingFtcpacvLocationInstance.getCurveEndPtBWorkarea();
+        std::vector<polygonPoint>  stor_pts;
+        stor_pts.push_back(pt1);
+        stor_pts.push_back(pt2);
+        stor_pts.push_back(pt3);
+        stor_pts.push_back(pt4);
+        stor_pts.push_back(pt5);
+        stor_pts.push_back(pt6);
+        stor_pts.push_back(pt7);
+        stor_pts.push_back(pt8);
+
+         auto arriveLineHeading = turingFtcpacvLocationInstance.getArriveLineHeading();
+        arriveLineHeading = arriveLineHeading * M_PI / 180;
+        //这里按照逆时针考虑的，所以取负
+        arriveLineHeading = -arriveLineHeading;
+        // 将坐标转换为相对于新坐标系的偏移量
+        for(auto& i : stor_pts){
+            double offsetX = i.x;
+            double offsetY = i.y;
+            // 计算逆向旋转后的坐标
+            double reversedX = offsetX * cos(arriveLineHeading) -  offsetY * sin(arriveLineHeading);
+            double reversedY = offsetY * cos(arriveLineHeading) +  offsetX * sin(arriveLineHeading) ;
+
+            // 将逆向旋转后的坐标转换为原始坐标系
+            polygonPoint reversedPoint;
+            reversedPoint.x = reversedX + cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].x;
+            reversedPoint.y = reversedY + cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].y;
+            i.x = reversedPoint.x;
+            i.y = reversedPoint.y;
+        }
+
+        std::ofstream   temp;
+        temp.open("/home/zzm/clion_test_polygonbackshape/tools/test1111.txt",std::ios::out);
+        for(auto i : stor_pts){
+            temp << " " << i.x << " " << i.y << std::endl;
+        }
+        temp.close();
     }
 }
 

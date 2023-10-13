@@ -1,7 +1,6 @@
 //
 // Created by zzm on 2023/10/11.
 //
-
 #ifndef POLYGONBACKSHAPE_CORNERTURING_FT_CPA_CV_ABPTLOCATION_H
 #define POLYGONBACKSHAPE_CORNERTURING_FT_CPA_CV_ABPTLOCATION_H
 #include <common/utilpath/path_polygonPoint.h>
@@ -50,6 +49,13 @@ public:
     void calculatePointsAandBForCurve();
     polygonPoint   getCurveStartPtA();
     polygonPoint   getCurveendPtB();
+    polygonPoint   getCurveStartPtARobot();
+    polygonPoint   getCurveendPtBRobot();
+    polygonPoint   getCurveStartPtAIm();
+    polygonPoint   getCurveEndPtBIm();
+    polygonPoint   getCurveStartPtAWorkarea();
+    polygonPoint   getCurveEndPtBWorkarea();
+    double    getArriveLineHeading();
     double getCurveAngleInt();
 private:
     std::vector<polygonPoint> arriveLine_;
@@ -68,5 +74,7 @@ private:
     polygonPoint B_im_;
     polygonPoint A_WORKAREA_;    //根据工作区域确定的A点
     polygonPoint B_WORKAREA_;
+    double  arriveLineHeading_;
+
 };
 #endif //POLYGONBACKSHAPE_CORNERTURING_FT_CPA_CV_ABPTLOCATION_H
