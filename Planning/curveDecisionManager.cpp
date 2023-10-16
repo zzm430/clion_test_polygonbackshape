@@ -85,19 +85,19 @@ void curveDecisionManager::processCurvePath(){
             break;
         }
         case CurveDecision::CONVEX_CORNER:{
-            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-                processFTCPACV();
-            }else{
+//            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
+//                processFTCPACV();
+//            }else{
                 processCCPA();
-            }
+//            }
             break;
         }
         case CurveDecision::CONCAVE_CORNER:{
-            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-                processFTCPACC();
-            }else{
+//            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
+//                processFTCPACC();
+//            }else{
                 processCCPA();
-            }
+//            }
             break;
         }
         case CurveDecision::FT_CPA_CC:{
@@ -479,6 +479,19 @@ void curveDecisionManager::processCCPA(){
             std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
             auto all_path = cornerTuringCCPAAlgorithm1.getAllPath();
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+
+            //验证拖拉机姿态
+            //计算拖拉机的轮廓点
+            for(auto im : all_path) {
+                tractorPolygonShow tractorPolygonShowInstance(im,
+                                                              arriveLineHeading_);
+                auto tractorHeadPts = tractorPolygonShowInstance.getTractorPolygonHeadPts();
+                auto tractorTailPts = tractorPolygonShowInstance.getTractorPolygonTailPts();
+                std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt";
+                auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
+//                auto & tractorTailPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test2);
+                tractorHeadPtsStream.writePts(tractorHeadPts,tractorTailPts);
+            }
         }
     } else if(curveType_ == CurveDecision::CONVEX_CORNER) {
         if(ridgeNumber_ == 0 && ptIndex_ == 1 ){
