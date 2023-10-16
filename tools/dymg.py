@@ -27,13 +27,14 @@ def update(frame):
 fig, ax = plt.subplots()
 ax.set_xlim(-300, 300)
 ax.set_ylim(-300, 300)
+ax.set_aspect('equal')
 # ax.autoscale()
 vertices = [(tractorHeadPtsStream[0][i], tractorHeadPtsStream[1][i]) for i in range(4)]
 polygon = Polygon(vertices, closed=True, fc='blue')
 ax.add_patch(polygon)
 
 vertices2 = [(tractorHeadPtsStream[0][i], tractorHeadPtsStream[1][i])for i in range(4, 8)]
-polygon2 = Polygon(vertices2, closed=True, fc='blue')
+polygon2 = Polygon(vertices2, closed=True, fc='red')
 ax.add_patch(polygon2)
 
 # 创建动画对象

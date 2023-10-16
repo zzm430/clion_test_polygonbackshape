@@ -3993,8 +3993,7 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
                 std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt";
                 auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
 //                auto & tractorTailPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test2);
-                tractorHeadPtsStream.writePts(tractorHeadPts);
-                tractorHeadPtsStream.writePts(tractorTailPts);
+                tractorHeadPtsStream.writePts(tractorHeadPts,tractorTailPts);
             }
         }
 
