@@ -3,6 +3,8 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.animation import FuncAnimation
+from matplotlib.patches import Polygon
 
 fig, ax = plt.subplots()
 # BB = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/origin_polygon.txt')
@@ -252,12 +254,46 @@ plt.plot(a[0,0],a[0,1],'ro')
 # for a, b in zip(test1_x,test1_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
+tractorHeadPtsStream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt')
+
+coordinates = []
+frame_count = len(tractorHeadPtsStream) - 1  # 帧数减去最后一帧
+duration = 1000  # 动画总持续时间（毫秒）
+interval = duration / frame_count  # 每个图形显示的时间间隔（毫秒）
+
+def update(frame):
+    # vertices =  [(np.cos(2*np.pi/5*i + frame*0.1), np.sin(2*np.pi/5*i + frame*0.1)) for i in range(5)]
+    if frame % 2 == 0:  # 只在 frame 为偶数时执行操作
+        if frame < len(tractorHeadPtsStream) - 1:
+             vertices = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame+1][i]) for i in range(4)]
+             vertices2 = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame + 1][i]) for i in range(4, 8)]
+             polygon.set_xy(vertices)
+             polygon2.set_xy(vertices2)
+    return (polygon,polygon2)
+
 # # 绘制线段
 for i in range(0, len(lineshow[0])-1, 2):
     x = [lineshow[0][i], lineshow[0][i+1]]
     y = [lineshow[1][i], lineshow[1][i+1]]
     plt.plot(x, y)
     plt.text(lineshow[0][i], lineshow[1][i], f"({lineshow[0][i]}, {lineshow[1][i]})")
+
+vertices = [(tractorHeadPtsStream[0][i], tractorHeadPtsStream[1][i]) for i in range(4)]
+polygon = Polygon(vertices, closed=True, fc='blue')
+ax.add_patch(polygon)
+
+vertices2 = [(tractorHeadPtsStream[0][i], tractorHeadPtsStream[1][i])for i in range(4, 8)]
+polygon2 = Polygon(vertices2, closed=True, fc='red')
+ax.add_patch(polygon2)
+
+# 创建动画对象
+# ani = FuncAnimation(fig, update, frames=np.arange(100), interval=interval,repeat=True, blit=True)
+ani = FuncAnimation(fig, update, frames=np.arange(frame_count), interval=interval,repeat=True, blit=True)
+
+for i in range(len(tractorHeadPtsStream) - 1):
+    coords = [(tractorHeadPtsStream[i][j], tractorHeadPtsStream[i+1][j]) for j in range(4, 8)]
+    polygonm = Polygon(coords, closed=True, fill=False, edgecolor='green', alpha=0.9,linewidth=0.1)  # 设置透明度为 0.5
+    ax.add_patch(polygonm)
 
 ax.set_xlabel('x label')
 ax.set_ylabel('y label')
