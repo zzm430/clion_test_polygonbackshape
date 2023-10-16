@@ -39,6 +39,8 @@
 #include "Geometry/cornerTuring_C_CPA_Algorithm.h"
 #include "common/common_param/common_typedef.h"
 #include "Planning/curveDecisionManager.h"
+#include "common/plot/tractorPolygonShow.h"
+#include "common/print/tractorPolyPrint.h"
 
 namespace aiforce{
 namespace Route_Planning

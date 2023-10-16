@@ -50,6 +50,8 @@
 #define MINEFF                    0.975     //带有农具时农具有效工作宽度的系数,动态可调,能动态更改圆的半径
 #define DIS_1                     1.1       //农具到车后轮中心的距离
 #define DIS_2                     1.6       //包含农具到车后轮中心的距离
+#define TRACTOR_WIDTH             1         //拖拉机车头宽度
+#define TRACTOR_HEIGH             2         //拖拉机车头长度
 
 
 

@@ -442,6 +442,7 @@ void curveDecisionManager::processCCPA(){
     arriveLineHeading = arriveLineHeading * M_PI / 180;
     //这里按照逆时针考虑的，所以取负
     arriveLineHeading = -arriveLineHeading;
+    arriveLineHeading_ = arriveLineHeading;
 
     //添加验证C-CPA代码
     if(curveType_ == CurveDecision::CONCAVE_CORNER){
@@ -551,10 +552,11 @@ void curveDecisionManager::processFTCPACV(){
         stor_pts.push_back(pt7);
         stor_pts.push_back(pt8);
 
-         auto arriveLineHeading = turingFtcpacvLocationInstance.getArriveLineHeading();
+        auto arriveLineHeading = turingFtcpacvLocationInstance.getArriveLineHeading();
         arriveLineHeading = arriveLineHeading * M_PI / 180;
         //这里按照逆时针考虑的，所以取负
         arriveLineHeading = -arriveLineHeading;
+        arriveLineHeading_ = arriveLineHeading;
         // 将坐标转换为相对于新坐标系的偏移量
         for(auto& i : stor_pts){
             double offsetX = i.x;
@@ -590,4 +592,8 @@ void curveDecisionManager::processREEDSHEPP(){
 
 void curveDecisionManager::changeState(CurveDecision  state){
     curveType_ = state;
+}
+
+double curveDecisionManager::getArriveLineHeading(){
+    return  arriveLineHeading_;
 }

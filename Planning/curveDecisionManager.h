@@ -15,6 +15,7 @@
 #include "common/utilpath/path_polygonPoint.h"
 #include "common/common_param/common_typedef.h"
 #include "common/common_param/common_parameters.h"
+#include "common/plot/tractorPolygonShow.h"
 
 enum  class CurveDecision : uint8_t {
     IDLE = 0,
@@ -46,6 +47,7 @@ public:
     void processFTCPACV();
     void processCCCURVE();
     void processREEDSHEPP();
+    double getArriveLineHeading();
     void changeState(CurveDecision  state);
 
 private:
@@ -53,6 +55,7 @@ private:
     double angleInt_;
     double ridgeNumber_;
     double ptIndex_;
+    double arriveLineHeading_;
     std::vector<polygonPoint> arriveLine_;
     std::vector<polygonPoint> leaveLine_;
     std::vector<std::vector<polygonPoint>>&      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]

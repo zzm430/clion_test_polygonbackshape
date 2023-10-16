@@ -3954,7 +3954,6 @@ void pathPolygonPlan::cgalComputeParallelLinesHeading(
 }
 
 void pathPolygonPlan::cgalComputeAKeyptsMapping(){
-
     int num =  cgalbackShape_keypoints_.size();
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
     for(int i = 0;i <= 1 ;i++){
@@ -3982,6 +3981,21 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
                                                              backshape_fishnail_curve_path_);
             curveDecisionManagerInstance.processCurveType();
             curveDecisionManagerInstance.processCurvePath();
+
+            //计算拖拉机的轮廓点
+            auto arriveLineHeading = curveDecisionManagerInstance.getArriveLineHeading();
+            tractorPolygonShow tractorPolygonShowInstance(cgalbackShape_keypoints_[i][j],
+                                                                     arriveLineHeading);
+            auto tractorHeadPts = tractorPolygonShowInstance.getTractorPolygonHeadPts();
+            auto tractorTailPts = tractorPolygonShowInstance.getTractorPolygonTailPts();
+
+            if(j == 1 && i == 0){
+                std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt";
+                auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
+//                auto & tractorTailPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test2);
+                tractorHeadPtsStream.writePts(tractorHeadPts);
+                tractorHeadPtsStream.writePts(tractorTailPts);
+            }
         }
 
         //最后一个点单独处理,j = cgalbackShape_keypoints_[i].size() - 1
