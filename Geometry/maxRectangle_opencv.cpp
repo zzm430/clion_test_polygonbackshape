@@ -8,8 +8,6 @@
 
 }
 
-
-
 double maxRectangle::get_point_min_x( std::vector<cv::Point>& points ) {
     double min_value;
 

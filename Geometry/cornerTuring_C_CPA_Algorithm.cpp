@@ -298,12 +298,7 @@ std::vector<polygonPoint>  cornerTuringCCPAAlgorithm::getAllLocalPath(){
 
 
 void cornerTuringCCPAAlgorithm::reprojectionCCA(std::vector<polygonPoint> & pts){
-//    for(auto& i : pts){
-//        i.x = fieldCornerPt_.x + i.x * cos(arriveLineHeading_ - 0.5 * M_PI)
-//                + i.y * sin(arriveLineHeading_ - 0.5 * M_PI);
-//        i.y = fieldCornerPt_.y - i.x * sin(arriveLineHeading_ - 0.5 * M_PI)
-//                + i.y * cos(arriveLineHeading_ - 0.5 * M_PI);
-//    }
+
     // 将坐标转换为相对于新坐标系的偏移量
     for(auto& i : pts){
         double offsetX = i.x;

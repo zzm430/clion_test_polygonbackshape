@@ -10,10 +10,6 @@ turingFtcpacvLocation::turingFtcpacvLocation(
                                   leaveLine_(leaveLine),
                                   Nlp_(ridgeNumber),
                                   Nap_(ridgeNumber){
-
-
-
-
     //arriveLine描述起始向量
     //leaveLine描述结束向量
     polygonPoint vector_1,vector_2,reference_vector;

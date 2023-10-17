@@ -483,13 +483,11 @@ void curveDecisionManager::processCCPA(){
             //计算拖拉机的轮廓点
             for(int  im = 1 ;im < all_path.size();im++) {
                 tractorPolygonShow tractorPolygonShowInstance(im,
-                                                              arriveLineHeading_,
                                                               all_path);
                 auto tractorHeadPts = tractorPolygonShowInstance.getTractorPolygonHeadPts();
                 auto tractorTailPts = tractorPolygonShowInstance.getTractorPolygonTailPts();
                 std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt";
                 auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
-//                auto & tractorTailPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test2);
                 tractorHeadPtsStream.writePts(tractorHeadPts,tractorTailPts);
             }
         }
@@ -498,10 +496,6 @@ void curveDecisionManager::processCCPA(){
             std::ofstream   temp;
             temp.open("/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeaveline1.txt",
                       std::ios::out);
-//        temp << " " << extendArriveLine_1[0].x << " " << extendArriveLine_1[1].x <<
-//             " " << extendLeaveLine_1[0].x << " " << extendLeaveLine_1[1].x << std::endl;
-//        temp << " " << extendArriveLine_1[0].y << " " << extendArriveLine_1[1].y <<
-//             " " << extendLeaveLine_1[0].y << " " << extendLeaveLine_1[1].y << std::endl;
             temp << " " << extendArriveLine[0].x << " " << extendArriveLine[1].x <<
                  " " << extendLeaveLine[0].x << " " << extendLeaveLine[1].x << std::endl;
             temp << " " << extendArriveLine[0].y << " " << extendArriveLine[1].y <<

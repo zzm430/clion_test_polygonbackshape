@@ -6,10 +6,8 @@
 
 tractorPolygonShow::tractorPolygonShow(
                                        int index,
-                                       double arriveLineHeading,
                                        std::vector<polygonPoint> orginCurvePathPts):
                                                           index_(index),
-                                                          arriveLineHeading_(arriveLineHeading),
                                                           orginCurvePathPts_(orginCurvePathPts){
      computeLocalTractorPolygonPts();
      transferTractorPolygonPts();
@@ -43,7 +41,6 @@ void tractorPolygonShow::computeLocalTractorPolygonPts(){
 }
 
 void tractorPolygonShow::transferTractorPolygonPts(){
-
     std::vector<polygonPoint>  storageTransPts;
     polygonPoint  refer_x_vector,vector_1;
     refer_x_vector.x = 1;
