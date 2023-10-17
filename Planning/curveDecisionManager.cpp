@@ -481,10 +481,10 @@ void curveDecisionManager::processCCPA(){
             auto allLocalPath = cornerTuringCCPAAlgorithm1.getAllLocalPath();
             //验证拖拉机姿态
             //计算拖拉机的轮廓点
-            for(auto im : all_path) {
+            for(int  im = 1 ;im < all_path.size();im++) {
                 tractorPolygonShow tractorPolygonShowInstance(im,
                                                               arriveLineHeading_,
-                                                              allLocalPath);
+                                                              all_path);
                 auto tractorHeadPts = tractorPolygonShowInstance.getTractorPolygonHeadPts();
                 auto tractorTailPts = tractorPolygonShowInstance.getTractorPolygonTailPts();
                 std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt";

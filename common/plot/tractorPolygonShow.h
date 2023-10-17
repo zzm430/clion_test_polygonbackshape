@@ -13,13 +13,16 @@ class tractorPolygonShow {
 public:
     tractorPolygonShow() = default;
     virtual  ~tractorPolygonShow() = default;
-    tractorPolygonShow(polygonPoint referencePt, double arriveLineHeading,std::vector<polygonPoint> orginCurvePathPts);
+    tractorPolygonShow(int Index, double arriveLineHeading,std::vector<polygonPoint> orginCurvePathPts);
     void computeLocalTractorPolygonPts();
     void transferTractorPolygonPts();
     std::vector<polygonPoint> getTractorPolygonHeadPts();
     std::vector<polygonPoint> getTractorPolygonTailPts();
+public:
+    std::vector<polygonPoint>   orginCurvePathPts1_;
+    std::vector<polygonPoint>   orginCurvePathPts2_;
 private:
-    polygonPoint referencePt_;                      //当对局部坐标原点
+    int  index_;
     double    arriveLineHeading_;                   //旋转方向
     std::vector<polygonPoint>  tractorPolyHeadPts_;  //拖拉机头部点位
     std::vector<polygonPoint>  tractorPolyTailPts_;  //拖拉机尾部点位

@@ -7,9 +7,9 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.patches import Polygon
 
 fig, ax = plt.subplots()
-# BB = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/origin_polygon.txt')
-# BB_x = BB[0]
-# BB_y = BB[1]
+BB = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/origin_polygon.txt')
+BB_x = BB[0]
+BB_y = BB[1]
 # ff = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/narrow_points.txt')
 # ff_x = ff[0]
 # ff_y = ff[1]
@@ -189,7 +189,7 @@ ax.plot(CCPA4path_x,CCPA4path_y,color='r',markerfacecolor='green',marker='o',lab
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
 # ax.plot(EE_x,EE_y,color='b',markerfacecolor='green',marker='o',label='increaseNodes data')
 # ax.plot(DD_x,DD_y,color='y',markerfacecolor='green',marker='o',label='inter_nodes data')
-# ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_polygon data')
+ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_polygon data')
 # ax.plot(test1_x,test1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 4.3,markersize=1)
 
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
