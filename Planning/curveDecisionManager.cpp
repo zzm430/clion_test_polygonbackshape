@@ -75,7 +75,6 @@ void curveDecisionManager::processCurveType(){
     }else{
         //to do
     }
-
 }
 
 void curveDecisionManager::processCurvePath(){
@@ -116,7 +115,6 @@ void curveDecisionManager::processCurvePath(){
 
 
 void curveDecisionManager::processBorderlessFishNail(){
-
     cornerTuringLocation   cornerTuringLocationtest(arriveLine_,
                                                     leaveLine_);
     cornerTuringLocationtest.decideLpAandLpB();
@@ -480,11 +478,13 @@ void curveDecisionManager::processCCPA(){
             auto all_path = cornerTuringCCPAAlgorithm1.getAllPath();
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
 
+            auto allLocalPath = cornerTuringCCPAAlgorithm1.getAllLocalPath();
             //验证拖拉机姿态
             //计算拖拉机的轮廓点
             for(auto im : all_path) {
                 tractorPolygonShow tractorPolygonShowInstance(im,
-                                                              arriveLineHeading_);
+                                                              arriveLineHeading_,
+                                                              allLocalPath);
                 auto tractorHeadPts = tractorPolygonShowInstance.getTractorPolygonHeadPts();
                 auto tractorTailPts = tractorPolygonShowInstance.getTractorPolygonTailPts();
                 std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt";

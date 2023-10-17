@@ -7,12 +7,13 @@
 #include <iostream>
 #include <common/utilpath/path_polygonPoint.h>
 #include <common/common_param/common_parameters.h>
+#include <common/math/common_math.h>
 
 class tractorPolygonShow {
 public:
     tractorPolygonShow() = default;
     virtual  ~tractorPolygonShow() = default;
-    tractorPolygonShow(polygonPoint referencePt, double arriveLineHeading);
+    tractorPolygonShow(polygonPoint referencePt, double arriveLineHeading,std::vector<polygonPoint> orginCurvePathPts);
     void computeLocalTractorPolygonPts();
     void transferTractorPolygonPts();
     std::vector<polygonPoint> getTractorPolygonHeadPts();
@@ -23,6 +24,7 @@ private:
     std::vector<polygonPoint>  tractorPolyHeadPts_;  //拖拉机头部点位
     std::vector<polygonPoint>  tractorPolyTailPts_;  //拖拉机尾部点位
     std::vector<polygonPoint>  localPolyPts_;        //
+    std::vector<polygonPoint>  orginCurvePathPts_;  //原始弯道点位信息
 
 };
 

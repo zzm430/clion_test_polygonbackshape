@@ -53,9 +53,6 @@
 #define TRACTOR_WIDTH             1         //拖拉机车头宽度
 #define TRACTOR_HEIGH             2         //拖拉机车头长度
 
-
-
-
 //鱼尾弯道参数
 //#define  F1                       1
 //#define  F2                       1

@@ -1,9 +1,7 @@
 //
 // Created by zzm on 23-9-22.
 //
-
 //此C-CPA算法目前只支持逆时针
-
 #include<math.h>
 #include "cornerTuring_C_CPA_Algorithm.h"
 #include "common/utilpath/path_polygonPoint.h"
@@ -209,6 +207,16 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
 //            correctForCornerOrientation(C1_pts);
 //            correctForCornerOrientation(C2_pts);
 //            correctForCornerOrientation(C3_pts);
+        for(auto i: C1_pts){
+            storage_localPath_.push_back(i);
+        }
+        for(auto i: C2_pts){
+            storage_localPath_.push_back(i);
+        }
+        for(auto i: C3_pts){
+            storage_localPath_.push_back(i);
+        }
+
          reprojectionCCA(C1_pts);
          reprojectionCCA(C2_pts);
          reprojectionCCA(C3_pts);
@@ -223,7 +231,6 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         C1file.writePts(C1_pts);
         C2file.writePts(C2_pts);
         C3file.writePts(C3_pts);
-        //后续需要裁剪处理
 
         std::ofstream  testfp;
         testfp.open("/home/zzm/Desktop/test_path_figure-main/src/test1007.txt",std::ios::out);
@@ -260,6 +267,10 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
                                                             circleCV_R,
                                                             circleCV_center_);
 
+
+        for(auto i: CV_pts){
+            storage_localPath_.push_back(i);
+        }
         reprojectionCCA(CV_pts);
         std::vector<polygonPoint>  temp_storage;
         temp_storage.push_back(circleCV_center_);
@@ -279,6 +290,10 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
 
 std::vector<polygonPoint>  cornerTuringCCPAAlgorithm::getAllPath(){
     return  storage_allPath_;
+}
+
+std::vector<polygonPoint>  cornerTuringCCPAAlgorithm::getAllLocalPath(){
+    return storage_localPath_;
 }
 
 

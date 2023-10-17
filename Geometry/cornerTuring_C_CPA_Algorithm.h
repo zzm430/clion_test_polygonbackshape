@@ -28,6 +28,7 @@ public:
     void correctForCornerOrientation(std::vector<polygonPoint> & vecPts);
     void reprojectionCCA(std::vector<polygonPoint> & pts);
     std::vector<polygonPoint>  getAllPath();
+    std::vector<polygonPoint>  getAllLocalPath();
     polygonPoint  getCircleC1Center();
     polygonPoint  getCircleC2Center();
     polygonPoint  getCircleC3Center();
@@ -48,7 +49,8 @@ private:
     polygonPoint   fieldCornerPt_;         //映射的原始坐标点
     polygonPoint   referencePt_;           //用于从局部更新到全局的基准点
     double   arriveLineHeading_;
-    std::vector<polygonPoint>  storage_allPath_;  //存储世界坐标系下path信息
+    std::vector<polygonPoint>  storage_allPath_;   //存储世界坐标系下path信息
+    std::vector<polygonPoint>  storage_localPath_; //存储局部坐标系下path信息
 };
 
 
