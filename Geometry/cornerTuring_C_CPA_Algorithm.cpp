@@ -38,7 +38,9 @@ cornerTuringCCPAAlgorithm::cornerTuringCCPAAlgorithm(
     }
     angleOC_ = 2 * M_PI - angleC;
     angleC_= angleC;
-    std::cout <<"the angle c is : " << angleC_ * 180/M_PI << std::endl;
+    std::cout <<"the angle c is : "
+              << angleC_ * 180/M_PI
+              << std::endl;
 }
 
 
@@ -114,7 +116,7 @@ void cornerTuringCCPAAlgorithm::calculateNewFieldBorder(){
         C1file.writePts(C1_pts);
         C2file.writePts(C2_pts);
         C3file.writePts(C3_pts);
-        //后续需要对这个路径进行裁剪
+
     } else {
         double angleCV_start = M_PI;
         double angleCV_end = angleC_;
@@ -170,8 +172,13 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
 //        double angleC3_start = 0;
 //        double angleC3_end = 2 * M_PI;
 
-        std::cout << "circle 1  ,circle 2, circle 3 R is : "<< circleC1_R << " " << circleC2_R << " " << " "
-                  << circleC3_R << std::endl;
+        std::cout << "circle 1  ,circle 2, circle 3 R is : "
+                  << circleC1_R
+                  << " "
+                  << circleC2_R
+                  << " "
+                  << circleC3_R
+                  << std::endl;
         double C1_allLength = circleC1_R * (angleC1_end - angleC1_start);
         double C2_allLength = circleC2_R * (angleC2_end - angleC2_start);
         double C3_allLength = circleC3_R  * (angleC3_end - angleC3_start);
@@ -275,7 +282,11 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         std::vector<polygonPoint>  temp_storage;
         temp_storage.push_back(circleCV_center_);
         reprojectionCCA(temp_storage);
-        std::cout << "the circlecv  111 center is : " << temp_storage[0].x << " " << temp_storage[0].y << std::endl;
+        std::cout << "the circlecv  111 center is : "
+                  << temp_storage[0].x
+                  << " "
+                  << temp_storage[0].y
+                  << std::endl;
 
         for(auto i: CV_pts){
             storage_allPath_.push_back(i);

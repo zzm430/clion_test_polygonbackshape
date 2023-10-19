@@ -34,7 +34,6 @@ void curveDecisionManager::processCurveType(){
     }
     if(JUDGE_CLOCKWISE){
         angle = 360 - angle; //arriveline 往逆时针走偏离的度数
-
         angleInt_  = angle ;
         std::cout << "11111111111111111111111111111111111111111 angle  1 is : "
                   << " angle 2 is : "
@@ -84,19 +83,19 @@ void curveDecisionManager::processCurvePath(){
             break;
         }
         case CurveDecision::CONVEX_CORNER:{
-//            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-//                processFTCPACV();
-//            }else{
+            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
+                processFTCPACV();
+            }else{
                 processCCPA();
-//            }
+            }
             break;
         }
         case CurveDecision::CONCAVE_CORNER:{
-//            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-//                processFTCPACC();
-//            }else{
+            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
+                processFTCPACC();
+            }else{
                 processCCPA();
-//            }
+            }
             break;
         }
         case CurveDecision::FT_CPA_CC:{
@@ -365,7 +364,11 @@ void curveDecisionManager::processBorderlessFishNail(polygonPoint curvePt){
 void curveDecisionManager::processCCPA(){
     //外扩arriveLine\leaveLine (垄宽/2)
     auto tempLeaveLine  = leaveLine_;
-    std::cout << "leave line 0 and 1 is : " << leaveLine_[0].x << " " << leaveLine_[0].y << std::endl;
+    std::cout << "leave line 0 and 1 is : "
+              << leaveLine_[0].x
+              << " "
+              << leaveLine_[0].y
+              << std::endl;
 
     //利用leaveline[0]计算垂足点
     auto footPt_1 = common::commonMath::computeFootPoint(
@@ -536,6 +539,7 @@ void curveDecisionManager::processFTCPACC(){
 
 void curveDecisionManager::processFTCPACV(){
     if(ridgeNumber_ == 0 && ptIndex_ == 1){
+        //确定弯道处理的关键点
         turingFtcpacvLocation turingFtcpacvLocationInstance(
                 arriveLine_,
                 leaveLine_,
@@ -550,12 +554,12 @@ void curveDecisionManager::processFTCPACV(){
         auto pt7 = turingFtcpacvLocationInstance.getCurveStartPtAWorkarea();
         auto pt8 = turingFtcpacvLocationInstance.getCurveEndPtBWorkarea();
         std::vector<polygonPoint>  stor_pts;
-        stor_pts.push_back(pt1);
-        stor_pts.push_back(pt2);
-        stor_pts.push_back(pt3);
-        stor_pts.push_back(pt4);
-        stor_pts.push_back(pt5);
-        stor_pts.push_back(pt6);
+//        stor_pts.push_back(pt1);
+//        stor_pts.push_back(pt2);
+//        stor_pts.push_back(pt3);
+//        stor_pts.push_back(pt4);
+//        stor_pts.push_back(pt5);
+//        stor_pts.push_back(pt6);
         stor_pts.push_back(pt7);
         stor_pts.push_back(pt8);
 

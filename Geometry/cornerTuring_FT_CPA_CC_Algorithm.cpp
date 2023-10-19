@@ -92,7 +92,9 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
     arriveLineHeading_ = -arriveLineHeading_;
 
     double tempfg = cornerTuringLocationtest.getCurveCCPAAngleInt();
-    std::cout << "the FTCPACC angleInt is : " << angleInt_ << std::endl;
+    std::cout << "the FTCPACC angleInt is : "
+              << angleInt_
+              << std::endl;
     double  angleC = DBL_MAX;
     if(angleInt_ < M_PI){
         angleC = angleInt_ + M_PI;

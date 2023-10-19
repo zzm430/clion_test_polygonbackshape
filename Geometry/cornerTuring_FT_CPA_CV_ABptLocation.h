@@ -66,9 +66,9 @@ private:
     double angleInt_;
     double Nlp_;
     double Nap_;
-    polygonPoint A_;            //FT-CPA-CV 起始点
-    polygonPoint B_;            //FT-CPA-CV 结束点
-    polygonPoint A_robot_;      //根据机器人确定的A点
+    polygonPoint A_;             //FT-CPA-CV 起始点
+    polygonPoint B_;             //FT-CPA-CV 结束点
+    polygonPoint A_robot_;       //根据机器人确定的A点
     polygonPoint B_robot_;
     polygonPoint A_im_;          //根据工具确定的A点
     polygonPoint B_im_;
