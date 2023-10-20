@@ -42,7 +42,7 @@ turingFtcpacvLocation::turingFtcpacvLocation(
         fishAngleInt = fish_diff_angle + 2 * M_PI;
     }
 
-    double angle_diff = fishAngleInt * M_PI / 180;
+    double angle_diff = fishAngleInt * 180 / M_PI;
 
     if(angle_diff >0 && angle_diff < 90){
         polygonPoint temp_lpA_robot,temp_lpB_robot,temp_lpA_im,temp_lpB_im;

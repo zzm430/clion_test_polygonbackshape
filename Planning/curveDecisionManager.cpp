@@ -554,27 +554,26 @@ void curveDecisionManager::processFTCPACV(){
         auto pt7 = turingFtcpacvLocationInstance.getCurveStartPtAWorkarea();
         auto pt8 = turingFtcpacvLocationInstance.getCurveEndPtBWorkarea();
         std::vector<polygonPoint>  stor_pts;
-//        stor_pts.push_back(pt1);
-//        stor_pts.push_back(pt2);
+        stor_pts.push_back(pt1);
+        stor_pts.push_back(pt2);
 //        stor_pts.push_back(pt3);
 //        stor_pts.push_back(pt4);
 //        stor_pts.push_back(pt5);
 //        stor_pts.push_back(pt6);
-        stor_pts.push_back(pt7);
-        stor_pts.push_back(pt8);
+//        stor_pts.push_back(pt7);
+//        stor_pts.push_back(pt8);
 
         auto arriveLineHeading = turingFtcpacvLocationInstance.getArriveLineHeading();
         arriveLineHeading = arriveLineHeading * M_PI / 180;
         //这里按照逆时针考虑的，所以取负
-        arriveLineHeading = -arriveLineHeading;
-        arriveLineHeading_ = arriveLineHeading;
+        arriveLineHeading_ = -arriveLineHeading;
         // 将坐标转换为相对于新坐标系的偏移量
         for(auto& i : stor_pts){
             double offsetX = i.x;
             double offsetY = i.y;
             // 计算逆向旋转后的坐标
-            double reversedX = offsetX * cos(arriveLineHeading) -  offsetY * sin(arriveLineHeading);
-            double reversedY = offsetY * cos(arriveLineHeading) +  offsetX * sin(arriveLineHeading) ;
+            double reversedX = offsetX * cos(arriveLineHeading_) -  offsetY * sin(arriveLineHeading_);
+            double reversedY = offsetY * cos(arriveLineHeading_) +  offsetX * sin(arriveLineHeading_) ;
 
             // 将逆向旋转后的坐标转换为原始坐标系
             polygonPoint reversedPoint;

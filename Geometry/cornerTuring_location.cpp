@@ -74,7 +74,7 @@ cornerTuringLocation::cornerTuringLocation(
 //   if(angle_diff < 0){
 //       angle_diff += 360;
 //   }
-     double angle_diff = fishAngleInt * M_PI / 180;
+     double angle_diff = fishAngleInt * 180 / M_PI;
 //   LOG(INFO) << "the angle 1 2 is : "
 //             << angle_1
 //             << " "
