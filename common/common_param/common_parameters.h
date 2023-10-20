@@ -53,6 +53,11 @@
 #define TRACTOR_WIDTH             1         //拖拉机车头宽度
 #define TRACTOR_HEIGH             2         //拖拉机车头长度
 
+//FT-CPA-CV
+#define DNCZ                      0.2       //the distance for the no-crop zone
+#define DEXTRA                    0.1       //the distance an implement can cross the field border
+
+
 //鱼尾弯道参数
 //#define  F1                       1
 //#define  F2                       1

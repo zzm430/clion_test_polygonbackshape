@@ -572,6 +572,8 @@ namespace common{
            return sample_points;  //C1、C2、C3的总长度
         }
 
+
+
     };
 }
 #endif //POLYGONBACKSHAPE_COMMON_MATH_H
