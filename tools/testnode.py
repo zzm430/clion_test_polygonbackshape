@@ -256,6 +256,8 @@ plt.plot(a[0,0],a[0,1],'ro')
 
 tractorHeadPtsStream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt')
 
+tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream111.txt')
+
 coordinates = []
 frame_count = len(tractorHeadPtsStream) - 1  # 帧数减去最后一帧
 duration = 1000  # 动画总持续时间（毫秒）
@@ -271,7 +273,7 @@ def update(frame):
              polygon2.set_xy(vertices2)
     return (polygon,polygon2)
 
-# # 绘制线段
+#  绘制线段
 for i in range(0, len(lineshow[0])-1, 2):
     x = [lineshow[0][i], lineshow[0][i+1]]
     y = [lineshow[1][i], lineshow[1][i+1]]
@@ -291,13 +293,24 @@ ax.add_patch(polygon2)
 ani = FuncAnimation(fig, update, frames=np.arange(frame_count), interval=interval,repeat=True, blit=True)
 
 for i in range(len(tractorHeadPtsStream) - 1):
-    coords = [(tractorHeadPtsStream[i][j], tractorHeadPtsStream[i+1][j]) for j in range(4, 8)]
-    coords1 = [(tractorHeadPtsStream[i][j], tractorHeadPtsStream[i+1][j]) for j in range (4)]
-    polygon = Polygon(coords, closed=True, fill=False, edgecolor='green', alpha=0.9,linewidth=0.1)
-    polygonf = Polygon(coords1, closed=True, fill=False, edgecolor='gray', alpha=0.9, linewidth=0.1)
-    # 设置透明度为 0.5
-    ax.add_patch(polygon)
-    ax.add_patch(polygonf)
+    if i % 2 == 0:
+        coords = [(tractorHeadPtsStream[i][j], tractorHeadPtsStream[i+1][j]) for j in range(4, 8)]
+        coords1 = [(tractorHeadPtsStream[i][j], tractorHeadPtsStream[i+1][j]) for j in range (4)]
+        polygon = Polygon(coords, closed=True, fill=False, edgecolor='green', alpha=0.9,linewidth=0.1)
+        polygonf = Polygon(coords1, closed=True, fill=False, edgecolor='gray', alpha=0.9, linewidth=0.1)
+        # 设置透明度为 0.5
+        ax.add_patch(polygon)
+        ax.add_patch(polygonf)
+
+for i in range(len(tractorHeadPtsStream111) - 1):
+    if i % 2 == 0:
+        coords1 = [(tractorHeadPtsStream111[i][j], tractorHeadPtsStream111[i + 1][j]) for j in range(4)]
+        coords = [(tractorHeadPtsStream111[i][j], tractorHeadPtsStream111[i + 1][j]) for j in range(4, 8)]
+        polygon1 = Polygon(coords, closed=True, fill=False, edgecolor='green', alpha=1, linewidth=1)
+        polygonf1 = Polygon(coords1, closed=True, fill=False, edgecolor='gray', alpha=1, linewidth=1)
+        # 设置透明度为 0.5
+        ax.add_patch(polygon1)
+        ax.add_patch(polygonf1)
 
 ax.set_xlabel('x label')
 ax.set_ylabel('y label')

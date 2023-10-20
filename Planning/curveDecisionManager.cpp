@@ -589,6 +589,25 @@ void curveDecisionManager::processFTCPACV(){
             temp << " " << i.x << " " << i.y << std::endl;
         }
         temp.close();
+
+        //构造FT-CPA-CV使用时的轮廓可视化
+        std::vector<polygonPoint>  polygon_A_show;
+        std::vector<polygonPoint>  polygon_B_show;
+        polygon_A_show.push_back(arriveLine_[1]);
+        polygon_A_show.push_back(stor_pts[0]);
+        polygon_B_show.push_back(leaveLine_[0]);
+        polygon_B_show.push_back(stor_pts[1]);
+        tractorPolygonShow tractorPolygonShowInstanceA(1,polygon_A_show);
+        auto pts_1 = tractorPolygonShowInstanceA.getTractorPolygonHeadPts();
+        auto pts_2 = tractorPolygonShowInstanceA.getTractorPolygonTailPts();
+        tractorPolygonShow tractorPolygonShowInstanceB(1,polygon_B_show);
+        auto pts_3 = tractorPolygonShowInstanceB.getTractorPolygonHeadPts();
+        auto pts_4 = tractorPolygonShowInstanceB.getTractorPolygonTailPts();
+
+        std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream111.txt";
+        auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
+        tractorHeadPtsStream.writePts(pts_1,pts_2);
+        tractorHeadPtsStream.writePts(pts_3,pts_4);
     }
 }
 
