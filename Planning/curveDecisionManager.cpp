@@ -20,8 +20,6 @@ curveDecisionManager::curveDecisionManager(
                       backshape_fishnail_curve_path_(backshape_fishnail_curve_path){
 }
 
-
-
 void curveDecisionManager::processCurveType(){
     polygonPoint vector_1,vector_2,reference_vector;
     vector_1.x = arriveLine_[1].x - arriveLine_[0].x;
@@ -553,6 +551,7 @@ void curveDecisionManager::processFTCPACV(){
         auto pt6 = turingFtcpacvLocationInstance.getCurveEndPtBIm();
         auto pt7 = turingFtcpacvLocationInstance.getCurveStartPtAWorkarea();
         auto pt8 = turingFtcpacvLocationInstance.getCurveEndPtBWorkarea();
+        auto angleInt = turingFtcpacvLocationInstance.getCurveAngleInt();
         std::vector<polygonPoint>  stor_pts;
         stor_pts.push_back(pt1);
         stor_pts.push_back(pt2);
@@ -608,6 +607,25 @@ void curveDecisionManager::processFTCPACV(){
         auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
         tractorHeadPtsStream.writePts(pts_1,pts_2);
         tractorHeadPtsStream.writePts(pts_3,pts_4);
+
+        cornerTuringFTCPACVAlgorithm cornerTuringFTCPACVAlgorithmInstance(angleInt);
+        cornerTuringFTCPACVAlgorithmInstance.computeLimitPtInPart2();
+        cornerTuringFTCPACVAlgorithmInstance.computeTheAnglesForFTCPACV();
+        cornerTuringFTCPACVAlgorithmInstance.SelectTheRequiredParts();
+        cornerTuringFTCPACVAlgorithmInstance.computePath();
+        auto pts = cornerTuringFTCPACVAlgorithmInstance.getPathAboutAll();
+
+        std::ofstream   testFTCPACV;
+        testFTCPACV.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACV.txt",std::ios::out);
+        for(auto i : pts){
+            testFTCPACV << " " << i.x ;
+        }
+        testFTCPACV << std::endl;
+        for(auto j : pts){
+            testFTCPACV <<" " << j.y;
+        }
+        testFTCPACV << std::endl;
+        testFTCPACV.close();
     }
 }
 

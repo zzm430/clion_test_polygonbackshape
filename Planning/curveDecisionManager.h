@@ -16,6 +16,7 @@
 #include "common/common_param/common_typedef.h"
 #include "common/common_param/common_parameters.h"
 #include "common/plot/tractorPolygonShow.h"
+#include "Geometry/cornerTuring_FT_CPA_CV_Algorithm.h"
 
 enum  class CurveDecision : uint8_t {
     IDLE = 0,
@@ -52,7 +53,7 @@ public:
 
 private:
     CurveDecision  curveType_ = CurveDecision::IDLE;
-    double angleInt_;
+    double angleInt_;    //此角度不可用于算法中的angleInt
     double ridgeNumber_;
     double ptIndex_;
     double arriveLineHeading_;

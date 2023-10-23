@@ -149,6 +149,10 @@ CCPA3path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/CCPA3path.tx
 CCPA3path_x = CCPA3path[0]
 CCPA3path_y = CCPA3path[1]
 
+testFTCPACV = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testFTCPACV.txt')
+testFTCPACV_x = testFTCPACV[0]
+testFTCPACV_y = testFTCPACV[1]
+
 # FTCPACC = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/FTCPACC.txt')
 # FTCPACC_x = FTCPACC[0]
 # FTCPACC_y = FTCPACC[1]
@@ -171,6 +175,7 @@ test1007_y = test1007[1]
 
 # ax.plot(test1007_x,test1007_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 
+ax.plot(testFTCPACV_x,testFTCPACV_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.1,markersize=1)
 ax.plot(CCPA1path_x,CCPA1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)
 ax.plot(CCPA2path_x,CCPA2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)
 ax.plot(CCPA3path_x,CCPA3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.1,markersize=1)

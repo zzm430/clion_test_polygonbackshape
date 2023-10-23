@@ -10,6 +10,11 @@ cornerTuringFTCPACVAlgorithm::cornerTuringFTCPACVAlgorithm(double angleInt):
      }else if(angleInt > M_PI && angleInt < 2 * M_PI){
          F2_ = -1;
      }
+     if(angleInt_ > M_PI){
+         angleInt2_ = 2 * M_PI - angleInt_;
+     }else{
+         angleInt2_ = angleInt_;
+     }
 }
 
 void cornerTuringFTCPACVAlgorithm::computeLimitPtInPart2(){
@@ -17,7 +22,7 @@ void cornerTuringFTCPACVAlgorithm::computeLimitPtInPart2(){
       pr.x = fabs(-DCRR) ;
       pr.y = fabs(-0.5 * WROBOT);
       if(angleInt_ > 0 && angleInt_ < M_PI){
-          pim.x = fabs(-DCRI- LIM);
+          pim.x = fabs(-DCRI-LIM);
           pim.y = fabs(-0.5 *WIM + OFFIM);
       }else{
           pim.x = fabs(-DCRI -LIM);
