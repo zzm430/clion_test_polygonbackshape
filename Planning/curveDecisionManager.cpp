@@ -537,6 +537,7 @@ void curveDecisionManager::processFTCPACC(){
 
 void curveDecisionManager::processFTCPACV(){
     if(ridgeNumber_ == 0 && ptIndex_ == 1){
+        
         //确定弯道处理的关键点
         turingFtcpacvLocation turingFtcpacvLocationInstance(
                 arriveLine_,

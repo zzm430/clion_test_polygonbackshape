@@ -237,16 +237,46 @@ void cornerTuringFTCPACVAlgorithm::reprojectionPts(
                              std::vector<polygonPoint> & storageCurvePathPart3,
                              std::vector<polygonPoint> & storageCurvePath){
     //计算第一次坐标转换
-    double dLPCR = sqrt(pLIM_.x * pLIM_.x + pLIM_.y * pLIM_.y);
-    double angleLPCR = atan(pLIM_.y/pLIM_.x);
+    double xShift;
+    //根据不同的part选择不同的局部坐标原点
+    switch(parttype_){
+        case PARTTYPE::REQUIRED_PART_1:{
+            double x = CIRCLE_RIDIS_R * sin(angleInt2_);
+            double y = F2_ * CIRCLE_RIDIS_R * (1 - cos(angleInt2_));
+            polygonPoint crEndPt(x,y);
+            xShift = -crEndPt.x + crEndPt.y / tan(angleInt_);
+            break;
+        }
+        case PARTTYPE::REQUIRED_PART_1_2:{
+            double dLPCR = sqrt(pLIM_.x * pLIM_.x + pLIM_.y * pLIM_.y);
+            double angleLPCR = atan(pLIM_.y/pLIM_.x);
+            double xLP = pLIM_.x *
+                         log(sin(angleStart_) * (cos(angleInt2_) - 1)/(sin(angleInt2_) * (cos(angleStart_) - 1)))
+                         - dCCX_;
+            double x = xLP + dLPCR * cos(angleInt2_ + angleLPCR);
+            double y = F2_ * (dLPCR * sin(angleInt2_ + angleLPCR) - pLIM_.y - dFL_);
+            polygonPoint crEndPt(x,y);
+            xShift = -crEndPt.x + crEndPt.y / tan(angleInt_);
+            break;
+        }
+        case PARTTYPE::REQUIRED_PART_1_2_3:{
+            double dLPCR = sqrt(pLIM_.x * pLIM_.x + pLIM_.y * pLIM_.y);
+            double angleLPCR = atan(pLIM_.y/pLIM_.x);
 
-    double xLP = pLIM_.x *
-                 log(sin(angleStart_) * (cos(angleEnd_) - 1)/(sin(angleEnd_) * (cos(angleStart_) - 1)))
-                 - dCCX_;
-    double x = xLP + dLPCR * cos(angleEnd_ + angleLPCR);
-    double y = F2_ * (dLPCR * sin(angleEnd_ + angleLPCR) - pLIM_.y - dFL_);
-    polygonPoint crEndPt(x,y);
-    double xShift = -crEndPt.x + crEndPt.y / tan(angleInt_);
+            double xLP = pLIM_.x *
+                         log(sin(angleStart_) * (cos(angleEnd_) - 1)/(sin(angleEnd_) * (cos(angleStart_) - 1)))
+                         - dCCX_;
+            double x = xLP + dLPCR * cos(angleEnd_ + angleLPCR);
+            double y = F2_ * (dLPCR * sin(angleEnd_ + angleLPCR) - pLIM_.y - dFL_);
+            polygonPoint crEndPt(x,y);
+            xShift = -crEndPt.x + crEndPt.y / tan(angleInt_);
+            break;
+        }
+        default:{
+            break;
+        }
+    }
+
 
      for(auto& i : storageCurvePathPart1){
          i.x =  i.x + xShift;

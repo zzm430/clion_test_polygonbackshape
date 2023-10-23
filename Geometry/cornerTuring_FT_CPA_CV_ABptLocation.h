@@ -56,7 +56,7 @@ public:
     polygonPoint   getCurveStartPtAWorkarea();
     polygonPoint   getCurveEndPtBWorkarea();
     double    getArriveLineHeading();
-    double getCurveAngleInt();
+    double    getCurveAngleInt();
 private:
     std::vector<polygonPoint> arriveLine_;
     std::vector<polygonPoint> leaveLine_;
