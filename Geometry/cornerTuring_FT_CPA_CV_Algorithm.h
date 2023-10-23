@@ -18,7 +18,7 @@ class cornerTuringFTCPACVAlgorithm{
 public:
     cornerTuringFTCPACVAlgorithm() =default;
     virtual ~cornerTuringFTCPACVAlgorithm() = default;
-    cornerTuringFTCPACVAlgorithm(double angleInt);
+    cornerTuringFTCPACVAlgorithm(double angleInt,polygonPoint referencePt,double arriveLineHeading);
     void computeLimitPtInPart2() ;
     void computeTheAnglesForFTCPACV();
     void computePath();
@@ -29,7 +29,8 @@ public:
             std::vector<polygonPoint> & storageCurvePathPart1,
             std::vector<polygonPoint> & storageCurvePathPart2,
             std::vector<polygonPoint> & storageCurvePathPart3,
-            std::vector<polygonPoint> & storageCurvePath);    // 映射到局部坐标系中
+            std::vector<polygonPoint> & storageCurvePath);    // 映射到局部坐标系中、全局坐标系下
+    void reprojectionGlobalPts(std::vector<polygonPoint> & pts);
     std::vector<polygonPoint> getPathAboutPart1();
     std::vector<polygonPoint> getPathAboutPart2();
     std::vector<polygonPoint> getPathAboutPart3();
@@ -48,7 +49,9 @@ private:
     double angleStart_;
     double angleEnd_;
     double F2_;
+    double arriveLineHeading_;
     PARTTYPE parttype_;
+    polygonPoint referencePt_;
     std::vector<polygonPoint>  storageCurvePath_;
     std::vector<polygonPoint>  storageCurvePathPart1_;
     std::vector<polygonPoint>  storageCurvePathPart2_;

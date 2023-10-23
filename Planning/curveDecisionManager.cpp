@@ -608,7 +608,11 @@ void curveDecisionManager::processFTCPACV(){
         tractorHeadPtsStream.writePts(pts_1,pts_2);
         tractorHeadPtsStream.writePts(pts_3,pts_4);
 
-        cornerTuringFTCPACVAlgorithm cornerTuringFTCPACVAlgorithmInstance(angleInt);
+
+        cornerTuringFTCPACVAlgorithm cornerTuringFTCPACVAlgorithmInstance(
+                                                                  angleInt,
+                                                                  cgalbackShape_keypoints_[ridgeNumber_][ptIndex_],
+                                                                  arriveLineHeading_);
         cornerTuringFTCPACVAlgorithmInstance.computeLimitPtInPart2();
         cornerTuringFTCPACVAlgorithmInstance.computeTheAnglesForFTCPACV();
         cornerTuringFTCPACVAlgorithmInstance.SelectTheRequiredParts();

@@ -3,16 +3,21 @@
 //
 #include "cornerTuring_FT_CPA_CV_Algorithm.h"
 
-cornerTuringFTCPACVAlgorithm::cornerTuringFTCPACVAlgorithm(double angleInt):
-                                                                angleInt_(angleInt){
+cornerTuringFTCPACVAlgorithm::cornerTuringFTCPACVAlgorithm(double angleInt,
+                                                           polygonPoint referencePt,
+                                                           double arriveLineHeading):
+                                                                angleInt_(angleInt),
+                                                                referencePt_(referencePt),
+                                                                arriveLineHeading_(arriveLineHeading){
      if(angleInt > 0  && angleInt < M_PI){
          F2_ = 1;
      }else if(angleInt > M_PI && angleInt < 2 * M_PI){
          F2_ = -1;
      }
+
      if(angleInt_ > M_PI){
          angleInt2_ = 2 * M_PI - angleInt_;
-     }else{
+     } else {
          angleInt2_ = angleInt_;
      }
 }
@@ -49,7 +54,9 @@ void cornerTuringFTCPACVAlgorithm::computeLimitPtInPart2(){
 void cornerTuringFTCPACVAlgorithm::computeTheAnglesForFTCPACV(){
     angleP1_ = atan((CIRCLE_RIDIS_R + pLIM_.y)/(pLIM_.x));
     dCCYP1_ = CIRCLE_RIDIS_R + pLIM_.y + dFL_;
-    angleP2_ = asin(dCCYP1_/dLIMCC_);
+    double temp  = dCCYP1_/dLIMCC_;
+    angleP2_ = asin(temp);
+    std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" <<  angleP2_ << std::endl;
     dCCX_ = dCCYP1_/tan(angleP2_);
     angleStart_ = angleP2_ - angleP1_;
     angleEnd_ = 0.5 * M_PI - angleP1_;
@@ -89,6 +96,11 @@ void cornerTuringFTCPACVAlgorithm::computePath(){
            break;
        }
    }
+    reprojectionPts(
+            storageCurvePathPart1_,
+            storageCurvePathPart2_,
+            storageCurvePathPart3_,
+            storageCurvePath_);
 }
 
 void cornerTuringFTCPACVAlgorithm::computePathAboutPart1(double angleStart,double angleEnd){
@@ -224,6 +236,7 @@ void cornerTuringFTCPACVAlgorithm::reprojectionPts(
                              std::vector<polygonPoint> & storageCurvePathPart2,
                              std::vector<polygonPoint> & storageCurvePathPart3,
                              std::vector<polygonPoint> & storageCurvePath){
+    //计算第一次坐标转换
     double dLPCR = sqrt(pLIM_.x * pLIM_.x + pLIM_.y * pLIM_.y);
     double angleLPCR = atan(pLIM_.y/pLIM_.x);
 
@@ -249,6 +262,28 @@ void cornerTuringFTCPACVAlgorithm::reprojectionPts(
 
     for(auto& i : storageCurvePath){
         i.x =  i.x + xShift;
+    }
+    //计算第二次坐标转换
+    reprojectionGlobalPts(storageCurvePathPart1);
+    reprojectionGlobalPts(storageCurvePathPart2);
+    reprojectionGlobalPts(storageCurvePathPart3);
+    reprojectionGlobalPts(storageCurvePath);
+
+}
+
+void cornerTuringFTCPACVAlgorithm::reprojectionGlobalPts(std::vector<polygonPoint> & pts){
+    for(auto & i: pts){
+        // 将坐标转换为相对于新坐标系的偏移量
+        double offsetX = i.x;
+        double offsetY = i.y;
+
+        // 计算逆向旋转后的坐标
+        double reversedX = offsetX * cos(arriveLineHeading_) -  offsetY * sin(arriveLineHeading_);
+        double reversedY = offsetY * cos(arriveLineHeading_) +  offsetX * sin(arriveLineHeading_) ;
+
+        // 将逆向旋转后的坐标转换为原始坐标系
+        i.x = reversedX + referencePt_.x;
+        i.y = reversedY + referencePt_.y;
     }
 }
 
