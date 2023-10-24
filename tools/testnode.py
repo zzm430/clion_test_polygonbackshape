@@ -200,9 +200,9 @@ ax.plot(BB_x,BB_y,color='r',markerfacecolor='green',marker='o',label='origin_pol
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 
 ax.plot(CCPA4border_x,CCPA4border_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
-ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(C2path_x,C2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(C3path_x,C3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(C1path_x,C1path_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(C2path_x,C2path_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(C3path_x,C3path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(testAB_x,testAB_y,color='black',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 # ax.plot(testABtransd_x,testABtransd_y,color='red',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 
@@ -259,7 +259,7 @@ plt.plot(a[0,0],a[0,1],'ro')
 # for a, b in zip(test1_x,test1_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
-tractorHeadPtsStream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream.txt')
+tractorHeadPtsStream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorFTCPACVPOLYGON.txt')
 
 tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream111.txt')
 
@@ -267,16 +267,16 @@ coordinates = []
 frame_count = len(tractorHeadPtsStream) - 1  # 帧数减去最后一帧
 duration = 1000  # 动画总持续时间（毫秒）
 interval = duration / frame_count  # 每个图形显示的时间间隔（毫秒）
-
-def update(frame):
-    # vertices =  [(np.cos(2*np.pi/5*i + frame*0.1), np.sin(2*np.pi/5*i + frame*0.1)) for i in range(5)]
-    if frame % 2 == 0:  # 只在 frame 为偶数时执行操作
-        if frame < len(tractorHeadPtsStream) - 1:
-             vertices = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame+1][i]) for i in range(4)]
-             vertices2 = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame + 1][i]) for i in range(4, 8)]
-             polygon.set_xy(vertices)
-             polygon2.set_xy(vertices2)
-    return (polygon,polygon2)
+#
+# def update(frame):
+#     # vertices =  [(np.cos(2*np.pi/5*i + frame*0.1), np.sin(2*np.pi/5*i + frame*0.1)) for i in range(5)]
+#     if frame % 2 == 0:  # 只在 frame 为偶数时执行操作
+#         if frame < len(tractorHeadPtsStream) - 1:
+#              vertices = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame+1][i]) for i in range(4)]
+#              vertices2 = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame + 1][i]) for i in range(4, 8)]
+#              polygon.set_xy(vertices)
+#              polygon2.set_xy(vertices2)
+#     return (polygon,polygon2)
 
 #  绘制线段
 for i in range(0, len(lineshow[0])-1, 2):
@@ -285,17 +285,17 @@ for i in range(0, len(lineshow[0])-1, 2):
     plt.plot(x, y)
     plt.text(lineshow[0][i], lineshow[1][i], f"({lineshow[0][i]}, {lineshow[1][i]})")
 
-vertices = [(tractorHeadPtsStream[0][i], tractorHeadPtsStream[1][i]) for i in range(4)]
-polygon = Polygon(vertices, closed=True, fc='blue')
-ax.add_patch(polygon)
-
-vertices2 = [(tractorHeadPtsStream[0][i], tractorHeadPtsStream[1][i])for i in range(4, 8)]
-polygon2 = Polygon(vertices2, closed=True, fc='red')
-ax.add_patch(polygon2)
-
-# 创建动画对象
-# ani = FuncAnimation(fig, update, frames=np.arange(100), interval=interval,repeat=True, blit=True)
-ani = FuncAnimation(fig, update, frames=np.arange(frame_count), interval=interval,repeat=True, blit=True)
+# vertices = [(tractorHeadPtsStream[0][i], tractorHeadPtsStream[1][i]) for i in range(4)]
+# polygon = Polygon(vertices, closed=True, fc='blue')
+# ax.add_patch(polygon)
+#
+# vertices2 = [(tractorHeadPtsStream[0][i], tractorHeadPtsStream[1][i])for i in range(4, 8)]
+# polygon2 = Polygon(vertices2, closed=True, fc='red')
+# ax.add_patch(polygon2)
+# #
+# # # 创建动画对象
+# # # ani = FuncAnimation(fig, update, frames=np.arange(100), interval=interval,repeat=True, blit=True)
+# ani = FuncAnimation(fig, update, frames=np.arange(frame_count), interval=interval,repeat=True, blit=True)
 
 for i in range(len(tractorHeadPtsStream) - 1):
     if i % 2 == 0:
@@ -307,12 +307,12 @@ for i in range(len(tractorHeadPtsStream) - 1):
         ax.add_patch(polygon)
         ax.add_patch(polygonf)
 
-for i in range(len(tractorHeadPtsStream111) - 1):
-    if i % 2 == 0:
-        coords1 = [(tractorHeadPtsStream111[i][j], tractorHeadPtsStream111[i + 1][j]) for j in range(4)]
-        coords = [(tractorHeadPtsStream111[i][j], tractorHeadPtsStream111[i + 1][j]) for j in range(4, 8)]
-        polygon1 = Polygon(coords, closed=True, fill=False, edgecolor='red', alpha=1, linewidth=1)
-        polygonf1 = Polygon(coords1, closed=True, fill=False, edgecolor='black', alpha=1, linewidth=1)
+for m in range(len(tractorHeadPtsStream111) - 1):
+    if m % 2 == 0:
+        coords11 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4)]
+        coords12 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4, 8)]
+        polygon1 = Polygon(coords12, closed=True, fill=False, edgecolor='green', alpha=0.9, linewidth=1)
+        polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor='gray', alpha=0.9, linewidth=1)
         # 设置透明度为 0.5
         ax.add_patch(polygon1)
         ax.add_patch(polygonf1)

@@ -77,12 +77,13 @@ void curveDecisionManager::processCurveType(){
 void curveDecisionManager::processCurvePath(){
     switch(curveType_){
         case CurveDecision::BORDERLESS_FISHNAIL: {
-            processBorderlessFishNail();
+//            processBorderlessFishNail();
+              processFTCPACV();
             break;
         }
         case CurveDecision::CONVEX_CORNER:{
             if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-                processFTCPACV();
+//                processFTCPACV();
             }else{
                 processCCPA();
             }
@@ -90,7 +91,7 @@ void curveDecisionManager::processCurvePath(){
         }
         case CurveDecision::CONCAVE_CORNER:{
             if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-                processFTCPACC();
+//                processFTCPACC();
             }else{
                 processCCPA();
             }
@@ -536,7 +537,7 @@ void curveDecisionManager::processFTCPACC(){
 }
 
 void curveDecisionManager::processFTCPACV(){
-    if(ridgeNumber_ == 0 && ptIndex_ == 1){
+    if(ridgeNumber_ == 0 && ptIndex_ == 5){
         //将arriveline、leaveLine 外扩 RIDGE_WIDTH_LENGTH/2
         //利用leaveline[0]计算垂足点
         auto footPt_1 = common::commonMath::computeFootPoint(
@@ -551,22 +552,21 @@ void curveDecisionManager::processFTCPACV(){
 
         std::vector<polygonPoint>   direction_line_1,direction_line_2;
 
-        direction_line_1.push_back(footPt_1);
         direction_line_1.push_back(leaveLine_[1]);
+        direction_line_1.push_back(footPt_1);
 
-        direction_line_2.push_back(footPt_2);
         direction_line_2.push_back(arriveLine_[0]);
-
+        direction_line_2.push_back(footPt_2);
 
         auto  extendArriveLine = common::commonMath::computeLineTranslationPoints(
                 arriveLine_,
                 direction_line_1,
-                2);
+                2.3);
         auto tempArriveLine = arriveLine_;
         auto extendLeaveLine = common::commonMath::computeLineTranslationPoints(
                 leaveLine_,
                 direction_line_2,
-                2);
+                2.3);
         //将extendArriveLine 和extendLeaveLine两端延长20m
         auto extendArriveLine_1 = common::commonMath::findPointExtendSegment2(
                 extendArriveLine[0],
@@ -604,12 +604,12 @@ void curveDecisionManager::processFTCPACV(){
         auto angleInt = turingFtcpacvLocationInstance.getCurveAngleInt();
         std::cout << "the real angleInt is : " << angleInt << std::endl;
         std::vector<polygonPoint>  stor_pts;
-//        stor_pts.push_back(pt1);
-//        stor_pts.push_back(pt2);
+        stor_pts.push_back(pt1);
+        stor_pts.push_back(pt2);
 //        stor_pts.push_back(pt3);
 //        stor_pts.push_back(pt4);
-        stor_pts.push_back(pt5);
-        stor_pts.push_back(pt6);
+//        stor_pts.push_back(pt5);
+//        stor_pts.push_back(pt6);
 //        stor_pts.push_back(pt7);
 //        stor_pts.push_back(pt8);
 
@@ -639,7 +639,6 @@ void curveDecisionManager::processFTCPACV(){
             temp1 << " " << i.x << " " << i.y << std::endl;
         }
         temp1.close();
-
         //构造FT-CPA-CV使用时的轮廓可视化
         std::vector<polygonPoint>  polygon_A_show;
         std::vector<polygonPoint>  polygon_B_show;
@@ -657,7 +656,7 @@ void curveDecisionManager::processFTCPACV(){
         auto pts_4 = tractorPolygonShowInstanceB.getTractorPolygonTailPts();
 
         std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream111.txt";
-        auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
+        auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint2>(test1);
         tractorHeadPtsStream.writePts(pts_1,pts_2);
         tractorHeadPtsStream.writePts(pts_3,pts_4);
 
@@ -682,6 +681,17 @@ void curveDecisionManager::processFTCPACV(){
         }
         testFTCPACV << std::endl;
         testFTCPACV.close();
+
+        //针对FT-CPA-CV算法进行姿态展示
+        for (int i  = 1;i < pts.size();i++){
+            tractorPolygonShow tractorPolygonShowInstanceM(i,pts);
+            auto pts_1 = tractorPolygonShowInstanceM.getTractorPolygonHeadPts();
+            auto pts_2 = tractorPolygonShowInstanceM.getTractorPolygonTailPts();
+            std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorFTCPACVPOLYGON.txt";
+            auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
+            tractorHeadPtsStream.writePts(pts_1,pts_2);
+        }
+
     }
 }
 

@@ -54,8 +54,8 @@
 #define TRACTOR_HEIGH             2         //拖拉机车头长度
 
 //FT-CPA-CV
-#define DNCZ                      0.2       //the distance for the no-crop zone
-#define DEXTRA                    0.1       //the distance an implement can cross the field border
+#define DNCZ                      0.15       //the distance for the no-crop zone，对于弯道属于part1、part2、part3起重要作用
+#define DEXTRA                    0.0       //the distance an implement can cross the field border
 
 
 //鱼尾弯道参数

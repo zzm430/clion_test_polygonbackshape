@@ -59,15 +59,21 @@ void cornerTuringFTCPACVAlgorithm::computeTheAnglesForFTCPACV(){
     dCCX_ = dCCYP1_/tan(angleP2_);
     angleStart_ = angleP2_ - angleP1_;
     angleEnd_ = 0.5 * M_PI - angleP1_;
+    std::cout << "the FT-CPA-CV angleStart is : " << angleStart_ * 180/ M_PI <<std::endl;
+    std::cout << "the FT-CPA-CV angleEnd is : " << angleEnd_ * 180/ M_PI << std::endl;
+    std::cout << "the FT-CPA-CV angleInt2 is : " << angleInt2_ * 180/ M_PI << std::endl;
 }
 
 void cornerTuringFTCPACVAlgorithm::SelectTheRequiredParts(){
     if(dCCYP1_ > dLIMCC_  || angleStart_ > angleInt2_){
         parttype_ = PARTTYPE::REQUIRED_PART_1;
+        std::cout << "the FT-CPA-CV belong to REQUIRED_PART_1!" << std::endl;
     }else if(angleEnd_ > angleInt2_) {
         parttype_ = PARTTYPE::REQUIRED_PART_1_2;
+        std::cout << "the FT-CPA-CV belong to REQUIRED_PART_1_2!" << std::endl;
     }else {
         parttype_ = PARTTYPE::REQUIRED_PART_1_2_3;
+        std::cout << "the FT-CPA-CV belong to REQUIRED_PART_1_2_3" <<std::endl;
     }
 }
 
@@ -175,7 +181,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart2(
         double current_angle = temp_last_start_angle + last_angle_increment * i;
         //计算xlp(anglehp2)
         double xLP = pLIM_.x *
-                     log(sin(angleStart_) * (cos(current_angle) - 1)/(sin(current_angle) * (cos(angleStart_) - 1)))
+                     log(fabs(sin(angleStart_) * (cos(current_angle) - 1)/(sin(current_angle) * (cos(angleStart_) - 1))))
                      - dCCX_;
         double x = xLP + dLPCR * cos(current_angle + angleLPCR);
         double y = F2_ * (dLPCR * sin(current_angle + angleLPCR) - pLIM_.y - dFL_);
@@ -202,7 +208,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart3(
     //存储采样点的容器
     std::vector<polygonPoint> sample_points;
     double xLPAngleend = pLIM_.x
-            * log(sin(angleStart_) * (cos(angleEnd_) - 1)/(sin(angleEnd_) * (cos(angleStart_) - 1)))
+            * log(fabs(sin(angleStart_) * (cos(angleEnd_) - 1)/(sin(angleEnd_) * (cos(angleStart_) - 1))))
             -dCCX_;
     for(int i = 1;i < num_samples -1 ;i++){
         double current_angle = angle_start + i * angle_increment;
@@ -250,7 +256,7 @@ void cornerTuringFTCPACVAlgorithm::reprojectionPts(
             double dLPCR = sqrt(pLIM_.x * pLIM_.x + pLIM_.y * pLIM_.y);
             double angleLPCR = atan(pLIM_.y/pLIM_.x);
             double xLP = pLIM_.x *
-                         log(sin(angleStart_) * (cos(angleInt2_) - 1)/(sin(angleInt2_) * (cos(angleStart_) - 1)))
+                         log(fabs(sin(angleStart_) * (cos(angleInt2_) - 1)/(sin(angleInt2_) * (cos(angleStart_) - 1))))
                          - dCCX_;
             double x = xLP + dLPCR * cos(angleInt2_ + angleLPCR);
             double y = F2_ * (dLPCR * sin(angleInt2_ + angleLPCR) - pLIM_.y - dFL_);
@@ -259,14 +265,11 @@ void cornerTuringFTCPACVAlgorithm::reprojectionPts(
             break;
         }
         case PARTTYPE::REQUIRED_PART_1_2_3:{
-            double dLPCR = sqrt(pLIM_.x * pLIM_.x + pLIM_.y * pLIM_.y);
-            double angleLPCR = atan(pLIM_.y/pLIM_.x);
-
             double xLP = pLIM_.x *
-                         log(sin(angleStart_) * (cos(angleEnd_) - 1)/(sin(angleEnd_) * (cos(angleStart_) - 1)))
+                         log(fabs(sin(angleStart_) * (cos(angleEnd_) - 1)/(sin(angleEnd_) * (cos(angleStart_) - 1))))
                          - dCCX_;
-            double x = xLP + dLPCR * cos(angleEnd_ + angleLPCR);
-            double y = F2_ * (dLPCR * sin(angleEnd_ + angleLPCR) - pLIM_.y - dFL_);
+            double x = xLP + CIRCLE_RIDIS_R * sin(angleInt2_);
+            double y = F2_ * (dLIMCC_ - dCCYP1_ + CIRCLE_RIDIS_R * (1 - cos(angleInt2_)));
             polygonPoint crEndPt(x,y);
             xShift = -crEndPt.x + crEndPt.y / tan(angleInt_);
             break;
