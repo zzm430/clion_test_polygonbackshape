@@ -32,12 +32,12 @@ void curveDecisionManager::processCurveType(){
     }
     if(JUDGE_CLOCKWISE){
         angle = 360 - angle; //arriveline 往逆时针走偏离的度数
-        angleInt_  = angle ;
+        angleIntManager_  = angle ;
         std::cout << "11111111111111111111111111111111111111111 angle  1 is : "
                   << " angle 2 is : "
                   << angle
                   << " the angle diff is ： "
-                  << angleInt_
+                  << angleIntManager_
                   << " the i is ： "
                   << ridgeNumber_
                   << " the index is : "
@@ -45,27 +45,27 @@ void curveDecisionManager::processCurveType(){
                   << std::endl;
 
         if(ridgeNumber_ < 2){                //第1垄和第2垄弯道处理
-            if(angleInt_> 0 && angleInt_ < 30){
+            if(angleIntManager_> 0 && angleIntManager_ < 30){
                 curveType_ = CurveDecision::CONVEX_CORNER;
-            }else if(angleInt_ > 30  && angleInt_ < 150){
+            }else if(angleIntManager_ > 30  && angleIntManager_ < 150){
                 curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleInt_ > 150  &&  angleInt_ < 210){
+            }else if(angleIntManager_ > 150  &&  angleIntManager_ < 210){
                 curveType_ = CurveDecision::CONCAVE_CORNER;
-            }else if(angleInt_ > 210  &&  angleInt_ < 330){
+            }else if(angleIntManager_ > 210  &&  angleIntManager_ < 330){
                 curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleInt_ > 330 &&  angleInt_ < 360){
+            }else if(angleIntManager_ > 330 &&  angleIntManager_ < 360){
                 curveType_ = CurveDecision::CONCAVE_CORNER;
             }
         }else{                            //当大于第2垄时弯道处理
-            if(angleInt_> 0 && angleInt_ < 30){
+            if(angleIntManager_> 0 && angleIntManager_ < 30){
                 curveType_ = CurveDecision::CONVEX_CORNER;
-            }else if(angleInt_ > 30  && angleInt_ < 150){
+            }else if(angleIntManager_ > 30  && angleIntManager_ < 150){
                 curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleInt_ > 150  &&  angleInt_ < 210){
+            }else if(angleIntManager_ > 150  &&  angleIntManager_ < 210){
                 curveType_ = CurveDecision::CONCAVE_CORNER;
-            }else if(angleInt_ > 210  &&  angleInt_ < 330){
+            }else if(angleIntManager_ > 210  &&  angleIntManager_ < 330){
                 curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleInt_ > 330 &&  angleInt_ < 360){
+            }else if(angleIntManager_ > 330 &&  angleIntManager_ < 360){
                 curveType_ = CurveDecision::CONCAVE_CORNER;
             }
         }
@@ -537,6 +537,56 @@ void curveDecisionManager::processFTCPACC(){
 
 void curveDecisionManager::processFTCPACV(){
     if(ridgeNumber_ == 0 && ptIndex_ == 1){
+        //将arriveline、leaveLine 外扩 RIDGE_WIDTH_LENGTH/2
+        //利用leaveline[0]计算垂足点
+        auto footPt_1 = common::commonMath::computeFootPoint(
+                leaveLine_[1],
+                arriveLine_[0],
+                arriveLine_[1]);
+
+        auto footPt_2 = common::commonMath::computeFootPoint(
+                arriveLine_[0],
+                leaveLine_[0],
+                leaveLine_[1]);
+
+        std::vector<polygonPoint>   direction_line_1,direction_line_2;
+
+        direction_line_1.push_back(footPt_1);
+        direction_line_1.push_back(leaveLine_[1]);
+
+        direction_line_2.push_back(footPt_2);
+        direction_line_2.push_back(arriveLine_[0]);
+
+
+        auto  extendArriveLine = common::commonMath::computeLineTranslationPoints(
+                arriveLine_,
+                direction_line_1,
+                2);
+        auto tempArriveLine = arriveLine_;
+        auto extendLeaveLine = common::commonMath::computeLineTranslationPoints(
+                leaveLine_,
+                direction_line_2,
+                2);
+        //将extendArriveLine 和extendLeaveLine两端延长20m
+        auto extendArriveLine_1 = common::commonMath::findPointExtendSegment2(
+                extendArriveLine[0],
+                extendArriveLine[1],
+                20);
+        auto  extendLeaveLine_1 =  common::commonMath::findPointExtendSegment2(
+                extendLeaveLine[0],
+                extendLeaveLine[1],
+                20);
+
+        std::ofstream   temp;
+        temp.open("/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeavelineFTCPACC11.txt",
+                  std::ios::out);
+        temp << " " << extendArriveLine_1[0].x << " " << extendArriveLine_1[1].x <<
+             " " << extendLeaveLine_1[0].x << " " << extendLeaveLine_1[1].x << std::endl;
+        temp << " " << extendArriveLine_1[0].y << " " << extendArriveLine_1[1].y <<
+             " " << extendLeaveLine_1[0].y << " " << extendLeaveLine_1[1].y << std::endl;
+        temp.close();
+
+
         //确定弯道处理的关键点
         turingFtcpacvLocation turingFtcpacvLocationInstance(
                 arriveLine_,
@@ -554,12 +604,12 @@ void curveDecisionManager::processFTCPACV(){
         auto angleInt = turingFtcpacvLocationInstance.getCurveAngleInt();
         std::cout << "the real angleInt is : " << angleInt << std::endl;
         std::vector<polygonPoint>  stor_pts;
-        stor_pts.push_back(pt1);
-        stor_pts.push_back(pt2);
+//        stor_pts.push_back(pt1);
+//        stor_pts.push_back(pt2);
 //        stor_pts.push_back(pt3);
 //        stor_pts.push_back(pt4);
-//        stor_pts.push_back(pt5);
-//        stor_pts.push_back(pt6);
+        stor_pts.push_back(pt5);
+        stor_pts.push_back(pt6);
 //        stor_pts.push_back(pt7);
 //        stor_pts.push_back(pt8);
 
@@ -583,12 +633,12 @@ void curveDecisionManager::processFTCPACV(){
             i.y = reversedPoint.y;
         }
 
-        std::ofstream   temp;
-        temp.open("/home/zzm/clion_test_polygonbackshape/tools/test1111.txt",std::ios::out);
+        std::ofstream   temp1;
+        temp1.open("/home/zzm/clion_test_polygonbackshape/tools/test1111.txt",std::ios::out);
         for(auto i : stor_pts){
-            temp << " " << i.x << " " << i.y << std::endl;
+            temp1 << " " << i.x << " " << i.y << std::endl;
         }
-        temp.close();
+        temp1.close();
 
         //构造FT-CPA-CV使用时的轮廓可视化
         std::vector<polygonPoint>  polygon_A_show;
@@ -598,6 +648,7 @@ void curveDecisionManager::processFTCPACV(){
         polygon_A_show.push_back(stor_pts[0]);
         polygon_B_show.push_back(leaveLine_[0]);
         polygon_B_show.push_back(stor_pts[1]);
+
         tractorPolygonShow tractorPolygonShowInstanceA(1,polygon_A_show);
         auto pts_1 = tractorPolygonShowInstanceA.getTractorPolygonHeadPts();
         auto pts_2 = tractorPolygonShowInstanceA.getTractorPolygonTailPts();

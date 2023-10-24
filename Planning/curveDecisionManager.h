@@ -53,7 +53,7 @@ public:
 
 private:
     CurveDecision  curveType_ = CurveDecision::IDLE;
-    double angleInt_;    //此角度不可用于算法中的angleInt
+    double angleIntManager_;    //此角度不可用于算法中的angleInt
     double ridgeNumber_;
     double ptIndex_;
     double arriveLineHeading_;

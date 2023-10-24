@@ -167,7 +167,7 @@ testFTCPACV_y = testFTCPACV[1]
 # CCPA3path1_x = CCPA3path1[0]
 # CCPA3path1_y = CCPA3path1[1]
 
-lineshow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeavelineFTCPACC.txt')
+lineshow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeavelineFTCPACC11.txt')
 
 test1007 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test1007.txt')
 test1007_x = test1007[0]
@@ -311,8 +311,8 @@ for i in range(len(tractorHeadPtsStream111) - 1):
     if i % 2 == 0:
         coords1 = [(tractorHeadPtsStream111[i][j], tractorHeadPtsStream111[i + 1][j]) for j in range(4)]
         coords = [(tractorHeadPtsStream111[i][j], tractorHeadPtsStream111[i + 1][j]) for j in range(4, 8)]
-        polygon1 = Polygon(coords, closed=True, fill=False, edgecolor='green', alpha=1, linewidth=1)
-        polygonf1 = Polygon(coords1, closed=True, fill=False, edgecolor='gray', alpha=1, linewidth=1)
+        polygon1 = Polygon(coords, closed=True, fill=False, edgecolor='red', alpha=1, linewidth=1)
+        polygonf1 = Polygon(coords1, closed=True, fill=False, edgecolor='black', alpha=1, linewidth=1)
         # 设置透明度为 0.5
         ax.add_patch(polygon1)
         ax.add_patch(polygonf1)
