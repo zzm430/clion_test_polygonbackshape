@@ -56,7 +56,6 @@ void cornerTuringFTCPACVAlgorithm::computeTheAnglesForFTCPACV(){
     dCCYP1_ = CIRCLE_RIDIS_R + pLIM_.y + dFL_;
     double temp  = dCCYP1_/dLIMCC_;
     angleP2_ = asin(temp);
-    std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" <<  angleP2_ << std::endl;
     dCCX_ = dCCYP1_/tan(angleP2_);
     angleStart_ = angleP2_ - angleP1_;
     angleEnd_ = 0.5 * M_PI - angleP1_;

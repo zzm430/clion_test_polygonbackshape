@@ -41,7 +41,7 @@ turingFtcpacvLocation::turingFtcpacvLocation(
     }else{
         fishAngleInt = fish_diff_angle + 2 * M_PI;
     }
-
+    angleInt_ = fishAngleInt ;
     double angle_diff = fishAngleInt * 180 / M_PI;
 
     if(angle_diff >0 && angle_diff < 90){
@@ -163,7 +163,6 @@ turingFtcpacvLocation::turingFtcpacvLocation(
         cornerAngleInfo_.LpB_WORKAREA_ = tempB;
         LOG(INFO) << "FT-CPA-CV's angleInt is in FOURTH_QUADRANT";
     }
-    angleInt_ = fishAngleInt ;
 }
 
 void turingFtcpacvLocation::calculatePointsAandBForCurve(){
@@ -222,7 +221,7 @@ void turingFtcpacvLocation::calculatePointsAandBForCurve(){
     A_.x = std::min(std::min(A_robot_.x,A_im_.x),A_WORKAREA_.x);
     A_.y = 0;
     if(angleInt_ > 0 && angleInt_ < M_PI){
-        B_.y = std::max(std::max(B_robot_.x,B_im_.x),B_WORKAREA_.x);
+        B_.y = std::max(std::max(B_robot_.y,B_im_.y),B_WORKAREA_.y);
     }else if(angleInt_ > M_PI  && angleInt_ < 2 * M_PI){
         B_.y = std::min(std::min(B_robot_.y,B_im_.y),B_WORKAREA_.y);
     }

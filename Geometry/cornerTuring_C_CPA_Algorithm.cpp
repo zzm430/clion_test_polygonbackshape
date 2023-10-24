@@ -211,9 +211,9 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
 
         //如果angleInt > M_PI,则将路径点y值全部乘以-1
 
-//            correctForCornerOrientation(C1_pts);
-//            correctForCornerOrientation(C2_pts);
-//            correctForCornerOrientation(C3_pts);
+//      correctForCornerOrientation(C1_pts);
+//      correctForCornerOrientation(C2_pts);
+//      correctForCornerOrientation(C3_pts);
         for(auto i: C1_pts){
             storage_localPath_.push_back(i);
         }

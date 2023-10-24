@@ -537,7 +537,6 @@ void curveDecisionManager::processFTCPACC(){
 
 void curveDecisionManager::processFTCPACV(){
     if(ridgeNumber_ == 0 && ptIndex_ == 1){
-        
         //确定弯道处理的关键点
         turingFtcpacvLocation turingFtcpacvLocationInstance(
                 arriveLine_,
@@ -553,6 +552,7 @@ void curveDecisionManager::processFTCPACV(){
         auto pt7 = turingFtcpacvLocationInstance.getCurveStartPtAWorkarea();
         auto pt8 = turingFtcpacvLocationInstance.getCurveEndPtBWorkarea();
         auto angleInt = turingFtcpacvLocationInstance.getCurveAngleInt();
+        std::cout << "the real angleInt is : " << angleInt << std::endl;
         std::vector<polygonPoint>  stor_pts;
         stor_pts.push_back(pt1);
         stor_pts.push_back(pt2);
@@ -593,6 +593,7 @@ void curveDecisionManager::processFTCPACV(){
         //构造FT-CPA-CV使用时的轮廓可视化
         std::vector<polygonPoint>  polygon_A_show;
         std::vector<polygonPoint>  polygon_B_show;
+
         polygon_A_show.push_back(arriveLine_[1]);
         polygon_A_show.push_back(stor_pts[0]);
         polygon_B_show.push_back(leaveLine_[0]);
@@ -608,7 +609,6 @@ void curveDecisionManager::processFTCPACV(){
         auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
         tractorHeadPtsStream.writePts(pts_1,pts_2);
         tractorHeadPtsStream.writePts(pts_3,pts_4);
-
 
         cornerTuringFTCPACVAlgorithm cornerTuringFTCPACVAlgorithmInstance(
                                                                   angleInt,

@@ -88,7 +88,7 @@ inner_skeleton_path_x = inner_skeleton_path[0]
 inner_skeleton_path_y = inner_skeleton_path[1]
 
 a = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/test1111.txt')
-# a = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt')
+# a = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/ptsshowtest.txt')
 # lineshow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/lineshow.txt')
 # lineshow_x = lineshow[0]
 # lineshow_y = lineshow[1]
