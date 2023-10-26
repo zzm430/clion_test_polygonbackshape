@@ -354,7 +354,6 @@ void cornerTuringTishNail::IntersectionOf2Circles(CIRCLE c1, CIRCLE c2, polygonP
         P1.y = (subs3 + sigma*a1 - sigma*a2) / (2 * subs1);
         P2.y = (subs3 - sigma*a1 + sigma*a2) / (2 * subs1);
     }
-
 }
 
 
@@ -427,7 +426,6 @@ polygonPoint  cornerTuringTishNail::computeCircleInterSectPt(
     insecPt.x = centroidm.x();
     insecPt.y = centroidm.y();
     return  insecPt;
-
 }
 
 std::vector<polygonPoint>  cornerTuringTishNail::calculateCircleLinesInsectPts(

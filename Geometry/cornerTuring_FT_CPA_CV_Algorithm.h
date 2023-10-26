@@ -7,6 +7,7 @@
 #include <common/utilpath/path_polygonPoint.h>
 #include "common/common_param/common_parameters.h"
 #include <iostream>
+#include "common/math/common_math.h"
 
 enum  class PARTTYPE :uint8_t{
     REQUIRED_PART_1  = 0,      //仅仅需要第一部分路径
@@ -18,7 +19,14 @@ class cornerTuringFTCPACVAlgorithm{
 public:
     cornerTuringFTCPACVAlgorithm() =default;
     virtual ~cornerTuringFTCPACVAlgorithm() = default;
-    cornerTuringFTCPACVAlgorithm(double angleInt,polygonPoint referencePt,double arriveLineHeading);
+    cornerTuringFTCPACVAlgorithm(
+                            const  double angleInt,
+                            const polygonPoint referencePt,
+                            const double arriveLineHeading,
+                            const polygonPoint pathStartPt,
+                            const polygonPoint pathEndPt,
+                            const std::vector<polygonPoint> arriveLine,
+                            const std::vector<polygonPoint> leaveLine);
     void computeLimitPtInPart2() ;
     void computeTheAnglesForFTCPACV();
     void computePath();
@@ -36,6 +44,9 @@ public:
     std::vector<polygonPoint> getPathAboutPart3();
     std::vector<polygonPoint> getPathAboutAll();
     void SelectTheRequiredParts();
+    std::vector<polygonPoint>  getPathStraight1();
+    std::vector<polygonPoint>  getPathStraight2();
+    void computePathAboutStraightLine();
 private:
     double angleInt_;
     double dFL_;
@@ -56,6 +67,23 @@ private:
     std::vector<polygonPoint>  storageCurvePathPart1_;
     std::vector<polygonPoint>  storageCurvePathPart2_;
     std::vector<polygonPoint>  storageCurvePathPart3_;
+
+
+    //两条直道相关参数
+private:
+    polygonPoint  pathStartPt_;  //全局坐标系下
+    polygonPoint  pathEndPt_;    //全局坐标系下
+    std::vector<polygonPoint>  pathStraight1_;   //直道倒车部分1
+    std::vector<polygonPoint>  pathStraight2_;   //直道倒车部分2
+    polygonPoint  curveStartPt_; //FT-CPA-CV算法弯道起始点统一Part1\Part12\Part123
+    polygonPoint  curveEndPt_;   //FT-CPA-CV算法弯道结束点统一Part1\Part12\Part123
+
+    //更新弯道起始点和结束点
+private:
+   std::vector<polygonPoint> arriveLine_;
+   std::vector<polygonPoint>  leaveLine_;
+
+
 
 };
 

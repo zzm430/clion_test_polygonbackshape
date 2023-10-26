@@ -29,12 +29,19 @@ namespace common{
 //13.给出一个三角形，求三角形对应的最短边，及其对角的顶点
 //14.给定一个点和一个多边形(闭环)的点位，更新多边形的存储顺序，第一个点距离该点距离最近
 
+//计算两向量之间的点积分
+//计算向量的模
+//计算两向量之间的夹角
+//计算两向量之间的度数
+
 //1.计算两点之间的距离
 //2.找到线段上固定端点固定距离的点
 //3.找到线段上固定端点的延长线上固定距离的点
 //4.在线段之间插入factor-1个点，等间隔插入
 //5.计算点到线段所在直线距离
 //6.计算点p在线段AB上的投影点
+//7.计算点p在线段AB上的垂足点
+
 
 //基础数学运算
 //1.取得余数
@@ -42,7 +49,13 @@ namespace common{
 //3.计算向量的heading
 //4.计算一个点是在线段AB所在直线的左侧还是右侧
 //5.根据两点构造一个向量
-//6.计算路径的总长度
+//6.判断一个点是否在线段AB上
+//7.计算路径的总长度
+
+//其他
+//1.等间隔差分一段圆弧，并获取其结果
+//2.弯道起始点和结束点的精度更新
+
         commonMath() = default;
         virtual ~commonMath() = default;
 
@@ -395,6 +408,22 @@ namespace common{
             densified_points.push_back(points.back());
             return densified_points;
         }
+        static std::vector<polygonPoint> densify2(const std::vector<polygonPoint>& points,
+                                          int factor) {
+            std::vector<polygonPoint> densified_points;
+            for (size_t i = 0; i < points.size() - 1; ++i) {
+                densified_points.push_back(points[i]);
+                for (int j = 1; j < factor; ++j) {
+                    double t = static_cast<double>(j) / factor;
+                    polygonPoint interpolated_point;
+                    interpolated_point.x = points[i].x + t * (points[i + 1].x - points[i].x);
+                    interpolated_point.y = points[i].y + t * (points[i + 1].y - points[i].y);
+                    densified_points.push_back(interpolated_point);
+                }
+            }
+            densified_points.push_back(points.back());
+            return densified_points;
+        }
         //5.计算点到线段所在直线距离
         static double distanceToLineSegment(double x1, double y1,
                                               double x2,double y2,
@@ -534,13 +563,13 @@ namespace common{
             return allPath;
         }
 
-        //等间隔差分一段圆弧,并获取其结果
+        //8等间隔差分一段圆弧,并获取其结果
         static std::vector<polygonPoint> equalIntervalDiff(
                 double arc_length,
                 double diff_dis,
                 double start_angle,   //弧度为单位
                 double end_angle,
-                double radis,      //半径
+                double radis,         //半径
                 polygonPoint circle_center
                 ){
            int num_samples = std::ceil(fabs(arc_length)/diff_dis); //向上取整
@@ -572,8 +601,26 @@ namespace common{
            return sample_points;  //C1、C2、C3的总长度
         }
 
+        //弯道起始点和结束点的精度更新,arriveLine[0]为起点，leaveLine[0]为起点
+        static void curveStartAndEndPtUpdate(const std::vector<polygonPoint> arriveLine,
+                                             const std::vector<polygonPoint> leaveLine,
+                                             std::vector<polygonPoint>& curvePath){
+            //计算arriveLine[1]到起点之间的距离
+            double size_m = curvePath.size();
+            auto footPtArr = common::commonMath::computeFootPoint(curvePath[0],
+                                                              arriveLine[0],
+                                                              arriveLine[1]);
+            auto footPtLea = common::commonMath::computeFootPoint(curvePath[size_m-1],
+                                                                leaveLine[0],
+                                                                leaveLine[1]);
 
-
+            //更新curvePath的起始点和末尾点
+            curvePath[0].x = footPtArr.x;
+            curvePath[0].y = footPtArr.y;
+            curvePath[size_m - 1].x = footPtLea.x;
+            curvePath[size_m - 1].y = footPtLea.y;
+        }
     };
+
 }
 #endif //POLYGONBACKSHAPE_COMMON_MATH_H

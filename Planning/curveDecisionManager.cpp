@@ -301,9 +301,9 @@ void curveDecisionManager::processBorderlessFishNail(polygonPoint curvePt){
     auto local_C2path = cornerTuringTishNailtest.getFishNailC2path();
     auto local_C3path = cornerTuringTishNailtest.getFishNailC3path();
 
-//            auto local_C1path = cornerTuringTishNailtest.getC1path();
-//            auto local_C2path = cornerTuringTishNailtest.getC2path();
-//            auto local_C3path = cornerTuringTishNailtest.getC3path();
+//  auto local_C1path = cornerTuringTishNailtest.getC1path();
+//  auto local_C2path = cornerTuringTishNailtest.getC2path();
+//  auto local_C3path = cornerTuringTishNailtest.getC3path();
 
     //转换到世界坐标系下
     normalMatrixTranslate  normalMatrixTranslateInstance;
@@ -577,6 +577,7 @@ void curveDecisionManager::processFTCPACV(){
                 extendLeaveLine[1],
                 20);
 
+#ifdef  DEBUG_CPA_INFO
         std::ofstream   temp;
         temp.open("/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeavelineFTCPACC11.txt",
                   std::ios::out);
@@ -585,7 +586,7 @@ void curveDecisionManager::processFTCPACV(){
         temp << " " << extendArriveLine_1[0].y << " " << extendArriveLine_1[1].y <<
              " " << extendLeaveLine_1[0].y << " " << extendLeaveLine_1[1].y << std::endl;
         temp.close();
-
+#endif
 
         //确定弯道处理的关键点
         turingFtcpacvLocation turingFtcpacvLocationInstance(
@@ -633,6 +634,7 @@ void curveDecisionManager::processFTCPACV(){
             i.y = reversedPoint.y;
         }
 
+#ifdef   DEBUG_CPA_INFO
         std::ofstream   temp1;
         temp1.open("/home/zzm/clion_test_polygonbackshape/tools/test1111.txt",std::ios::out);
         for(auto i : stor_pts){
@@ -659,39 +661,60 @@ void curveDecisionManager::processFTCPACV(){
         auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint2>(test1);
         tractorHeadPtsStream.writePts(pts_1,pts_2);
         tractorHeadPtsStream.writePts(pts_3,pts_4);
-
+#endif
         cornerTuringFTCPACVAlgorithm cornerTuringFTCPACVAlgorithmInstance(
                                                                   angleInt,
                                                                   cgalbackShape_keypoints_[ridgeNumber_][ptIndex_],
-                                                                  arriveLineHeading_);
+                                                                  arriveLineHeading_,
+                                                                  stor_pts[0],
+                                                                  stor_pts[1],
+                                                                  arriveLine_,
+                                                                  leaveLine_);
         cornerTuringFTCPACVAlgorithmInstance.computeLimitPtInPart2();
         cornerTuringFTCPACVAlgorithmInstance.computeTheAnglesForFTCPACV();
         cornerTuringFTCPACVAlgorithmInstance.SelectTheRequiredParts();
         cornerTuringFTCPACVAlgorithmInstance.computePath();
         auto pts = cornerTuringFTCPACVAlgorithmInstance.getPathAboutAll();
+        auto path1 = cornerTuringFTCPACVAlgorithmInstance.getPathStraight1();
+        auto path2 = cornerTuringFTCPACVAlgorithmInstance.getPathStraight2();
+
+#ifdef DEBUG_CPA_INFO
+        //对整个FT-CPA-CV的path点位进行展示
+        std::vector<polygonPoint>  storageALLPath;
+        std::reverse(path1.begin(),path1.end());
+        std::reverse(path2.begin(),path2.end());
+        for(auto i : path1){
+            storageALLPath.push_back(i);
+        }
+        for(auto i : pts){
+            storageALLPath.push_back(i);
+        }
+        for(auto i: path2){
+            storageALLPath.push_back(i);
+        }
 
         std::ofstream   testFTCPACV;
         testFTCPACV.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACV.txt",std::ios::out);
-        for(auto i : pts){
+        for(auto i : storageALLPath){
             testFTCPACV << " " << i.x ;
         }
         testFTCPACV << std::endl;
-        for(auto j : pts){
+        for(auto j : storageALLPath){
             testFTCPACV <<" " << j.y;
         }
         testFTCPACV << std::endl;
         testFTCPACV.close();
 
         //针对FT-CPA-CV算法进行姿态展示
-        for (int i  = 1;i < pts.size();i++){
-            tractorPolygonShow tractorPolygonShowInstanceM(i,pts);
+        for (int i  = 1;i < storageALLPath.size();i++){
+            tractorPolygonShow tractorPolygonShowInstanceM(i,storageALLPath);
             auto pts_1 = tractorPolygonShowInstanceM.getTractorPolygonHeadPts();
             auto pts_2 = tractorPolygonShowInstanceM.getTractorPolygonTailPts();
-            std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorFTCPACVPOLYGON.txt";
+            std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorFTCPACVPOLYGON1.txt";
             auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
             tractorHeadPtsStream.writePts(pts_1,pts_2);
         }
-
+#endif
     }
 }
 

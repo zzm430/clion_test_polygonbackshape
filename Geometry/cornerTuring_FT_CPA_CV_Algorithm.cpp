@@ -3,12 +3,20 @@
 //
 #include "cornerTuring_FT_CPA_CV_Algorithm.h"
 
-cornerTuringFTCPACVAlgorithm::cornerTuringFTCPACVAlgorithm(double angleInt,
-                                                           polygonPoint referencePt,
-                                                           double arriveLineHeading):
+cornerTuringFTCPACVAlgorithm::cornerTuringFTCPACVAlgorithm( const double angleInt,
+                                                            const polygonPoint referencePt,
+                                                            const double arriveLineHeading,
+                                                            const polygonPoint pathStartPt,
+                                                            const polygonPoint pathEndPt,
+                                                            const std::vector<polygonPoint> arriveLine,
+                                                            const std::vector<polygonPoint> leaveLine):
                                                                 angleInt_(angleInt),
                                                                 referencePt_(referencePt),
-                                                                arriveLineHeading_(arriveLineHeading){
+                                                                arriveLineHeading_(arriveLineHeading),
+                                                                pathStartPt_(pathStartPt),
+                                                                pathEndPt_(pathEndPt),
+                                                                arriveLine_(arriveLine),
+                                                                leaveLine_(leaveLine){
      if(angleInt > 0  && angleInt < M_PI){
          F2_ = 1;
      }else if(angleInt > M_PI && angleInt < 2 * M_PI){
@@ -78,6 +86,7 @@ void cornerTuringFTCPACVAlgorithm::SelectTheRequiredParts(){
 }
 
 void cornerTuringFTCPACVAlgorithm::computePath(){
+    //1.生成对应的弯道path
    switch(parttype_){
        case PARTTYPE::REQUIRED_PART_1:{
            std::cout << "the FT-CPA-CV belong to REQUIRED_PART_1 !";
@@ -106,6 +115,43 @@ void cornerTuringFTCPACVAlgorithm::computePath(){
             storageCurvePathPart2_,
             storageCurvePathPart3_,
             storageCurvePath_);
+   //更新整个弯道的起始点和结束点
+   common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
+                                                leaveLine_,
+                                                storageCurvePath_);
+
+   curveStartPt_ = storageCurvePath_[0];
+   curveEndPt_ = storageCurvePath_[storageCurvePath_.size()-1];
+   //2.生成两条直道对应的path
+    computePathAboutStraightLine();
+}
+
+void cornerTuringFTCPACVAlgorithm::computePathAboutStraightLine(){
+        //获取第一段path,根据part的不同区分是否考虑有path2
+        std::vector<polygonPoint>  path1;
+        std::vector<polygonPoint>  path2;
+        path1.push_back(pathStartPt_);
+        path1.push_back(curveStartPt_);
+        switch(parttype_){
+            case PARTTYPE::REQUIRED_PART_1:{
+                std::cout << "the path2 is ZREO !";
+                break;
+            }
+            case PARTTYPE::REQUIRED_PART_1_2:
+            case PARTTYPE::REQUIRED_PART_1_2_3:{
+                path2.push_back(curveEndPt_);
+                path2.push_back(pathEndPt_);
+            }
+        }
+
+        double dis1 = common::commonMath::distance2(path1[0],path1[1]);
+        double count  = dis1/REEDSHEPP_SAMPLE_INTERVAL;
+        pathStraight1_ = common::commonMath::densify2(path1,count);
+        if(!path2.empty()){
+            double dis2 = common::commonMath::distance2(path2[0],path2[1]);
+            double count2 = dis2/REEDSHEPP_SAMPLE_INTERVAL;
+            pathStraight2_ = common::commonMath::densify2(path2,count2);
+        }
 }
 
 void cornerTuringFTCPACVAlgorithm::computePathAboutPart1(double angleStart,double angleEnd){
@@ -121,7 +167,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart1(double angleStart,doubl
     //存储采样点的容器
     std::vector<polygonPoint> sample_points;
 
-    for(int i = 1;i < num_samples -1 ;i++){
+    for(int i = 0;i < num_samples -1 ;i++){
         double current_angle = angle_start + i * angle_increment;
         double x = CIRCLE_RIDIS_R * sin(current_angle);
         double y = F2_ * CIRCLE_RIDIS_R * (1 - cos(current_angle));
@@ -133,7 +179,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart1(double angleStart,doubl
     double temp_last_start_angle = angle_start + (num_samples - 1) * angle_increment;
     double last_angle_increment =
             angle_increment/100;
-    for(int i = 1;i < 100;i++){
+    for(int i = 99;i < 100;i++){
         double current_angle = temp_last_start_angle + last_angle_increment * i;
         double x = CIRCLE_RIDIS_R * sin(current_angle);
         double y = F2_ * CIRCLE_RIDIS_R * (1 - cos(current_angle));
@@ -142,6 +188,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart1(double angleStart,doubl
     }
     storageCurvePath_ = sample_points;
     storageCurvePathPart1_ = sample_points;
+
 }
 
 void cornerTuringFTCPACVAlgorithm::computePathAboutPart2(
@@ -161,7 +208,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart2(
 
     double dLPCR = sqrt(pLIM_.x * pLIM_.x + pLIM_.y * pLIM_.y);
     double angleLPCR = atan(pLIM_.y/pLIM_.x);
-    for(int i = 1;i < num_samples -1 ;i++){
+    for(int i = 0;i < num_samples -1 ;i++){
         double current_angle = angle_start + i * angle_increment;
         //计算xlp(anglehp2)
         double xLP = pLIM_.x *
@@ -177,7 +224,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart2(
     double temp_last_start_angle = angle_start + (num_samples - 1) * angle_increment;
     double last_angle_increment =
             angle_increment/100;
-    for(int i = 1;i < 100;i++){
+    for(int i = 99;i < 100;i++){
         double current_angle = temp_last_start_angle + last_angle_increment * i;
         //计算xlp(anglehp2)
         double xLP = pLIM_.x *
@@ -210,7 +257,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart3(
     double xLPAngleend = pLIM_.x
             * log(fabs(sin(angleStart_) * (cos(angleEnd_) - 1)/(sin(angleEnd_) * (cos(angleStart_) - 1))))
             -dCCX_;
-    for(int i = 1;i < num_samples -1 ;i++){
+    for(int i = 0;i < num_samples -1 ;i++){
         double current_angle = angle_start + i * angle_increment;
         double x = xLPAngleend + CIRCLE_RIDIS_R * sin(current_angle) ;
         double y = F2_ * (dLIMCC_ - dCCYP1_ + CIRCLE_RIDIS_R * (1 - cos(current_angle)));
@@ -222,7 +269,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart3(
     double temp_last_start_angle = angle_start + (num_samples - 1) * angle_increment;
     double last_angle_increment =
             angle_increment/100;
-    for(int i = 1;i < 100;i++){
+    for(int i = 99;i < 100;i++){
         double current_angle = temp_last_start_angle + last_angle_increment * i;
         double x = xLPAngleend + CIRCLE_RIDIS_R * sin(current_angle) ;
         double y = F2_ * (dLIMCC_ - dCCYP1_ + CIRCLE_RIDIS_R * (1 - cos(current_angle)));
@@ -279,7 +326,6 @@ void cornerTuringFTCPACVAlgorithm::reprojectionPts(
         }
     }
 
-
      for(auto& i : storageCurvePathPart1){
          i.x =  i.x + xShift;
      }
@@ -334,4 +380,12 @@ std::vector<polygonPoint> cornerTuringFTCPACVAlgorithm::getPathAboutPart3(){
 
 std::vector<polygonPoint> cornerTuringFTCPACVAlgorithm::getPathAboutAll(){
     return storageCurvePath_;
+}
+
+std::vector<polygonPoint>  cornerTuringFTCPACVAlgorithm::getPathStraight1(){
+    return pathStraight1_;
+}
+
+std::vector<polygonPoint>  cornerTuringFTCPACVAlgorithm::getPathStraight2(){
+    return pathStraight2_;
 }

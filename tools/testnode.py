@@ -259,7 +259,7 @@ plt.plot(a[0,0],a[0,1],'ro')
 # for a, b in zip(test1_x,test1_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
-tractorHeadPtsStream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorFTCPACVPOLYGON.txt')
+tractorHeadPtsStream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorFTCPACVPOLYGON1.txt')
 
 tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorHeadPtsStream111.txt')
 
@@ -301,8 +301,8 @@ for i in range(len(tractorHeadPtsStream) - 1):
     if i % 2 == 0:
         coords = [(tractorHeadPtsStream[i][j], tractorHeadPtsStream[i+1][j]) for j in range(4, 8)]
         coords1 = [(tractorHeadPtsStream[i][j], tractorHeadPtsStream[i+1][j]) for j in range (4)]
-        polygon = Polygon(coords, closed=True, fill=False, edgecolor='green', alpha=0.9,linewidth=0.1)
-        polygonf = Polygon(coords1, closed=True, fill=False, edgecolor='gray', alpha=0.9, linewidth=0.1)
+        polygon = Polygon(coords, closed=True, fill=False, edgecolor='green', alpha=1,linewidth=0.1)
+        polygonf = Polygon(coords1, closed=True, fill=False, edgecolor='gray', alpha=1, linewidth=0.1)
         # 设置透明度为 0.5
         ax.add_patch(polygon)
         ax.add_patch(polygonf)
@@ -322,7 +322,7 @@ ax.set_ylabel('y label')
 ax.set_title('Simple Plot')
 ax.set_aspect('equal')
 # ax.autoscale()
-ax.legend()
+# ax.legend()
 
 # plt.xlim(0, 700) # 横坐标显示范围为0到6
 # plt.ylim(0, 1500)

@@ -53,7 +53,6 @@ void tractorPolygonShow::transferTractorPolygonPts(){
     }
 //        //转换成弧度
         angle_x = angle_x * M_PI / 180;
-//        angle_x += M_PI;
     for(int  m  = 0; m <  localPolyPts_.size();m++){
         polygonPoint tempPt;
         tempPt.x = localPolyPts_[m].x * cos(angle_x) + localPolyPts_[m].y * sin(angle_x);

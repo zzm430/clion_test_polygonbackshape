@@ -33,7 +33,7 @@
 #define  SET_HEADLAND_WIDTH_WHL   4       //地头宽度(具体指的是CPA算法中的whl)
 
 //LOG以及相关txt信息输出
-#define DEBUG_MIDDLE_INFO                 //控制输出的txt文件debug使用
+#define DEBUG_CPA_INFO                 //控制输出的txt文件debug使用
 
 //回型部分弯道起始点和终点相关参数设置
 #define WROBOT                    1.8       //widtth of robot
@@ -54,7 +54,7 @@
 #define TRACTOR_HEIGH             2         //拖拉机车头长度
 
 //FT-CPA-CV
-#define DNCZ                      0.15       //the distance for the no-crop zone，对于弯道属于part1、part2、part3起重要作用
+#define DNCZ                      0.15      //the distance for the no-crop zone，对于弯道属于part1、part2、part3起重要作用
 #define DEXTRA                    0.0       //the distance an implement can cross the field border
 
 
@@ -64,7 +64,7 @@
 //#define  F3                       1
 #define  CIRCLE_RIDIS_R             6        //圆半径
 #define  MAX_CIRCLE_RIDIS_R         12       //设置的最大圆半径
-#define  FISHNail_DIFF_DIS          0.01      //间隔20cm
+#define  FISHNail_DIFF_DIS          0.2      //间隔20cm
 
 //回字形规划方法选择
 //#define  RECTANGLE_BACK_SHAPE           //矩形回字形规划
