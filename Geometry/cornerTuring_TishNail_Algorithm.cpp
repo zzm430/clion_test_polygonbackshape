@@ -208,20 +208,20 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
 
     //等间隔采样点
     auto C1_pts = common::commonMath::equalIntervalDiff(C1_allLength,
-                                                        FISHNail_DIFF_DIS,
+                                                        CPA_DIFF_DIS,
                                                         C1alphaStart,
                                                         C1alphaEnd,
                                                         CIRCLE_RIDIS_R,
                                                         pt1);
     auto C2_pts = common::commonMath::equalIntervalDiff(C2_allLength,
-                                                        FISHNail_DIFF_DIS,
+                                                        CPA_DIFF_DIS,
                                                         C2alphaStart,
                                                         C2alphaEnd,
                                                         RC2,
                                                         pt2);
 
     auto C3_pts = common::commonMath::equalIntervalDiff(C3_allLength,
-                                                        FISHNail_DIFF_DIS,
+                                                        CPA_DIFF_DIS,
                                                         C3alphaStart,
                                                         C3alphaEnd,
                                                         CIRCLE_RIDIS_R,

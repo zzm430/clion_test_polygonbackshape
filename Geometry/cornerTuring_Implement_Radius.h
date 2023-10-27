@@ -5,8 +5,6 @@
 #ifndef POLYGONBACKSHAPE_CORNERTURING_IMPLEMENT_RADIUS_H
 #define POLYGONBACKSHAPE_CORNERTURING_IMPLEMENT_RADIUS_H
 #include <iostream>
-
-
 class cornerTuringImplementRadius {
 public:
     cornerTuringImplementRadius() = default;

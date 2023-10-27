@@ -91,7 +91,7 @@ void curveDecisionManager::processCurvePath(){
         }
         case CurveDecision::CONCAVE_CORNER:{
             if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-//                processFTCPACC();
+                processFTCPACC();
             }else{
                 processCCPA();
             }
@@ -471,7 +471,9 @@ void curveDecisionManager::processCCPA(){
                     false,
                     cgalbackShape_keypoints_[ridgeNumber_][ptIndex_],
                     referencePt,
-                    arriveLineHeading);
+                    arriveLineHeading,
+                    arriveLine_,
+                    leaveLine_);
             cornerTuringCCPAAlgorithm1.calculateAngleCC2();
             cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
             cornerTuringCCPAAlgorithm1.calculateNewFieldBorder();
@@ -514,7 +516,9 @@ void curveDecisionManager::processCCPA(){
                     true,
                     cgalbackShape_keypoints_[ridgeNumber_][ptIndex_],
                     referencePt,
-                    arriveLineHeading);
+                    arriveLineHeading,
+                    arriveLine_,
+                    leaveLine_);
             cornerTuringCCPAAlgorithm1.calculateAngleCC2();
             cornerTuringCCPAAlgorithm1.calculateCirclesCenter();
             cornerTuringCCPAAlgorithm1.calculateNewFieldBorder();
@@ -695,11 +699,11 @@ void curveDecisionManager::processFTCPACV(){
 
         std::ofstream   testFTCPACV;
         testFTCPACV.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACV.txt",std::ios::out);
-        for(auto i : pts){
+        for(auto i : storageALLPath){
             testFTCPACV << " " << i.x ;
         }
         testFTCPACV << std::endl;
-        for(auto j : pts){
+        for(auto j : storageALLPath){
             testFTCPACV <<" " << j.y;
         }
         testFTCPACV << std::endl;

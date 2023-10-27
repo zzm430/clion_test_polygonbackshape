@@ -20,7 +20,9 @@ public:
             bool arriveAndLeaveAngleType,
             polygonPoint fieldCornerPt,
             polygonPoint referencePt,
-            double arriveLineHeading);
+            double arriveLineHeading,
+            std::vector<polygonPoint> arriveLine,
+            std::vector<polygonPoint> leaveLine);
     void calculateAngleCC2();
     void calculateCirclesCenter();
     void calculateNewFieldBorder();
@@ -51,6 +53,8 @@ private:
     double   arriveLineHeading_;
     std::vector<polygonPoint>  storage_allPath_;   //存储世界坐标系下path信息
     std::vector<polygonPoint>  storage_localPath_; //存储局部坐标系下path信息
+    std::vector<polygonPoint>  arriveLine_;
+    std::vector<polygonPoint>  leaveLine_;
 };
 
 

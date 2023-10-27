@@ -591,7 +591,7 @@ namespace common{
            double temp_last_start_angle = start_angle + (num_samples - 1) * angle_increment;
            double last_angle_increment =
                         angle_increment/100;
-          for(int i = 1;i < 100;i++){
+          for(int i = 99;i < 100;i++){
                double current_angle = temp_last_start_angle + last_angle_increment * i;
               double x = circle_center.x + radis * std::sin(current_angle);
               double y = circle_center.y + radis * std::cos(current_angle);

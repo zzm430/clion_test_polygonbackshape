@@ -54,7 +54,7 @@
 #define TRACTOR_HEIGH             2         //拖拉机车头长度
 
 //FT-CPA-CV
-#define DNCZ                      0.15      //the distance for the no-crop zone，对于弯道属于part1、part2、part3起重要作用
+#define DNCZ                      0.1      //the distance for the no-crop zone，对于弯道属于part1、part2、part3起重要作用
 #define DEXTRA                    0.0       //the distance an implement can cross the field border
 
 
@@ -65,6 +65,7 @@
 #define  CIRCLE_RIDIS_R             6        //圆半径
 #define  MAX_CIRCLE_RIDIS_R         12       //设置的最大圆半径
 #define  FISHNail_DIFF_DIS          0.2      //间隔20cm
+#define  CPA_DIFF_DIS               0.2      //CPA系列算法间隔
 
 //回字形规划方法选择
 //#define  RECTANGLE_BACK_SHAPE           //矩形回字形规划

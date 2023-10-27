@@ -48,18 +48,16 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
             extendLeaveLine[1],
             20);
 
+#ifdef  DEBUG_CPA_INFO
     std::ofstream   temp;
     temp.open("/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeavelineFTCPACC.txt",
               std::ios::out);
-//        temp << " " << extendArriveLine_1[0].x << " " << extendArriveLine_1[1].x <<
-//             " " << extendLeaveLine_1[0].x << " " << extendLeaveLine_1[1].x << std::endl;
-//        temp << " " << extendArriveLine_1[0].y << " " << extendArriveLine_1[1].y <<
-//             " " << extendLeaveLine_1[0].y << " " << extendLeaveLine_1[1].y << std::endl;
     temp << " " << extendArriveLine_1[0].x << " " << extendArriveLine_1[1].x <<
          " " << extendLeaveLine_1[0].x << " " << extendLeaveLine_1[1].x << std::endl;
     temp << " " << extendArriveLine_1[0].y << " " << extendArriveLine_1[1].y <<
          " " << extendLeaveLine_1[0].y << " " << extendLeaveLine_1[1].y << std::endl;
     temp.close();
+#endif
 
     //计算extendArriveLine 和extendLeaveLine的交点
     Segment seg1(pointbst(extendArriveLine_1[0].x, extendArriveLine_1[0].y),
@@ -84,7 +82,6 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
     cornerTuringLocationtest.decideLpAandLpB();
     cornerTuringLocationtest.calculatePointsAandBForCurve();
     angleInt_ = cornerTuringLocationtest.getCurveAngleInt();
-//    angleInt_ = cornerTuringLocationtest.getCurveCCPAAngleInt();
     arriveLineHeading_ = cornerTuringLocationtest.getCurveArrriveLineHeading();
 
     arriveLineHeading_ = arriveLineHeading_ * M_PI / 180;
@@ -113,10 +110,10 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
 
 //    double angle_start = 0;
 //    double angle_end = 2 *  M_PI ;
-     double allLength =  CIRCLE_RIDIS_R * (angle_end - angle_start);
+    double allLength =  CIRCLE_RIDIS_R * (angle_end - angle_start);
     storageAllPath_ = common::commonMath::equalIntervalDiff(
             allLength,
-            FISHNail_DIFF_DIS,
+            CPA_DIFF_DIS,
             angle_start,
             angle_end,
             CIRCLE_RIDIS_R,
@@ -130,9 +127,17 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
     //对路径点更新到全局坐标系下
     reprojectionFTCPACC(storageAllPath_);
 
+    //更新整个弯道的起始点和结束点
+    common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
+                                                 leaveLine_,
+                                                 storageAllPath_);
+
+#ifdef DEBUG_CPA_INFO
     std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/FTCPACC.txt";
     normalPrint C4file(C4name);
     C4file.writePts(storageAllPath_);
+#endif
+
 }
 
 void cornerTuringFTCPACCAlgorithm::reprojectionFTCPACC(std::vector<polygonPoint> & pts){

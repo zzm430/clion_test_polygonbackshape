@@ -14,14 +14,18 @@ cornerTuringCCPAAlgorithm::cornerTuringCCPAAlgorithm(
                                                   bool arriveAndLeaveAngleType,
                                                   polygonPoint fieldCornerPt,
                                                   polygonPoint referencePt,
-                                                  double arriveLineHeading)
+                                                  double arriveLineHeading,
+                                                  std::vector<polygonPoint> arriveLine,
+                                                  std::vector<polygonPoint> leaveLine)
                                                   :angleInt_(angleInt),
                                                    Rsw_(Rsw),
                                                    Nswath_(Nswath),
                                                    arriveAndLeaveAngleType_(arriveAndLeaveAngleType),
                                                    fieldCornerPt_(fieldCornerPt),
                                                    referencePt_(referencePt),
-                                                   arriveLineHeading_(arriveLineHeading){
+                                                   arriveLineHeading_(arriveLineHeading),
+                                                   arriveLine_(arriveLine),
+                                                   leaveLine_(leaveLine){
     double angleC;
     if(JUDGE_CLOCKWISE){
         if(angleInt_>= M_PI) {
@@ -88,25 +92,25 @@ void cornerTuringCCPAAlgorithm::calculateNewFieldBorder(){
 
         //等间隔采样点
         auto C1_pts = common::commonMath::equalIntervalDiff(C1_allLength,
-                                                            FISHNail_DIFF_DIS,
+                                                            CPA_DIFF_DIS,
                                                             angleC1_start,
                                                             angleC1_end,
                                                             Rsw_ + SET_HEADLAND_WIDTH_WHL,
                                                             circleC1_center_);
         auto C2_pts = common::commonMath::equalIntervalDiff(C2_allLength,
-                                                            FISHNail_DIFF_DIS,
+                                                            CPA_DIFF_DIS,
                                                             angleC2_start,
                                                             angleC2_end,
                                                             Rsw_,
                                                             circleC2_center_);
 
         auto C3_pts = common::commonMath::equalIntervalDiff(C3_allLength,
-                                                            FISHNail_DIFF_DIS,
+                                                            CPA_DIFF_DIS,
                                                             angleC3_start,
                                                             angleC3_end,
                                                             Rsw_ + SET_HEADLAND_WIDTH_WHL,
                                                             circleC3_center_);
-
+#ifdef DEBUG_CPA_INFO
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA1border.txt";
         std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA2border.txt";
         std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA3border.txt";
@@ -116,7 +120,7 @@ void cornerTuringCCPAAlgorithm::calculateNewFieldBorder(){
         C1file.writePts(C1_pts);
         C2file.writePts(C2_pts);
         C3file.writePts(C3_pts);
-
+#endif
     } else {
         double angleCV_start = M_PI;
         double angleCV_end = angleC_;
@@ -126,16 +130,18 @@ void cornerTuringCCPAAlgorithm::calculateNewFieldBorder(){
         double C4_allLength = (Rsw_ + SET_HEADLAND_WIDTH_WHL)  * (angleCV_end - angleCV_start);
 
         auto CV_pts = common::commonMath::equalIntervalDiff(C4_allLength,
-                                                            FISHNail_DIFF_DIS,
+                                                            CPA_DIFF_DIS,
                                                             angleCV_start,
                                                             angleCV_end,
                                                             Rsw_ + SET_HEADLAND_WIDTH_WHL,
                                                             circleCV_center_);
 
         reprojectionCCA(CV_pts);
+#ifdef  DEBUG_CPA_INFO
         std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA4border.txt";
         normalPrint C1file(C4name);
         C1file.writePts(CV_pts);
+#endif
     }
 }
 
@@ -185,20 +191,20 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
 
         //等间隔采样点
         auto C1_pts = common::commonMath::equalIntervalDiff(C1_allLength,
-                                                            FISHNail_DIFF_DIS,
+                                                            CPA_DIFF_DIS,
                                                             angleC1_start,
                                                             angleC1_end,
                                                             circleC1_R,
                                                             circleC1_center_);
         auto C2_pts = common::commonMath::equalIntervalDiff(C2_allLength,
-                                                            FISHNail_DIFF_DIS,
+                                                            CPA_DIFF_DIS,
                                                             angleC2_start,
                                                             angleC2_end,
                                                             circleC2_R,
                                                             circleC2_center_);
 
         auto C3_pts = common::commonMath::equalIntervalDiff(C3_allLength,
-                                                            FISHNail_DIFF_DIS,
+                                                            CPA_DIFF_DIS,
                                                             angleC3_start,
                                                             angleC3_end,
                                                             circleC3_R,
@@ -229,6 +235,7 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
          reprojectionCCA(C3_pts);
          reprojectionCCA(tempStoragetestpts);
 
+#ifdef  DEBUG_CPA_INFO
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA1path.txt";
         std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA2path.txt";
         std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA3path.txt";
@@ -250,6 +257,7 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         }
         testfp << std::endl;
         testfp.close();
+#endif
 
         for(auto i: C1_pts){
             storage_allPath_.push_back(i);
@@ -268,7 +276,7 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         double angleCV_end = angleC_;
         double C4_allLength = circleCV_R  * (angleCV_end - angleCV_start);
         auto CV_pts = common::commonMath::equalIntervalDiff(C4_allLength,
-                                                            FISHNail_DIFF_DIS,
+                                                            CPA_DIFF_DIS,
                                                             angleCV_start,
                                                             angleCV_end,
                                                             circleCV_R,
@@ -292,9 +300,11 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
             storage_allPath_.push_back(i);
         }
 
+#ifdef  DEBUG_CPA_INFO
         std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA4path111.txt";
         normalPrint C4file(C4name);
         C4file.writePts(CV_pts);
+#endif
     }
 }
 
@@ -309,7 +319,6 @@ std::vector<polygonPoint>  cornerTuringCCPAAlgorithm::getAllLocalPath(){
 
 
 void cornerTuringCCPAAlgorithm::reprojectionCCA(std::vector<polygonPoint> & pts){
-
     // 将坐标转换为相对于新坐标系的偏移量
     for(auto& i : pts){
         double offsetX = i.x;

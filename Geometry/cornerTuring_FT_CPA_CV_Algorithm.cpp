@@ -145,11 +145,11 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutStraightLine(){
         }
 
         double dis1 = common::commonMath::distance2(path1[0],path1[1]);
-        double count  = dis1/REEDSHEPP_SAMPLE_INTERVAL;
+        double count  = dis1/CPA_DIFF_DIS;
         pathStraight1_ = common::commonMath::densify2(path1,count);
         if(!path2.empty()){
             double dis2 = common::commonMath::distance2(path2[0],path2[1]);
-            double count2 = dis2/REEDSHEPP_SAMPLE_INTERVAL;
+            double count2 = dis2/CPA_DIFF_DIS;
             pathStraight2_ = common::commonMath::densify2(path2,count2);
         }
 }
@@ -160,7 +160,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart1(double angleStart,doubl
 
     double allLength =  CIRCLE_RIDIS_R * (angle_end - angle_start);
 
-    int num_samples = std::ceil(fabs(allLength)/FISHNail_DIFF_DIS); //向上取整
+    int num_samples = std::ceil(fabs(allLength)/CPA_DIFF_DIS); //向上取整
     double angle_increment =
             (angle_end - angle_start ) / (num_samples - 1);
 
@@ -199,7 +199,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart2(
 
     double allLength =  CIRCLE_RIDIS_R * (angle_end - angle_start);
 
-    int num_samples = std::ceil(fabs(allLength)/FISHNail_DIFF_DIS); //向上取整
+    int num_samples = std::ceil(fabs(allLength)/CPA_DIFF_DIS); //向上取整
     double angle_increment =
             (angle_end - angle_start ) / (num_samples - 1);
 
@@ -249,7 +249,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart3(
     double angle_end = angleEnd;
 
     double allLength =  CIRCLE_RIDIS_R * (angle_end - angle_start);
-    int num_samples = std::ceil(fabs(allLength)/FISHNail_DIFF_DIS); //向上取整
+    int num_samples = std::ceil(fabs(allLength)/CPA_DIFF_DIS); //向上取整
     double angle_increment =
             (angle_end - angle_start ) / (num_samples - 1);
     //存储采样点的容器
