@@ -2,7 +2,7 @@
 // Created by zzm on 23-9-11.
 //
 //鱼尾算法目前只支持逆时针
-#include "Geometry/cornerTuring_TishNail_Algorithm.h"
+#include "Geometry/cornerTuring_FT_CPA_FS_Algorithm.h"
 cornerTuringTishNail::~cornerTuringTishNail(){
 
 }

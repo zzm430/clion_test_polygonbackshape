@@ -31,7 +31,7 @@
 #include "common/utilpath/path_polygonPoint.h"
 #include "Geometry/cornerTuring_location.h"
 #include "Geometry/newCornerTuring_location.h"
-#include "Geometry/cornerTuring_TishNail_Algorithm.h"
+#include "Geometry/cornerTuring_FT_CPA_FS_Algorithm.h"
 #include "common/print/normaPrint.h"
 #include "Planning/diffMode_Choose.h"
 #include "Planning/normalMatrix_Translate.h"

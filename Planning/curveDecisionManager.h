@@ -8,7 +8,7 @@
 #include "Planning/normalMatrix_Translate.h"
 #include "Geometry/cornerTuring_Implement_Radius.h"
 #include "Geometry/cornerTuring_C_CPA_Algorithm.h"
-#include "Geometry/cornerTuring_TishNail_Algorithm.h"
+#include "Geometry/cornerTuring_FT_CPA_FS_Algorithm.h"
 #include "Geometry/cornerTuring_location.h"
 #include "Geometry/cornerTuring_FT_CPA_CC_Algorithm.h"
 #include "Geometry/cornerTuring_FT_CPA_CV_ABptLocation.h"

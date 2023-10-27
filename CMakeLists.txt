@@ -42,8 +42,8 @@ add_executable(polygonbackshape
              Geometry/cornerTuring_location.h Geometry/cornerTuring_location.cpp
              common/utilpath/path_polygonPoint.h Geometry/newCornerTuring_location.h
              Geometry/newCornerTuring_location.cpp common/print/filePrint.h
-             common/print/filePrint2.h Geometry/cornerTuring_TishNail_Algorithm.h
-             Geometry/cornerTuring_TishNail_Algorithm.cpp common/print/normaPrint.h
+             common/print/filePrint2.h Geometry/cornerTuring_FT_CPA_FS_Algorithm.h
+        Geometry/cornerTuring_FT_CPA_FS_Algorithm.cpp common/print/normaPrint.h
              Planning/normalMatrix_Translate.h Planning/normalMatrix_Translate.cpp
               Planning/diffMode_Choose.h Geometry/cornerTuring_Implement_Radius.h
               Geometry/cornerTuring_Implement_Radius.cpp Geometry/cornerTuring_C_CPA_Algorithm.h
