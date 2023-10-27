@@ -221,20 +221,20 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart2(
     }
 
     //对最后一段进行10等分做特殊处理
-    double temp_last_start_angle = angle_start + (num_samples - 1) * angle_increment;
-    double last_angle_increment =
-            angle_increment/100;
-    for(int i = 99;i < 100;i++){
-        double current_angle = temp_last_start_angle + last_angle_increment * i;
-        //计算xlp(anglehp2)
-        double xLP = pLIM_.x *
-                     log(fabs(sin(angleStart_) * (cos(current_angle) - 1)/(sin(current_angle) * (cos(angleStart_) - 1))))
-                     - dCCX_;
-        double x = xLP + dLPCR * cos(current_angle + angleLPCR);
-        double y = F2_ * (dLPCR * sin(current_angle + angleLPCR) - pLIM_.y - dFL_);
-        polygonPoint  tempPt(x,y);
-        sample_points.push_back(tempPt);
-    }
+//    double temp_last_start_angle = angle_start + (num_samples - 1) * angle_increment;
+//    double last_angle_increment =
+//            angle_increment/100;
+//    for(int i = 99;i < 100;i++){
+//        double current_angle = temp_last_start_angle + last_angle_increment * i;
+//        //计算xlp(anglehp2)
+//        double xLP = pLIM_.x *
+//                     log(fabs(sin(angleStart_) * (cos(current_angle) - 1)/(sin(current_angle) * (cos(angleStart_) - 1))))
+//                     - dCCX_;
+//        double x = xLP + dLPCR * cos(current_angle + angleLPCR);
+//        double y = F2_ * (dLPCR * sin(current_angle + angleLPCR) - pLIM_.y - dFL_);
+//        polygonPoint  tempPt(x,y);
+//        sample_points.push_back(tempPt);
+//    }
 
     for(auto it : sample_points){
         storageCurvePath_.push_back(it);
@@ -257,7 +257,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart3(
     double xLPAngleend = pLIM_.x
             * log(fabs(sin(angleStart_) * (cos(angleEnd_) - 1)/(sin(angleEnd_) * (cos(angleStart_) - 1))))
             -dCCX_;
-    for(int i = 0;i < num_samples -1 ;i++){
+    for(int i = 1;i < num_samples -1 ;i++){
         double current_angle = angle_start + i * angle_increment;
         double x = xLPAngleend + CIRCLE_RIDIS_R * sin(current_angle) ;
         double y = F2_ * (dLIMCC_ - dCCYP1_ + CIRCLE_RIDIS_R * (1 - cos(current_angle)));

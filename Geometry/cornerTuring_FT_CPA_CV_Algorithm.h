@@ -67,8 +67,6 @@ private:
     std::vector<polygonPoint>  storageCurvePathPart1_;
     std::vector<polygonPoint>  storageCurvePathPart2_;
     std::vector<polygonPoint>  storageCurvePathPart3_;
-
-
     //两条直道相关参数
 private:
     polygonPoint  pathStartPt_;  //全局坐标系下
@@ -80,7 +78,7 @@ private:
 
     //更新弯道起始点和结束点
 private:
-   std::vector<polygonPoint> arriveLine_;
+   std::vector<polygonPoint>  arriveLine_;
    std::vector<polygonPoint>  leaveLine_;
 
 

@@ -265,18 +265,18 @@ tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/sr
 
 coordinates = []
 frame_count = len(tractorHeadPtsStream) - 1  # 帧数减去最后一帧
-duration = 1000  # 动画总持续时间（毫秒）
+duration = 10000  # 动画总持续时间（毫秒）
 interval = duration / frame_count  # 每个图形显示的时间间隔（毫秒）
 #
-# def update(frame):
-#     # vertices =  [(np.cos(2*np.pi/5*i + frame*0.1), np.sin(2*np.pi/5*i + frame*0.1)) for i in range(5)]
-#     if frame % 2 == 0:  # 只在 frame 为偶数时执行操作
-#         if frame < len(tractorHeadPtsStream) - 1:
-#              vertices = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame+1][i]) for i in range(4)]
-#              vertices2 = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame + 1][i]) for i in range(4, 8)]
-#              polygon.set_xy(vertices)
-#              polygon2.set_xy(vertices2)
-#     return (polygon,polygon2)
+def update(frame):
+    # vertices =  [(np.cos(2*np.pi/5*i + frame*0.1), np.sin(2*np.pi/5*i + frame*0.1)) for i in range(5)]
+    if frame % 2 == 0:  # 只在 frame 为偶数时执行操作
+        if frame < len(tractorHeadPtsStream) - 1:
+             vertices = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame+1][i]) for i in range(4)]
+             vertices2 = [(tractorHeadPtsStream[frame][i], tractorHeadPtsStream[frame + 1][i]) for i in range(4, 8)]
+             polygon.set_xy(vertices)
+             polygon2.set_xy(vertices2)
+    return (polygon,polygon2)
 
 #  绘制线段
 for i in range(0, len(lineshow[0])-1, 2):
@@ -293,8 +293,8 @@ for i in range(0, len(lineshow[0])-1, 2):
 # polygon2 = Polygon(vertices2, closed=True, fc='red')
 # ax.add_patch(polygon2)
 # #
-# # # 创建动画对象
-# # # ani = FuncAnimation(fig, update, frames=np.arange(100), interval=interval,repeat=True, blit=True)
+# # 创建动画对象
+# # ani = FuncAnimation(fig, update, frames=np.arange(100), interval=interval,repeat=True, blit=True)
 # ani = FuncAnimation(fig, update, frames=np.arange(frame_count), interval=interval,repeat=True, blit=True)
 
 for i in range(len(tractorHeadPtsStream) - 1):

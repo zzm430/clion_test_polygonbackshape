@@ -18,6 +18,8 @@
 #include "common/plot/tractorPolygonShow.h"
 #include "Geometry/cornerTuring_FT_CPA_CV_Algorithm.h"
 #include "common/print/tractorPolyPrint2.h"
+#include "common/plot/curveCurvatureCalculate.h"
+
 enum  class CurveDecision : uint8_t {
     IDLE = 0,
     BORDERLESS_FISHNAIL = 1,          //无边界鱼尾

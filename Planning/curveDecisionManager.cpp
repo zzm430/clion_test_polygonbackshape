@@ -83,7 +83,7 @@ void curveDecisionManager::processCurvePath(){
         }
         case CurveDecision::CONVEX_CORNER:{
             if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-//                processFTCPACV();
+                processFTCPACV();
             }else{
                 processCCPA();
             }
@@ -695,15 +695,26 @@ void curveDecisionManager::processFTCPACV(){
 
         std::ofstream   testFTCPACV;
         testFTCPACV.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACV.txt",std::ios::out);
-        for(auto i : storageALLPath){
+        for(auto i : pts){
             testFTCPACV << " " << i.x ;
         }
         testFTCPACV << std::endl;
-        for(auto j : storageALLPath){
+        for(auto j : pts){
             testFTCPACV <<" " << j.y;
         }
         testFTCPACV << std::endl;
         testFTCPACV.close();
+
+        //记录曲率相关数据
+        curveCurvatureCalculate curveCurvatureCalculateInstance(pts);
+        auto kData = curveCurvatureCalculateInstance.getPathPtsR();
+        std::ofstream  testFTCPACVK;
+        testFTCPACVK.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACVK.txt",std::ios::out);
+        for(auto i : kData){
+             testFTCPACVK << " " << i;
+        }
+        testFTCPACVK << std::endl;
+        testFTCPACVK.close();
 
         //针对FT-CPA-CV算法进行姿态展示
         for (int i  = 1;i < storageALLPath.size();i++){
