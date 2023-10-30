@@ -82,19 +82,19 @@ void curveDecisionManager::processCurvePath(){
             break;
         }
         case CurveDecision::CONVEX_CORNER:{
-            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-                processFTCPACV();
-            }else{
+//            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
+//                processFTCPACV();
+//            }else{
                 processCCPA();
-            }
+//            }
             break;
         }
         case CurveDecision::CONCAVE_CORNER:{
-            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-                processFTCPACC();
-            }else{
+//            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
+//                processFTCPACC();
+//            }else{
                 processCCPA();
-            }
+//            }
             break;
         }
         case CurveDecision::FT_CPA_CC:{

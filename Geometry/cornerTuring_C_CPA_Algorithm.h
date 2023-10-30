@@ -7,7 +7,7 @@
 
 #include <common/utilpath/path_polygonPoint.h>
 #include "common/common_param/common_parameters.h"
-
+#include "common/plot/curveCurvatureCalculate.h"
 
 class cornerTuringCCPAAlgorithm{
 public:
@@ -31,6 +31,10 @@ public:
     void reprojectionCCA(std::vector<polygonPoint> & pts);
     std::vector<polygonPoint>  getAllPath();
     std::vector<polygonPoint>  getAllLocalPath();
+    std::vector<polygonPoint>  getGlobalWCSC1Path();
+    std::vector<polygonPoint>  getGlobalWCSC2Path();
+    std::vector<polygonPoint>  getGlobalWCSC3path();
+    std::vector<polygonPoint>  getGlobalWCSC4Path();
     polygonPoint  getCircleC1Center();
     polygonPoint  getCircleC2Center();
     polygonPoint  getCircleC3Center();
@@ -55,6 +59,10 @@ private:
     std::vector<polygonPoint>  storage_localPath_; //存储局部坐标系下path信息
     std::vector<polygonPoint>  arriveLine_;
     std::vector<polygonPoint>  leaveLine_;
+    std::vector<polygonPoint>  storage_GlobalWCSC1Path_;   //存储全局下弯道C1path;
+    std::vector<polygonPoint>  storage_GlobalWCSC2Path_;
+    std::vector<polygonPoint>  storage_GlobalWCSC3Path_;
+    std::vector<polygonPoint>  storage_GlobalWCSC4Path_;  //凸角情况下的path;
 };
 
 

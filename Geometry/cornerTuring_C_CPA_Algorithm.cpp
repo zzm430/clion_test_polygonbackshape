@@ -235,6 +235,18 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
          reprojectionCCA(C3_pts);
          reprojectionCCA(tempStoragetestpts);
 
+         //增加弯道的起始点和结束点的双保险，更新起始点
+        common::commonMath::curveStartPtUpdate(arriveLine_,
+                                                     leaveLine_,
+                                                     C1_pts);
+        //更新弯道结束点
+        common::commonMath::curveEndPtUpdate(arriveLine_,
+                                             leaveLine_,
+                                             C3_pts);
+        storage_GlobalWCSC1Path_ = C1_pts;
+        storage_GlobalWCSC2Path_ = C2_pts;
+        storage_GlobalWCSC3Path_ = C3_pts;
+
 #ifdef  DEBUG_CPA_INFO
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA1path.txt";
         std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA2path.txt";
@@ -300,6 +312,12 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
             storage_allPath_.push_back(i);
         }
 
+//        //增加弯道的起始点和结束点的双保险，更新起始点
+//        common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
+//                                                     leaveLine_,
+//                                                     storage_allPath_);
+        storage_GlobalWCSC4Path_ = storage_allPath_;
+
 #ifdef  DEBUG_CPA_INFO
         std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/CCPA4path111.txt";
         normalPrint C4file(C4name);
@@ -358,4 +376,20 @@ polygonPoint cornerTuringCCPAAlgorithm::getCircleC3Center() {
 
 polygonPoint cornerTuringCCPAAlgorithm::getCircleCVCenter() {
     return circleCV_center_;
+}
+
+std::vector<polygonPoint>  cornerTuringCCPAAlgorithm::getGlobalWCSC1Path(){
+    return storage_GlobalWCSC1Path_;
+}
+
+std::vector<polygonPoint>  cornerTuringCCPAAlgorithm::getGlobalWCSC2Path(){
+    return storage_GlobalWCSC2Path_;
+}
+
+std::vector<polygonPoint>  cornerTuringCCPAAlgorithm::getGlobalWCSC3path(){
+    return storage_GlobalWCSC3Path_;
+}
+
+std::vector<polygonPoint>  cornerTuringCCPAAlgorithm::getGlobalWCSC4Path(){
+    return storage_GlobalWCSC4Path_;
 }

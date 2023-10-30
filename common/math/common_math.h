@@ -620,6 +620,31 @@ namespace common{
             curvePath[size_m - 1].x = footPtLea.x;
             curvePath[size_m - 1].y = footPtLea.y;
         }
+
+        //弯道起始点和结束点的精度更新2,只更新path的起始点，投影到arriveline
+        static void curveStartPtUpdate(const std::vector<polygonPoint> arriveLine,
+                                       const std::vector<polygonPoint> leaveLine,
+                                       std::vector<polygonPoint> & curvePath){
+            auto footPtArr = common::commonMath::computeFootPoint(
+                    curvePath[0],
+                    arriveLine[0],
+                    arriveLine[1]);
+            curvePath[0].x = footPtArr.x;
+            curvePath[0].y = footPtArr.y;
+        }
+
+        //弯道起始点和结束点的精度更新3,只更新path的末尾点,投影到leaveline
+        static void curveEndPtUpdate( const std::vector<polygonPoint> arriveLine,
+                                       const std::vector<polygonPoint> leaveLine,
+                                       std::vector<polygonPoint> & curvePath){
+            double size_m = curvePath.size();
+            auto footPtLea = common::commonMath::computeFootPoint(
+                    curvePath[0],
+                    leaveLine[0],
+                    leaveLine[1]);
+            curvePath[size_m - 1].x= footPtLea.x;
+            curvePath[size_m - 1].y= footPtLea.y;
+        }
     };
 
 }
