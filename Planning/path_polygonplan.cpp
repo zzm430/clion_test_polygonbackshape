@@ -96,6 +96,9 @@ pathPolygonPlan::~pathPolygonPlan(){
 void pathPolygonPlan::initialize() {
 }
 
+Point pathPolygonPlan::cgalComputeEntranceOrderedPt(std::vector<Point> & pts ,Point carPt){
+}
+
 void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     int num_size = points.size();
     //去掉最后一个闭环点
@@ -155,8 +158,8 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 
     //根据指定的顶点找到对应的骨架路径
     polygonPoint entrance_point;
-    entrance_point.x = points[1].x;
-    entrance_point.y = points[1].y;
+    entrance_point.x = points[2].x;
+    entrance_point.y = points[2].y;
     std::vector<polygonPoint>  storagePoints;
     int num_inner = inner_polypts.size();
     //根据指定的点找到对应的直骨架入口路径信息
@@ -3954,7 +3957,7 @@ void pathPolygonPlan::cgalComputeParallelLinesHeading(
 void pathPolygonPlan::cgalComputeAKeyptsMapping(){
     int num =  cgalbackShape_keypoints_.size();
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
-    for(int i = 0;i < 1 ;i++){
+    for(int i = 2;i < 3 ;i++){
 //        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
         for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1  ;j++){
 //            for(int j = 1 ; j < 2;j++){

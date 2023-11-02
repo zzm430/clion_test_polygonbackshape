@@ -191,6 +191,7 @@ namespace Route_Planning
  public:
      void initialize();
      void cgalNarrowPolygons(std::vector<Point> &points);
+     Point cgalComputeEntranceOrderedPt(std::vector<Point> & pts ,Point carPt);
      void computeLastRidgeInnerPoints( std::vector<polygonPoint> & points);
      void cgalUpdatePolygonPointsINcrease();
      void cgalUpatePolygonPointsSequence();

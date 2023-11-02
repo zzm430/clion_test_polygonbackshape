@@ -180,8 +180,8 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     auto pt1 = storage_circle_center_[0];
     auto pt2 = storage_circle_center_[1];
     auto pt3 = storage_circle_center_[2];
-    double alphaXC12 = atan2((pt1.y - pt2.y),(pt2.x - pt1.x));
-    double alphaXC23 = atan2((pt3.y - pt2.y),(pt2.x - pt3.x));
+    double alphaXC12 = atan2((pt1.y - pt2.y),(pt2.x - pt1.x)) + 0.5 * M_PI;
+    double alphaXC23 = atan2((pt3.y - pt2.y),(pt2.x - pt3.x)) - 0.5 * M_PI;
     double alphaC3By = atan((B.y - pt3.y)/(B.x - pt3.x));
     double alphaC21y = atan((pt2.x - pt1.x)/(pt2.y - pt1.y));
 
@@ -199,7 +199,6 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     //处理C3
     double C3alphaStart = alphaXC23 + M_PI;
     double C3alphaEnd = M_PI/2 - alphaC3By;
-
 
     //C1、C2、C3的总长度
     double C1_allLength = CIRCLE_RIDIS_R * (C1alphaEnd - C1alphaStart);
@@ -226,52 +225,19 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
                                                         C3alphaEnd,
                                                         CIRCLE_RIDIS_R,
                                                         pt3);
-    C1path_ = C1_pts;
-    C2path_ = C2_pts;
-    C3path_ = C3_pts;
+    fishNailC1path_ = C1_pts;
+    fishNailC2path_ = C2_pts;
+    fishNailC3path_ = C3_pts;
 
-//    std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
-//    std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
-//    std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
-//    normalPrint C1file(C1name);
-//    normalPrint C2file(C2name);
-//    normalPrint C3file(C3name);
-//    C1file.writePts(C1path_);
-//    C2file.writePts(C2path_);
-//    C3file.writePts(C3path_);
-
-
-  auto vecPtsC1_2 =  cornerTuringTishNail::computeCircleInterSectPts(
-          pt1,
-          pt2,
-          CIRCLE_RIDIS_R,
-          RC2);
-  auto vecPtsC2_3 = cornerTuringTishNail::computeCircleInterSectPts(
-          pt3,
-          pt2,
-          CIRCLE_RIDIS_R,
-          RC2);
-
-    //对原始3个线段进行截取对应路径
-    fishNailC1path_ = computeInterceptPath(C1path_,vecPtsC1_2[0]);
-    auto tempC2path = computeInterceptPath(C2path_,vecPtsC1_2[0]);
-    std::reverse(tempC2path.begin(),tempC2path.end());
-    fishNailC2path_ = computeInterceptPath(tempC2path,vecPtsC2_3[0]);
-    //std::reverse(fishNailC2path_.begin(),fishNailC2path_.end());
-    auto tempPath3 = C3path_;
-    std::reverse(tempPath3.begin(),tempPath3.end());
-    fishNailC3path_ = computeInterceptPath(tempPath3,vecPtsC2_3[0]);
-    std::reverse(fishNailC3path_.begin(),fishNailC3path_.end());
-
-//    std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
-//    std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
-//    std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
-//    normalPrint C1file(C1name);
-//    normalPrint C2file(C2name);
-//    normalPrint C3file(C3name);
-//    C1file.writePts(fishNailC1path_);
-//    C2file.writePts(fishNailC2path_);
-//    C3file.writePts(fishNailC3path_);
+    std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
+    std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
+    std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
+    normalPrint C1file(C1name);
+    normalPrint C2file(C2name);
+    normalPrint C3file(C3name);
+    C1file.writePts(fishNailC1path_);
+    C2file.writePts(fishNailC2path_);
+    C3file.writePts(fishNailC3path_);
 
 }
 
@@ -467,17 +433,5 @@ std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC2path(){
 
 std::vector<polygonPoint>   cornerTuringTishNail::getFishNailC3path(){
     return fishNailC3path_;
-}
-
-std::vector<polygonPoint>   cornerTuringTishNail::getC1path(){
-    return C1path_;
-}
-
-std::vector<polygonPoint>   cornerTuringTishNail::getC2path(){
-    return C2path_;
-}
-
-std::vector<polygonPoint>   cornerTuringTishNail::getC3path(){
-    return C3path_;
 }
 

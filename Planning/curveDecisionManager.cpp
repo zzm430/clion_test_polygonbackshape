@@ -33,12 +33,11 @@ void curveDecisionManager::processCurveType(){
     if(JUDGE_CLOCKWISE){
         angle = 360 - angle; //arriveline 往逆时针走偏离的度数
         angleIntManager_  = angle ;
-        std::cout << "11111111111111111111111111111111111111111 angle  1 is : "
-                  << " angle 2 is : "
+        std::cout << "angle  is : "
                   << angle
-                  << " the angle diff is ： "
+                  << " the angleIntManager is ： "
                   << angleIntManager_
-                  << " the i is ： "
+                  << " the ridge is ： "
                   << ridgeNumber_
                   << " the index is : "
                   << ptIndex_
@@ -132,11 +131,7 @@ void curveDecisionManager::processBorderlessFishNail(){
     auto local_C2path = cornerTuringTishNailtest.getFishNailC2path();
     auto local_C3path = cornerTuringTishNailtest.getFishNailC3path();
 
-//  auto local_C1path = cornerTuringTishNailtest.getC1path();
-//  auto local_C2path = cornerTuringTishNailtest.getC2path();
-//  auto local_C3path = cornerTuringTishNailtest.getC3path();
-
-    std::vector<polygonPoint> temp_test_C1Path ;
+    std::vector<polygonPoint> temp_test_C1Path;
     std::vector<polygonPoint> temp_test_C2Path;
     std::vector<polygonPoint> temp_test_C3Path;
 
@@ -228,7 +223,8 @@ void curveDecisionManager::processBorderlessFishNail(){
         ptsshow.writePt(tempfg);
     }
 
-    if(ptIndex_ == 5 && ridgeNumber_ == 0){
+
+    if(ptIndex_ == 5 && ridgeNumber_ == 2){
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
         std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
         std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";
@@ -239,6 +235,7 @@ void curveDecisionManager::processBorderlessFishNail(){
         C2file.writePts(temp_test_C2Path);
         C3file.writePts(temp_test_C3Path);
     }
+    
 #endif
 
 }

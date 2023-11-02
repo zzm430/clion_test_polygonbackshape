@@ -88,14 +88,8 @@ public:
     std::vector<polygonPoint>   getFishNailC1path();
     std::vector<polygonPoint>   getFishNailC2path();
     std::vector<polygonPoint>   getFishNailC3path();
-    std::vector<polygonPoint>   getC1path();
-    std::vector<polygonPoint>   getC2path();
-    std::vector<polygonPoint>   getC3path();
 private:
     std::vector<polygonPoint>   storage_circle_center_;           //存储c1、c2、c3的圆心
-    std::vector<polygonPoint>  C1path_;                           //原始path
-    std::vector<polygonPoint>  C2path_;
-    std::vector<polygonPoint>  C3path_;
     std::vector<polygonPoint>  fishNailC1path_;                   //鱼尾path
     std::vector<polygonPoint>  fishNailC2path_;
     std::vector<polygonPoint>  fishNailC3path_;
