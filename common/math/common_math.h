@@ -145,6 +145,7 @@ namespace common{
                 return result;
         }
 
+
         static std::vector<polygonPoint>   computeLineTranslationPoints(
                                                 std::vector<polygonPoint> initialPoints,
                                                 std::vector<polygonPoint> directionPoints,
@@ -295,7 +296,7 @@ namespace common{
             double mag_b = magnitude(line_2.x,line_2.y);
             return acos(dot / (mag_a * mag_b));
         }
-        //输出角度范围为-180 到 180 度,这个函数顺时针为正方向
+        //输出角度范围为-180 到 180 度,这个函数逆时针为正方向，从a转到b为正
         static double computeTwolineAngleDu(
                 polygonPoint a,
                 polygonPoint b){
@@ -645,6 +646,20 @@ namespace common{
             curvePath[size_m - 1].x= footPtLea.x;
             curvePath[size_m - 1].y= footPtLea.y;
         }
+
+        //CPA算法类弯道点位过滤函数
+        static void curvePtsFilter(std::vector<polygonPoint> & pts){
+            std::vector<polygonPoint>  transd_pts;
+            for(auto i : pts){
+                 if(i.x == DBL_MAX && i.y == DBL_MAX){
+                     continue;
+                 };
+                transd_pts.push_back(i);
+            }
+            pts.clear();
+            pts = transd_pts;
+        }
+
     };
 
 }

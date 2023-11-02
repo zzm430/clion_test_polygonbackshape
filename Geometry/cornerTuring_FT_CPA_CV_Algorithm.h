@@ -42,7 +42,8 @@ public:
     std::vector<polygonPoint> getPathAboutPart1();
     std::vector<polygonPoint> getPathAboutPart2();
     std::vector<polygonPoint> getPathAboutPart3();
-    std::vector<polygonPoint> getPathAboutAll();
+    std::vector<polygonPoint> getPathAboutCurve();
+    std::vector<polygonPoint> getPathAboutALL();   //返回的是直道+弯道+弯道前进后腿属性的所有点的信息
     void SelectTheRequiredParts();
     std::vector<polygonPoint>  getPathStraight1();
     std::vector<polygonPoint>  getPathStraight2();
@@ -63,18 +64,19 @@ private:
     double arriveLineHeading_;
     PARTTYPE parttype_;
     polygonPoint referencePt_;
-    std::vector<polygonPoint>  storageCurvePath_;
+    std::vector<polygonPoint>  storageCurvePath_;    //只包含弯道
     std::vector<polygonPoint>  storageCurvePathPart1_;
     std::vector<polygonPoint>  storageCurvePathPart2_;
     std::vector<polygonPoint>  storageCurvePathPart3_;
+    std::vector<polygonPoint>  storaveCurvePathAll_;  //包含所有的弯道的点位和直道的信息
     //两条直道相关参数
 private:
     polygonPoint  pathStartPt_;  //全局坐标系下
     polygonPoint  pathEndPt_;    //全局坐标系下
     std::vector<polygonPoint>  pathStraight1_;   //直道倒车部分1
     std::vector<polygonPoint>  pathStraight2_;   //直道倒车部分2
-    polygonPoint  curveStartPt_; //FT-CPA-CV算法弯道起始点统一Part1\Part12\Part123
-    polygonPoint  curveEndPt_;   //FT-CPA-CV算法弯道结束点统一Part1\Part12\Part123
+    polygonPoint  curveStartPt_;  //FT-CPA-CV算法弯道起始点统一Part1\Part12\Part123
+    polygonPoint  curveEndPt_;    //FT-CPA-CV算法弯道结束点统一Part1\Part12\Part123
 
     //更新弯道起始点和结束点
 private:

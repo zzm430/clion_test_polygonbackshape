@@ -124,6 +124,42 @@ void cornerTuringFTCPACVAlgorithm::computePath(){
    curveEndPt_ = storageCurvePath_[storageCurvePath_.size()-1];
    //2.生成两条直道对应的path
     computePathAboutStraightLine();
+    //3.给路径点赋予弯道前进后退的属性
+    for(int i = 0;i < pathStraight1_.size();i++){
+         if(i == 0){
+             pathStraight1_[i].pathPtType_ = pathPtType::SWITCHPT;
+         }else{
+             pathStraight1_[i].pathPtType_ = pathPtType::BACKWARD;
+         }
+    }
+
+    for(auto i = 0; i < storageCurvePath_.size();i++){
+        if(i == 0){
+            storageCurvePath_[i].pathPtType_ = pathPtType::SWITCHPT;
+        }else{
+            storageCurvePath_[i].pathPtType_ = pathPtType::FORWARD;
+        }
+    }
+
+    for(int i = 0;i < pathStraight2_.size();i++){
+        if(i == 0){
+            pathStraight2_[i].pathPtType_ = pathPtType::SWITCHPT;
+        }else {
+            pathStraight2_[i].pathPtType_ = pathPtType::BACKWARD;
+        }
+    }
+
+    //4.将更新属性后点存储得到最后的path
+    for(auto i : pathStraight1_){
+        storaveCurvePathAll_.push_back(i);
+    }
+    for(auto i : storageCurvePath_){
+        storaveCurvePathAll_.push_back(i);
+    }
+    for(auto i : pathStraight2_){
+        storaveCurvePathAll_.push_back(i);
+    }
+
 }
 
 void cornerTuringFTCPACVAlgorithm::computePathAboutStraightLine(){
@@ -326,26 +362,37 @@ void cornerTuringFTCPACVAlgorithm::reprojectionPts(
         }
     }
 
+
      for(auto& i : storageCurvePathPart1){
          i.x =  i.x + xShift;
      }
+
 
     for(auto& i : storageCurvePathPart2){
         i.x =  i.x + xShift;
     }
 
+
     for(auto& i : storageCurvePathPart3){
         i.x =  i.x + xShift;
     }
 
+
     for(auto& i : storageCurvePath){
         i.x =  i.x + xShift;
     }
+
     //计算第二次坐标转换
     reprojectionGlobalPts(storageCurvePathPart1);
     reprojectionGlobalPts(storageCurvePathPart2);
     reprojectionGlobalPts(storageCurvePathPart3);
     reprojectionGlobalPts(storageCurvePath);
+
+    //对FT-CPA-CV算法生成的路径进行路径点过滤
+    //  common::commonMath::curvePtsFilter(storageCurvePathPart1);
+    //  common::commonMath::curvePtsFilter(storageCurvePathPart2);
+    //  common::commonMath::curvePtsFilter(storageCurvePathPart3);
+    //  common::commonMath::curvePtsFilter(storageCurvePath);
 
 }
 
@@ -378,7 +425,7 @@ std::vector<polygonPoint> cornerTuringFTCPACVAlgorithm::getPathAboutPart3(){
     return storageCurvePathPart3_;
 }
 
-std::vector<polygonPoint> cornerTuringFTCPACVAlgorithm::getPathAboutAll(){
+std::vector<polygonPoint> cornerTuringFTCPACVAlgorithm::getPathAboutCurve(){
     return storageCurvePath_;
 }
 
@@ -388,4 +435,8 @@ std::vector<polygonPoint>  cornerTuringFTCPACVAlgorithm::getPathStraight1(){
 
 std::vector<polygonPoint>  cornerTuringFTCPACVAlgorithm::getPathStraight2(){
     return pathStraight2_;
+}
+
+std::vector<polygonPoint> cornerTuringFTCPACVAlgorithm::getPathAboutALL(){
+    return storaveCurvePathAll_;
 }

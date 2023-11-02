@@ -41,7 +41,7 @@ cornerTuringCCPAAlgorithm::cornerTuringCCPAAlgorithm(
         }
     }
     angleOC_ = 2 * M_PI - angleC;
-    angleC_= angleC;
+    angleC_ = angleC;
     std::cout <<"the angle c is : "
               << angleC_ * 180/M_PI
               << std::endl;
@@ -270,16 +270,38 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         testfp << std::endl;
         testfp.close();
 #endif
+        //增加弯道属性
+        for(int i = 0;i < C1_pts.size();i++){
+            polygonPoint temp;
+            temp = C1_pts[i];
+            if(i == 0){
+                temp.pathPtType_ = pathPtType::SWITCHPT;
+            }else{
+                temp.pathPtType_ = pathPtType::BACKWARD;
+            }
+            storage_allPath_.push_back(temp);
+        }
+        for(int i = 0;i < C2_pts.size();i++){
+            polygonPoint temp;
+            temp = C2_pts[i];
+            if(i == 0){
+                temp.pathPtType_ = pathPtType::SWITCHPT;
+            }else {
+                temp.pathPtType_ = pathPtType::BACKWARD;
+            }
+            storage_allPath_.push_back(temp);
+        }
+        for(int  i = 0;i < C3_pts.size();i++){
+            polygonPoint temp;
+            temp = C3_pts[i];
+            if(i == 0){
+                temp.pathPtType_ = pathPtType::SWITCHPT;
+            }else {
+                temp.pathPtType_ = pathPtType::FORWARD;
+            }
+            storage_allPath_.push_back(temp);
+        }
 
-        for(auto i: C1_pts){
-            storage_allPath_.push_back(i);
-        }
-        for(auto i: C2_pts){
-            storage_allPath_.push_back(i);
-        }
-        for(auto i: C3_pts){
-            storage_allPath_.push_back(i);
-        }
     } else {
 //        double angleCV_start = 0;
 //        double angleCV_end = 2 * M_PI;
@@ -313,9 +335,13 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
         }
 
 //        //增加弯道的起始点和结束点的双保险，更新起始点
-//        common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
-//                                                     leaveLine_,
-//                                                     storage_allPath_);
+        common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
+                                                     leaveLine_,
+                                                     storage_allPath_);
+        //对所有的路径点增加弯道属性
+        for(auto & i : storage_allPath_){
+            i.pathPtType_ = pathPtType::FORWARD;
+        }
         storage_GlobalWCSC4Path_ = storage_allPath_;
 
 #ifdef  DEBUG_CPA_INFO

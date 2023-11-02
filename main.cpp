@@ -10,6 +10,7 @@
 #include "easylogging++.h"
 #include "common/math/common_math.h"
 #include "Planning/path_polygonplan.h"
+#include "Decision/curveDecisionType.h"
 #include "Geometry/innerRect.h"
 //#include "Geometry/cornerTuring_location.h"
 #include "Geometry/newCornerTuring_location.h"
@@ -160,7 +161,7 @@ int main(int argc, char **argv) {
                          std::ios::out);
     std::vector<pathInterface::pathPoint> cgal_routing_pts;
     std::vector<std::vector<pathInterface::pathPoint>>  cgal_all_path;
-    for(auto i  = 0  ; i < 1 ;i++){
+    for(auto i  = 0  ; i < 20 ;i++){
         cgal_routing_pts =
                 instance_pathPolygonPlan.cgalComputeRidgeRoutingpts(i);
         for (int i = 0; i < (int)cgal_routing_pts.size(); i++) {

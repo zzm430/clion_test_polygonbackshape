@@ -88,7 +88,7 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
     //这里按照逆时针考虑的，所以取负
     arriveLineHeading_ = -arriveLineHeading_;
 
-    double tempfg = cornerTuringLocationtest.getCurveCCPAAngleInt();
+
     std::cout << "the FTCPACC angleInt is : "
               << angleInt_
               << std::endl;
@@ -132,6 +132,14 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
                                                  leaveLine_,
                                                  storageAllPath_);
 
+    //增加弯道属性点前进信息
+    for(int i = 0;i < storageAllPath_.size();i++){
+        if(i == 0){
+            storageAllPath_[i].pathPtType_ = pathPtType::SWITCHPT;
+        }else{
+            storageAllPath_[i].pathPtType_ = pathPtType::FORWARD;
+        }
+    }
 #ifdef DEBUG_CPA_INFO
     std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/FTCPACC.txt";
     normalPrint C4file(C4name);

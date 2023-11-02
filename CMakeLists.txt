@@ -48,7 +48,7 @@ add_executable(polygonbackshape
               Planning/diffMode_Choose.h Geometry/cornerTuring_Implement_Radius.h
               Geometry/cornerTuring_Implement_Radius.cpp Geometry/cornerTuring_C_CPA_Algorithm.h
               Geometry/cornerTuring_C_CPA_Algorithm.cpp common/common_param/common_typedef.h
-              Planning/curveDecisionManager.h Planning/curveDecisionManager.cpp Geometry/cornerTuring_FT_CPA_CC_Algorithm.h Geometry/cornerTuring_FT_CPA_CC_Algorithm.cpp Geometry/cornerTuring_FT_CPA_CV_ABptLocation.h Geometry/cornerTuring_FT_CPA_CV_ABptLocation.cpp common/plot/tractorPolygonShow.h common/plot/tractorPolygonShow.cpp common/print/tractorPolyPrint.h Geometry/cornerTuring_FT_CPA_CV_Algorithm.h Geometry/cornerTuring_FT_CPA_CV_Algorithm.cpp common/print/tractorPolyPrint2.h common/plot/curveCurvatureCalculate.h common/plot/curveCurvatureCalculate.cpp Decision/curveDecision.h Decision/curveDecision.cpp)
+              Planning/curveDecisionManager.h Planning/curveDecisionManager.cpp Geometry/cornerTuring_FT_CPA_CC_Algorithm.h Geometry/cornerTuring_FT_CPA_CC_Algorithm.cpp Geometry/cornerTuring_FT_CPA_CV_ABptLocation.h Geometry/cornerTuring_FT_CPA_CV_ABptLocation.cpp common/plot/tractorPolygonShow.h common/plot/tractorPolygonShow.cpp common/print/tractorPolyPrint.h Geometry/cornerTuring_FT_CPA_CV_Algorithm.h Geometry/cornerTuring_FT_CPA_CV_Algorithm.cpp common/print/tractorPolyPrint2.h common/plot/curveCurvatureCalculate.h common/plot/curveCurvatureCalculate.cpp Decision/curveDecision.h Decision/curveDecision.cpp Decision/curveDecisionType.h)
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})

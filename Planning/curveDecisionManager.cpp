@@ -45,28 +45,18 @@ void curveDecisionManager::processCurveType(){
                   << std::endl;
 
         if(ridgeNumber_ < 2){                //第1垄和第2垄弯道处理
-            if(angleIntManager_> 0 && angleIntManager_ < 30){
-                curveType_ = CurveDecision::CONVEX_CORNER;
-            }else if(angleIntManager_ > 30  && angleIntManager_ < 150){
-                curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleIntManager_ > 150  &&  angleIntManager_ < 210){
-                curveType_ = CurveDecision::CONCAVE_CORNER;
-            }else if(angleIntManager_ > 210  &&  angleIntManager_ < 330){
-                curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleIntManager_ > 330 &&  angleIntManager_ < 360){
-                curveType_ = CurveDecision::CONCAVE_CORNER;
+            if(angleIntManager_> 0 && angleIntManager_ < 180){
+                curveType_ = CurveDecision::FT_CPA_CV;
+            }else if(angleIntManager_ > 180  && angleIntManager_ < 360){
+                curveType_ = CurveDecision::FT_CPA_CC;
             }
         }else{                            //当大于第2垄时弯道处理
             if(angleIntManager_> 0 && angleIntManager_ < 30){
-                curveType_ = CurveDecision::CONVEX_CORNER;
-            }else if(angleIntManager_ > 30  && angleIntManager_ < 150){
-                curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleIntManager_ > 150  &&  angleIntManager_ < 210){
-                curveType_ = CurveDecision::CONCAVE_CORNER;
-            }else if(angleIntManager_ > 210  &&  angleIntManager_ < 330){
-                curveType_ = CurveDecision::BORDERLESS_FISHNAIL;
-            }else if(angleIntManager_ > 330 &&  angleIntManager_ < 360){
-                curveType_ = CurveDecision::CONCAVE_CORNER;
+                curveType_ = CurveDecision::C_CPA_CV;
+            }else if(angleIntManager_ > 30  && angleIntManager_ < 330){
+                curveType_ = CurveDecision::FT_CPA_FS;
+            }else if(angleIntManager_ > 330  &&  angleIntManager_ < 360){
+                curveType_ = CurveDecision::C_CPA_CC;
             }
         }
     }else{
@@ -76,29 +66,21 @@ void curveDecisionManager::processCurveType(){
 
 void curveDecisionManager::processCurvePath(){
     switch(curveType_){
-        case CurveDecision::BORDERLESS_FISHNAIL: {
-//            processBorderlessFishNail();
-              processFTCPACV();
+        case CurveDecision::FT_CPA_FS: {
+            processBorderlessFishNail();
             break;
         }
-        case CurveDecision::CONVEX_CORNER:{
-//            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-//                processFTCPACV();
-//            }else{
-                processCCPA();
-//            }
-            break;
-        }
-        case CurveDecision::CONCAVE_CORNER:{
-//            if(ridgeNumber_ == 0 || ridgeNumber_ == 1){
-//                processFTCPACC();
-//            }else{
-                processCCPA();
-//            }
+        case CurveDecision::C_CPA_CC:
+        case CurveDecision::C_CPA_CV:{
+            processCCPA();
             break;
         }
         case CurveDecision::FT_CPA_CC:{
             processFTCPACC();
+            break;
+        }
+        case CurveDecision::FT_CPA_CV:{
+            processFTCPACV();
             break;
         }
         case CurveDecision::REED_SHEPP:{
@@ -213,8 +195,24 @@ void curveDecisionManager::processBorderlessFishNail(){
         temp_test_C3Path.push_back(tempPt);
         storage_origin_path.push_back(tempPt);
     }
-    backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = storage_origin_path;
 
+    //如果小于5度之内的，则其路径点为一个点
+    if(fabs(angleIntManager_)< REPLACE_CURVE_PATH_THR ){
+        polygonPoint  onePt;
+        onePt.x = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].x;
+        onePt.y = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].y;
+        onePt.pathPtType_ = pathPtType::FORWARD;
+        std::vector<polygonPoint>  storageTemp;
+        storageTemp.push_back(onePt);
+        backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = storageTemp;
+    } else {
+        backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = storage_origin_path;
+    }
+
+
+
+
+#ifdef  DEBUG_CPA_INFO
     //将A、B点转入到世界坐标系下
     std::string ptname = "/home/zzm/Desktop/test_path_figure-main/src/ptsshow.txt";
     auto & ptsshow =
@@ -239,6 +237,8 @@ void curveDecisionManager::processBorderlessFishNail(){
         C2file.writePts(temp_test_C2Path);
         C3file.writePts(temp_test_C3Path);
     }
+#endif
+
 }
 
 void curveDecisionManager::processBorderlessFishNail(polygonPoint curvePt){
@@ -381,13 +381,13 @@ void curveDecisionManager::processCCPA(){
                                                leaveLine_[1]);
 
     std::vector<polygonPoint>   direction_line_1,direction_line_2;
-    if(curveType_ == CurveDecision::CONCAVE_CORNER){
+    if(curveType_ == CurveDecision::C_CPA_CC){
         direction_line_1.push_back(footPt_1);
         direction_line_1.push_back(leaveLine_[1]);
 
         direction_line_2.push_back(footPt_2);
         direction_line_2.push_back(arriveLine_[0]);
-    } else if(curveType_ == CurveDecision::CONVEX_CORNER){
+    } else if(curveType_ == CurveDecision::C_CPA_CV){
         direction_line_1.push_back(leaveLine_[1]);
         direction_line_1.push_back(footPt_1);
 
@@ -444,10 +444,10 @@ void curveDecisionManager::processCCPA(){
     arriveLineHeading = -arriveLineHeading;
     arriveLineHeading_ = arriveLineHeading;
 
-    //添加验证C-CPA代码
-    if(curveType_ == CurveDecision::CONCAVE_CORNER){
+    //添加C-CPA代码
+    if(curveType_ == CurveDecision::C_CPA_CC){
         //扩展线段显示
-        if(ridgeNumber_ == 0 && ptIndex_ == 4) {
+//        if(ridgeNumber_ == 0 && ptIndex_ == 4) {
             std::ofstream temp;
             temp.open("/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeaveline.txt",
                       std::ios::out);
@@ -483,6 +483,10 @@ void curveDecisionManager::processCCPA(){
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
 
             auto allLocalPath = cornerTuringCCPAAlgorithm1.getAllLocalPath();
+            //增加坐标点位的前进或后退
+
+
+#ifdef  DEBUG_CPA_INFO
             //验证拖拉机姿态
             //计算拖拉机的轮廓点
             for(int  im = 1 ;im < all_path.size();im++) {
@@ -494,9 +498,11 @@ void curveDecisionManager::processCCPA(){
                 auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
                 tractorHeadPtsStream.writePts(tractorHeadPts,tractorTailPts);
             }
-        }
-    } else if(curveType_ == CurveDecision::CONVEX_CORNER) {
-        if(ridgeNumber_ == 0 && ptIndex_ == 1 ){
+#endif
+//        }
+
+    } else if(curveType_ == CurveDecision::C_CPA_CV) {
+//        if(ridgeNumber_ == 0 && ptIndex_ == 1 ){
             std::ofstream   temp;
             temp.open("/home/zzm/Desktop/test_path_figure-main/src/extendArriveAndLeaveline1.txt",
                       std::ios::out);
@@ -525,23 +531,24 @@ void curveDecisionManager::processCCPA(){
             cornerTuringCCPAAlgorithm1.calculatePath();
             std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
             auto all_path = cornerTuringCCPAAlgorithm1.getAllPath();
+            //给对应的path增加前进或者后退属性
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
         }
-    }
+//    }
 }
 
 void curveDecisionManager::processFTCPACC(){
-    if(ridgeNumber_ == 0 && ptIndex_ == 2){
+//    if(ridgeNumber_ == 0 && ptIndex_ == 2){
         cornerTuringFTCPACCAlgorithm cornerTuringFTCPACCAlgorithmInstance(
                 arriveLine_,
                 leaveLine_);
         auto all_path = cornerTuringFTCPACCAlgorithmInstance.getPath();
         backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
-    }
+//    }
 }
 
 void curveDecisionManager::processFTCPACV(){
-    if(ridgeNumber_ == 0 && ptIndex_ == 5){
+//    if(ridgeNumber_ == 0 && ptIndex_ == 5){
         //将arriveline、leaveLine 外扩 RIDGE_WIDTH_LENGTH/2
         //利用leaveline[0]计算垂足点
         auto footPt_1 = common::commonMath::computeFootPoint(
@@ -678,9 +685,12 @@ void curveDecisionManager::processFTCPACV(){
         cornerTuringFTCPACVAlgorithmInstance.computeTheAnglesForFTCPACV();
         cornerTuringFTCPACVAlgorithmInstance.SelectTheRequiredParts();
         cornerTuringFTCPACVAlgorithmInstance.computePath();
-        auto pts = cornerTuringFTCPACVAlgorithmInstance.getPathAboutAll();
+        auto pts = cornerTuringFTCPACVAlgorithmInstance.getPathAboutCurve();
         auto path1 = cornerTuringFTCPACVAlgorithmInstance.getPathStraight1();
         auto path2 = cornerTuringFTCPACVAlgorithmInstance.getPathStraight2();
+
+        auto all_path = cornerTuringFTCPACVAlgorithmInstance.getPathAboutALL();
+        backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
 
 #ifdef DEBUG_CPA_INFO
         //对整个FT-CPA-CV的path点位进行展示
@@ -709,16 +719,16 @@ void curveDecisionManager::processFTCPACV(){
         testFTCPACV << std::endl;
         testFTCPACV.close();
 
-        //记录曲率相关数据
-        curveCurvatureCalculate curveCurvatureCalculateInstance(pts);
-        auto kData = curveCurvatureCalculateInstance.getPathPtsR();
-        std::ofstream  testFTCPACVK;
-        testFTCPACVK.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACVK.txt",std::ios::out);
-        for(auto i : kData){
-             testFTCPACVK << " " << i;
-        }
-        testFTCPACVK << std::endl;
-        testFTCPACVK.close();
+//        //记录曲率相关数据
+//        curveCurvatureCalculate curveCurvatureCalculateInstance(pts);
+//        auto kData = curveCurvatureCalculateInstance.getPathPtsR();
+//        std::ofstream  testFTCPACVK;
+//        testFTCPACVK.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACVK.txt",std::ios::out);
+//        for(auto i : kData){
+//             testFTCPACVK << " " << i;
+//        }
+//        testFTCPACVK << std::endl;
+//        testFTCPACVK.close();
 
         //针对FT-CPA-CV算法进行姿态展示
         for (int i  = 1;i < storageALLPath.size();i++){
@@ -730,7 +740,7 @@ void curveDecisionManager::processFTCPACV(){
             tractorHeadPtsStream.writePts(pts_1,pts_2);
         }
 #endif
-    }
+//    }
 }
 
 void curveDecisionManager::processCCCURVE(){

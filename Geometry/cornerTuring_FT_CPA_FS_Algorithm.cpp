@@ -263,8 +263,6 @@ void cornerTuringTishNail::cornerTuringPath( polygonPoint A,
     fishNailC3path_ = computeInterceptPath(tempPath3,vecPtsC2_3[0]);
     std::reverse(fishNailC3path_.begin(),fishNailC3path_.end());
 
-
-
 //    std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
 //    std::string C2name = "/home/zzm/Desktop/test_path_figure-main/src/C2path.txt";
 //    std::string C3name = "/home/zzm/Desktop/test_path_figure-main/src/C3path.txt";

@@ -41,6 +41,7 @@
 #include "Planning/curveDecisionManager.h"
 #include "common/plot/tractorPolygonShow.h"
 #include "common/print/tractorPolyPrint.h"
+#include "Decision/curveDecisionType.h"
 
 namespace aiforce{
 namespace Route_Planning
@@ -217,9 +218,9 @@ namespace Route_Planning
      void computeLeaveSituation(std::vector<polygonPoint> & origin_poly);                       //将B中的分裂多边形按照平行线处理
      void cgalComputeRidgeKeyPointsLeave();               //计算A剩余未相交的按照弓字型处理的关键点
      void cgalComputeBRidgeKeyPointsLeave();              //计算B剩余未相交的按照弓字型处理的关键点
-     void processSpiltPolys();           //将分裂多边形分开存储,挑选出A结构的多边形，Bs结构的多边形
-     void cgalComputeParallelCurveMap();  //计算平行线弯道的起始和结束映射点位
-     void cgalComputeHeadleadsAandB();    //车体坐标系下计算弯道起始和结束点
+     void processSpiltPolys();               //将分裂多边形分开存储,挑选出A结构的多边形，Bs结构的多边形
+     void cgalComputeParallelCurveMap();     //计算平行线弯道的起始和结束映射点位
+     void cgalComputeHeadleadsAandB();       //车体坐标系下计算弯道起始和结束点
      void cgalComputeRSpath(
              int & num,
              std::vector<polygonPoint> & ordered_points,
@@ -252,15 +253,13 @@ namespace Route_Planning
      std::vector<std::vector<polygonPoint>>      cgalSequencedPolypts_;   //增加入口点并已入口点为起点存储的内缩多边形
 
      std::map<polygonPoint,std::vector<polygonPoint>>    cgalPtMaping_;    //直骨架点位映射
-     int mode_choose_ = 0;                                          //分裂多边形分裂 mode_choose_ = 1 ,2
+     int mode_choose_ = 0;                                           //分裂多边形分裂 mode_choose_ = 1 ,2
      cgalLastPolyIdentify             cgalLastPolyType_;
      int find_entrance_pts_size_ = 0;                                //入口点数
      bool set_flag_about_buffer_spilt_polys_ = false;                //设置是否启用B的平行线相关代码
      bool flag_increase_last_skeleton_ = false;                      //判断是否添加最后内部直骨架路径
      std::vector<polygonPoint>  storage_keypts_inner_skeleton_;      //存储最后的内部直骨架路径
      std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> last_inner_skeleton_keypts_; //获取关键点的映射信息
-     curveModeChoose   curveModeChoose_;                             //弯道模式选择
-     curveLocationChoose  curveLocationChoose_;                      //弯道起始点和结束点选择方式
  public:
      std::vector<std::vector<polygonPoint>>      cgalbackShape_keypoints_; //回字形的关键点位信息[第几垄][对应的关键点位们]
      std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash> backshape_fishnail_curve_path_;  //关键点映射到fishnail路径点

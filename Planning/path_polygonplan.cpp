@@ -94,8 +94,6 @@ pathPolygonPlan::~pathPolygonPlan(){
 }
 
 void pathPolygonPlan::initialize() {
-    curveModeChoose_ =  curveModeChoose::MODE_FISHNAIL;
-    curveLocationChoose_ = curveLocationChoose::MODE_HEADLANDS_CURVE__START_END;
 }
 
 void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
@@ -157,8 +155,8 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
 
     //根据指定的顶点找到对应的骨架路径
     polygonPoint entrance_point;
-    entrance_point.x = points[3].x;
-    entrance_point.y = points[3].y;
+    entrance_point.x = points[1].x;
+    entrance_point.y = points[1].y;
     std::vector<polygonPoint>  storagePoints;
     int num_inner = inner_polypts.size();
     //根据指定的点找到对应的直骨架入口路径信息
@@ -2495,28 +2493,28 @@ std::vector<pathInterface::pathPoint>  pathPolygonPlan::cgalComputeRidgeRoutingp
     point_1.ridge_number = ridge_index;
     storageAllPath.push_back(point_1);
 
-    switch(curveLocationChoose_){
-        case curveLocationChoose::MODE_HEADLANDS_CURVE__START_END:{
-            cgalComputeFishNailRidgePath(
+//    switch(){
+//        case curveLocationChoose::MODE_HEADLANDS_CURVE__START_END:{
+    cgalComputeFishNailRidgePath(
                     num,
                     ordered_points,
                     ridge_index,
                    storageAllPath);
-            break;
-        }
-        case curveLocationChoose::MODE_CUSTOM_CURVE_START_END:{
-            cgalComputeRSpath(
-                     num,
-                     ordered_points,
-                     ridge_index,
-                     storageAllPath,
-                     r);
-            break;
-        }
-        default:{
-            break;
-        }
-    }
+//            break;
+//        }
+//        case curveLocationChoose::MODE_CUSTOM_CURVE_START_END:{
+//            cgalComputeRSpath(
+//                     num,
+//                     ordered_points,
+//                     ridge_index,
+//                     storageAllPath,
+//                     r);
+//            break;
+//        }
+//        default:{
+//            break;
+//        }
+//    }
 
    return storageAllPath;
 }
@@ -3956,14 +3954,14 @@ void pathPolygonPlan::cgalComputeParallelLinesHeading(
 void pathPolygonPlan::cgalComputeAKeyptsMapping(){
     int num =  cgalbackShape_keypoints_.size();
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
-    for(int i = 0;i <= 1 ;i++){
+    for(int i = 0;i < 20 ;i++){
 //        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
         for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1  ;j++){
 //            for(int j = 1 ; j < 2;j++){
             auto ordered_pt = cgalbackShape_keypoints_[i][j];
             //计算指定点的前后弯道关键点
             ridgeKeypoint tempPtInfo;
-            auto forward_last_points =                     //注意点的顺序
+            auto forward_last_points =                                  //注意点的顺序
                     common::commonMath::computeForwardAndBackPoints(
                             cgalbackShape_keypoints_[i],
                             cgalbackShape_keypoints_[i][j]);
@@ -4002,8 +4000,8 @@ void pathPolygonPlan::cgalComputeAKeyptsMapping(){
                                                              cgalbackShape_keypoints_,
                                                              backshape_fishnail_curve_path_);
             curveDecisionManagerInstance.processCurveType();
-            curveDecisionManagerInstance.processBorderlessFishNail(cgalbackShape_keypoints_[i][spiral_size-1]);
-        }else{
+            curveDecisionManagerInstance.processCurvePath();
+        } else {
             //暂时回型最后一个点不做处理
             //DoNothing
         }

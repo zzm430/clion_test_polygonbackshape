@@ -6,7 +6,6 @@
 #define  MAX_PNG_SIZE 20000            //opencv处理的图片大小
 #define  INNER_RECT_GRID_DENSITY 2     //利用柱状直方图计算最大内接矩形的精度 >=1
 
-
 //debug
 //#define  DEBUG                       //用于opencv相关dubeg
 
@@ -70,5 +69,8 @@
 //回字形规划方法选择
 //#define  RECTANGLE_BACK_SHAPE           //矩形回字形规划
 #define  POLYGON_BACK_SHAPE               //多边形回字形规划
+
+//将拐弯较小的弯道生成的弯道点替换为一个点
+#define  REPLACE_CURVE_PATH_THR    5
 
 #endif // COMMON_PARAMETERS_H

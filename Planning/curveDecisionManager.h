@@ -19,16 +19,8 @@
 #include "Geometry/cornerTuring_FT_CPA_CV_Algorithm.h"
 #include "common/print/tractorPolyPrint2.h"
 #include "common/plot/curveCurvatureCalculate.h"
+#include "Decision/curveDecisionType.h"
 
-enum  class CurveDecision : uint8_t {
-    IDLE = 0,
-    BORDERLESS_FISHNAIL = 1,          //无边界鱼尾
-    CONVEX_CORNER = 2,                //凸角
-    CONCAVE_CORNER = 3,               //凹角
-    CC_CURVE = 4 ,                    //连续弯道
-    REED_SHEPP = 5,                   //
-    FT_CPA_CC  = 6                    //最外层替代无限制鱼尾弯道
-};
 
 class curveDecisionManager {
 public:
@@ -55,7 +47,7 @@ public:
 
 private:
     CurveDecision  curveType_ = CurveDecision::IDLE;
-    double angleIntManager_;    //此角度不可用于算法中的angleInt
+    double angleIntManager_;                        //此角度不可用于算法中的angleInt
     double ridgeNumber_;
     double ptIndex_;
     double arriveLineHeading_;
