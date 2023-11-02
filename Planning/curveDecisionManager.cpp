@@ -50,7 +50,7 @@ void curveDecisionManager::processCurveType(){
             }else if(angleIntManager_ > 180  && angleIntManager_ < 360){
                 curveType_ = CurveDecision::FT_CPA_CC;
             }
-        }else{                            //当大于第2垄时弯道处理
+        } else {                            //当大于第2垄时弯道处理
             if(angleIntManager_> 0 && angleIntManager_ < 30){
                 curveType_ = CurveDecision::C_CPA_CV;
             }else if(angleIntManager_ > 30  && angleIntManager_ < 330){
@@ -197,7 +197,9 @@ void curveDecisionManager::processBorderlessFishNail(){
     }
 
     //如果小于5度之内的，则其路径点为一个点
-    if(fabs(angleIntManager_)< REPLACE_CURVE_PATH_THR ){
+    if(fabs(angleIntManager_) < REPLACE_CURVE_PATH_THR  ||
+       fabs(angleIntManager_) < 360 &&
+       fabs(angleIntManager_) > 360- REPLACE_CURVE_PATH_THR){
         polygonPoint  onePt;
         onePt.x = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].x;
         onePt.y = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].y;
@@ -480,7 +482,22 @@ void curveDecisionManager::processCCPA(){
             cornerTuringCCPAAlgorithm1.calculatePath();
             std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
             auto all_path = cornerTuringCCPAAlgorithm1.getAllPath();
+
+        //如果小于5度之内的，则其路径点为一个点
+        if(fabs(angleIntManager_) < REPLACE_CURVE_PATH_THR  ||
+           fabs(angleIntManager_) < 360 &&
+           fabs(angleIntManager_) > 360 - REPLACE_CURVE_PATH_THR) {
+            polygonPoint onePt;
+            onePt.x = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].x;
+            onePt.y = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].y;
+            onePt.pathPtType_ = pathPtType::FORWARD;
+            std::vector<polygonPoint> storageTemp;
+            storageTemp.push_back(onePt);
+            backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = storageTemp;
+        } else {
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+        }
+
 
             auto allLocalPath = cornerTuringCCPAAlgorithm1.getAllLocalPath();
             //增加坐标点位的前进或后退
@@ -532,7 +549,20 @@ void curveDecisionManager::processCCPA(){
             std::cout << "the angleInt is : " << angleInt * 180 / M_PI;
             auto all_path = cornerTuringCCPAAlgorithm1.getAllPath();
             //给对应的path增加前进或者后退属性
+        //如果小于5度之内的，则其路径点为一个点
+        if(fabs(angleIntManager_) < REPLACE_CURVE_PATH_THR  ||
+           fabs(angleIntManager_) < 360 &&
+           fabs(angleIntManager_) > 360- REPLACE_CURVE_PATH_THR ) {
+            polygonPoint onePt;
+            onePt.x = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].x;
+            onePt.y = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].y;
+            onePt.pathPtType_ = pathPtType::FORWARD;
+            std::vector<polygonPoint> storageTemp;
+            storageTemp.push_back(onePt);
+            backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = storageTemp;
+        }else{
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+        }
         }
 //    }
 }
@@ -543,7 +573,20 @@ void curveDecisionManager::processFTCPACC(){
                 arriveLine_,
                 leaveLine_);
         auto all_path = cornerTuringFTCPACCAlgorithmInstance.getPath();
-        backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+        //如果小于5度之内的，则其路径点为一个点
+        if(fabs(angleIntManager_) < REPLACE_CURVE_PATH_THR  ||
+           fabs(angleIntManager_) < 360 &&
+           fabs(angleIntManager_) > 360 - REPLACE_CURVE_PATH_THR ) {
+            polygonPoint onePt;
+            onePt.x = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].x;
+            onePt.y = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].y;
+            onePt.pathPtType_ = pathPtType::FORWARD;
+            std::vector<polygonPoint> storageTemp;
+            storageTemp.push_back(onePt);
+            backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = storageTemp;
+        }else{
+            backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+        }
 //    }
 }
 
@@ -690,7 +733,21 @@ void curveDecisionManager::processFTCPACV(){
         auto path2 = cornerTuringFTCPACVAlgorithmInstance.getPathStraight2();
 
         auto all_path = cornerTuringFTCPACVAlgorithmInstance.getPathAboutALL();
-        backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+        //如果小于5度之内的，则其路径点为一个点
+        if(fabs(angleIntManager_) < REPLACE_CURVE_PATH_THR  ||
+            fabs(360 - REPLACE_CURVE_PATH_THR) < 360 &&
+            fabs(360 - REPLACE_CURVE_PATH_THR) > 360 - REPLACE_CURVE_PATH_THR ) {
+            polygonPoint onePt;
+            onePt.x = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].x;
+            onePt.y = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].y;
+            onePt.pathPtType_ = pathPtType::FORWARD;
+            std::vector<polygonPoint> storageTemp;
+            storageTemp.push_back(onePt);
+            backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = storageTemp;
+        } else {
+            backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
+        }
+
 
 #ifdef DEBUG_CPA_INFO
         //对整个FT-CPA-CV的path点位进行展示

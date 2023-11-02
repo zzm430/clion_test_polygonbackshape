@@ -3954,7 +3954,7 @@ void pathPolygonPlan::cgalComputeParallelLinesHeading(
 void pathPolygonPlan::cgalComputeAKeyptsMapping(){
     int num =  cgalbackShape_keypoints_.size();
     //第一垄到 num -1 垄统一处理，最后一笼单独处理
-    for(int i = 0;i < 20 ;i++){
+    for(int i = 0;i < 1 ;i++){
 //        for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1;j++){
         for(int j = 1 ; j < cgalbackShape_keypoints_[i].size() - 1  ;j++){
 //            for(int j = 1 ; j < 2;j++){
