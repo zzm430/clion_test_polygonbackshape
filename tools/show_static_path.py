@@ -6,19 +6,19 @@ import math
 a=np.loadtxt("/home/zzm/Desktop/test_path_figure-main/src/cgal_show_ridge_path.txt")
 
 # a=np.loadtxt("/home/zzm/Desktop/test_path_figure-main/src/routing_ps.txt")
-# B = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/origin_polygon.txt')
+B = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/origin_polygon.txt')
 # c = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testtemp.txt')
 # c_x = c[0]
 # c_y = c[1]
-# B_x = B[0]
-# B_y = B[1]
+B_x = B[0]
+B_y = B[1]
 
 f=plt.figure();                                                      #创建一个Figure对象，并向其中添加一个包含子图的Axes对象
 ax=f.add_subplot(111)                                                
 # ax.set(xlim=[523300, 523900],ylim=[4897000,4897900 ])                                   #设置x轴和y轴的范围限制为[0,10]
 # ax.set(xlim=[0,500],ylim=[0,500])
 # ax.set(xlim=[-400, 500], ylim=[-400,500 ])
-# ax.plot(B_x,B_y,color='r',markerfacecolor='red',marker='o',label='update data')
+ax.plot(B_x,B_y,color='r',markerfacecolor='red',marker='o',label='update data')
 # ax.plot(c_x,c_y,color='y',markerfacecolor='red',marker='o',label='update1 data')
 plt.plot(a[0,0],a[0,1],'ro')
 

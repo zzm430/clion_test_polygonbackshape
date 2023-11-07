@@ -71,6 +71,6 @@
 #define  POLYGON_BACK_SHAPE               //多边形回字形规划
 
 //将拐弯较小的弯道生成的弯道点替换为一个点
-#define  REPLACE_CURVE_PATH_THR    5
+#define  REPLACE_CURVE_PATH_THR    10
 
 #endif // COMMON_PARAMETERS_H

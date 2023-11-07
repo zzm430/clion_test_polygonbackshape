@@ -194,7 +194,7 @@ void curveDecisionManager::processBorderlessFishNail(){
     //如果小于5度之内的，则其路径点为一个点
     if(fabs(angleIntManager_) < REPLACE_CURVE_PATH_THR  ||
        fabs(angleIntManager_) < 360 &&
-       fabs(angleIntManager_) > 360- REPLACE_CURVE_PATH_THR){
+       fabs(angleIntManager_) > 360 - REPLACE_CURVE_PATH_THR){
         polygonPoint  onePt;
         onePt.x = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].x;
         onePt.y = cgalbackShape_keypoints_[ridgeNumber_][ptIndex_].y;

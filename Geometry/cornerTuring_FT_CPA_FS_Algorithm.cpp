@@ -50,9 +50,9 @@ void cornerTuringTishNail::computeCircleCenter(polygonPoint A,
         double c = pt_1.x * pt_1.x + pt_1.y * pt_1.y + b1 * b1 - 2*b1*pt_1.y - CIRCLE_RIDIS_R * CIRCLE_RIDIS_R
                    - RC2 * RC2 - 2 * CIRCLE_RIDIS_R * RC2;
         if((pt_1.y > 0 && pt_1.y > pt_3.y) || (pt_1.y < 0 && pt_1.y < pt_3.y)){
-            pt_2.x = (-b + sqrt(b * b - 4 * a * c))/(2 * a);
-        }else{
-            pt_2.x = (-b - sqrt(b * b - 4 * a * c))/(2 * a);
+            pt_2.x = (-b + sqrt(fabs(b * b - 4 * a * c)))/(2 * a);
+        } else {
+            pt_2.x = (-b - sqrt(fabs(b * b - 4 * a * c)))/(2 * a);
         }
         pt_2.y = pt_2.x * a1 + b1;
     }
@@ -159,7 +159,7 @@ void cornerTuringTishNail::chooseOptimalpath(  polygonPoint A,
                                                double F2,
                                                double F3){
     double maxLengthCost = DBL_MAX ;
-    for(int i = 1;i < 30;i++){
+    for(int i = 1;i < 5;i++){
         computeCircleCenter(A,  B, angleInt, RC2, F1, F2);       //计算C2的圆心
         cornerTuringPath(A,B,RC2,F3);
         double lengthCost =  computeLengthCostPath();
