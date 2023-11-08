@@ -99,6 +99,52 @@ void pathPolygonPlan::initialize() {
 Point pathPolygonPlan::cgalComputeEntranceOrderedPt(std::vector<Point> & pts ,Point carPt){
 }
 
+polygonPoint pathPolygonPlan::cgalChooseOptimalEntrancePt(std::vector<polygonPoint> & pts,
+                                                  polygonPoint tractorPosition){
+      //遍历各个顶点按照距离大小进行排序
+   std::sort(pts.begin(),pts.end(),[&](const polygonPoint &a, polygonPoint & b){
+       return common::commonMath::compareDistance(
+               a,
+               b,
+               tractorPosition);
+   });
+
+   //找到距离最近的那个顶点，并且其5m范围内没有其他顶点
+   double radis = 5;
+   bool flag = false;
+   polygonPoint mPt;
+   for(int i = 0;i < pts.size();i++){
+       Point1_2  center(pts[i].x,pts[i].y);
+       Circle1_2 circle(center,radis);
+       double angle1 = 0.0;
+       double angle2 = 2 * M_PI / 3;
+       double angle3 = 4 * M_PI / 3;
+       Point1_2 p1(center.x() + radis * cos(angle1),center.y() + radis * sin(angle1));
+       Point1_2 p2(center.x() + radis * cos(angle2),center.y() + radis * sin(angle2));
+       Point1_2 p3(center.x() + radis * cos(angle3),center.y() + radis * sin(angle3));
+       for(int m = 0; m < pts.size();m++){
+           if(m == i){
+               continue;
+           } else {
+               Point1_2  orderedPt(pts[m].x,pts[m].y);
+               auto result = CGAL::side_of_bounded_circle(p1,p2,p3,orderedPt);
+               if(result ==  CGAL::ON_BOUNDED_SIDE ||
+                  result ==  CGAL::ON_BOUNDARY){
+                   continue;
+               }else{
+                   mPt = pts[m];
+                   flag = true;
+                   break;
+               }
+           }
+       }
+       if(flag) {
+           break;
+       }
+   }
+   return mPt;
+}
+
 void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     int num_size = points.size();
     //去掉最后一个闭环点

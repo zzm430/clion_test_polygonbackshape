@@ -55,6 +55,7 @@ namespace common{
 //其他
 //1.等间隔差分一段圆弧，并获取其结果
 //2.弯道起始点和结束点的精度更新
+//3.比较函数，用于std::sort
 
         commonMath() = default;
         virtual ~commonMath() = default;
@@ -658,6 +659,13 @@ namespace common{
             }
             pts.clear();
             pts = transd_pts;
+        }
+
+        //比较函数，用于std::sort
+        static bool compareDistance(const polygonPoint & a,
+                                    const polygonPoint & b,
+                                    const polygonPoint & specifiedPoint){
+            return a.distanceTo(specifiedPoint) < b.distanceTo(specifiedPoint);
         }
 
     };

@@ -54,7 +54,7 @@ namespace Route_Planning
 
 
 
-     virtual  std::unordered_map<int,std::vector<pathBasePlan::curvePoint>>  getCurvePoints() =0 ;
+     virtual  std::unordered_map<int,std::vector<pathBasePlan::curvePoint>>  getCurvePoints() = 0 ;
 
      virtual  void diff1PointToJudgeDirection(Point p1,Point p2,
                                               std::vector<pathInterface::pathPoint> &path,

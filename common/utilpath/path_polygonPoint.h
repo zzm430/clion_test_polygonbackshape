@@ -53,6 +53,11 @@ private:
 public:
     bool entrance_ = false;                    //回字形入口点
     pathPtType   pathPtType_;                  //路径点的前进方向
+
+public:
+    double distanceTo(const polygonPoint & other) const{
+        return std::sqrt((x - other.x) * (x - other.x ) + (y - other.y) * (y - other.y));
+    }
 };
 
 struct polyPointHash{

@@ -237,6 +237,8 @@ namespace Route_Planning
      void cgalComputeEntraceCurvePath(std::vector<polygonPoint> & arriveLine,
                                                        std::vector<polygonPoint> & leaveLine,
                                                        polygonPoint    curvePt);
+     polygonPoint cgalChooseOptimalEntrancePt(std::vector<polygonPoint> & pts,
+                                                       polygonPoint tractorPosition);  //选择多边形的哪个顶点作为入口路径
  private:
      std::vector<std::vector<polygonPoint>>   cgalPolypts_;         //内缩多边形的存储
      std::vector<std::vector<polygonPoint>>   cgalandboostPolypts_; //cgal和boost混合的内缩多边形存储
