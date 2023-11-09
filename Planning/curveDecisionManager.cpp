@@ -43,11 +43,13 @@ void curveDecisionManager::processCurveType(){
                   << ptIndex_
                   << std::endl;
 
-        if(ridgeNumber_ < 2){                //第1垄和第2垄弯道处理
+        if( ridgeNumber_ < 2 ){                //第1垄和第2垄弯道处理
             if(angleIntManager_> 0 && angleIntManager_ < 180){
                 curveType_ = CurveDecision::FT_CPA_CV;
-            }else if(angleIntManager_ > 180  && angleIntManager_ < 360){
+            }else if(angleIntManager_ > 180  && angleIntManager_ < 315){
                 curveType_ = CurveDecision::FT_CPA_CC;
+            }else if(angleIntManager_ > 315 && angleIntManager_ < 360){
+                curveType_ = CurveDecision::C_CPA_CC;
             }
         } else {                            //当大于第2垄时弯道处理
             if(angleIntManager_> 0 && angleIntManager_ < 30){
@@ -222,7 +224,6 @@ void curveDecisionManager::processBorderlessFishNail(){
                 arriveLineHeading);
         ptsshow.writePt(tempfg);
     }
-
 
     if(ptIndex_ == 5 && ridgeNumber_ == 2){
         std::string C1name = "/home/zzm/Desktop/test_path_figure-main/src/C1path.txt";
