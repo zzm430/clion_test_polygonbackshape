@@ -115,10 +115,10 @@ void cornerTuringFTCPACVAlgorithm::computePath(){
             storageCurvePathPart2_,
             storageCurvePathPart3_,
             storageCurvePath_);
-   //更新整个弯道的起始点和结束点
-   common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
-                                                leaveLine_,
-                                                storageCurvePath_);
+//   //更新整个弯道的起始点和结束点
+//   common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
+//                                                leaveLine_,
+//                                                storageCurvePath_);
 
    curveStartPt_ = storageCurvePath_[0];
    curveEndPt_ = storageCurvePath_[storageCurvePath_.size()-1];

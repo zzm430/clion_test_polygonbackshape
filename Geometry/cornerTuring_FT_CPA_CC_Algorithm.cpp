@@ -128,9 +128,9 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
     reprojectionFTCPACC(storageAllPath_);
 
     //更新整个弯道的起始点和结束点
-    common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
-                                                 leaveLine_,
-                                                 storageAllPath_);
+//    common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
+//                                                 leaveLine_,
+//                                                 storageAllPath_);
 
     //增加弯道属性点前进信息
     for(int i = 0;i < storageAllPath_.size();i++){

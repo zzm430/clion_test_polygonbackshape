@@ -236,13 +236,13 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
          reprojectionCCA(tempStoragetestpts);
 
          //增加弯道的起始点和结束点的双保险，更新起始点
-        common::commonMath::curveStartPtUpdate(arriveLine_,
-                                                     leaveLine_,
-                                                     C1_pts);
+//        common::commonMath::curveStartPtUpdate(arriveLine_,
+//                                                     leaveLine_,
+//                                                     C1_pts);
         //更新弯道结束点
-        common::commonMath::curveEndPtUpdate(arriveLine_,
-                                             leaveLine_,
-                                             C3_pts);
+//        common::commonMath::curveEndPtUpdate(arriveLine_,
+//                                             leaveLine_,
+//                                             C3_pts);
         storage_GlobalWCSC1Path_ = C1_pts;
         storage_GlobalWCSC2Path_ = C2_pts;
         storage_GlobalWCSC3Path_ = C3_pts;
@@ -334,10 +334,10 @@ void cornerTuringCCPAAlgorithm::calculatePath(){
             storage_allPath_.push_back(i);
         }
 
-//        //增加弯道的起始点和结束点的双保险，更新起始点
-        common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
-                                                     leaveLine_,
-                                                     storage_allPath_);
+////        //增加弯道的起始点和结束点的双保险，更新起始点
+//        common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
+//                                                     leaveLine_,
+//                                                     storage_allPath_);
         //对所有的路径点增加弯道属性
         for(auto & i : storage_allPath_){
             i.pathPtType_ = pathPtType::FORWARD;
