@@ -96,8 +96,7 @@ pathPolygonPlan::~pathPolygonPlan(){
 void pathPolygonPlan::initialize() {
 }
 
-Point pathPolygonPlan::cgalComputeEntranceOrderedPt(std::vector<Point> & pts ,Point carPt){
-}
+
 
 polygonPoint pathPolygonPlan::cgalChooseOptimalEntrancePt(std::vector<polygonPoint> & pts,
                                                   polygonPoint tractorPosition){
@@ -110,7 +109,7 @@ polygonPoint pathPolygonPlan::cgalChooseOptimalEntrancePt(std::vector<polygonPoi
    });
 
    //找到距离最近的那个顶点，并且其5m范围内没有其他顶点
-   double radis = 5;
+   double radis = 60;
    bool flag = false;
    polygonPoint mPt;
    for(int i = 0;i < pts.size();i++){
@@ -203,9 +202,18 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     }
 
     //根据指定的顶点找到对应的骨架路径
+    polygonPoint     tempPt(610,260);
+    std::vector<polygonPoint>  transedPts;
+    for(auto i : points){
+        polygonPoint temp;
+        temp.x = i.x;
+        temp.y = i.y;
+        transedPts.push_back(temp);
+    }
+    auto ordered_pt = cgalChooseOptimalEntrancePt(transedPts,tempPt);
     polygonPoint entrance_point;
-    entrance_point.x = points[4].x;
-    entrance_point.y = points[4].y;
+    entrance_point.x = ordered_pt.x;
+    entrance_point.y = ordered_pt.y;
     std::vector<polygonPoint>  storagePoints;
     int num_inner = inner_polypts.size();
     //根据指定的点找到对应的直骨架入口路径信息
