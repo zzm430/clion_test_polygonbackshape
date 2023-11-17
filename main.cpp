@@ -12,6 +12,8 @@
 #include "Planning/path_polygonplan.h"
 #include "Decision/curveDecisionType.h"
 #include "Geometry/innerRect.h"
+#include "Emplanner/customPJPO.h"
+
 //#include "Geometry/cornerTuring_location.h"
 #include "Geometry/newCornerTuring_location.h"
 namespace bg = boost::geometry;
@@ -19,6 +21,11 @@ namespace bg = boost::geometry;
 INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char **argv) {
+
+    customPJPO  customPJPOtest;
+    customPJPOtest.testPjpo();
+
+    return 0;
     //获取到原始点位信息
     std::cout << "the argc number is :" << argc  << std::endl;
     std::cout << "the argv frist is :" << *argv <<  std::endl;
