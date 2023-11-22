@@ -1,3 +1,4 @@
+#用于简单测试osqp算法
 import osqp
 import numpy as np
 import matplotlib.pyplot as plt
