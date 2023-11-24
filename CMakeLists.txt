@@ -55,7 +55,12 @@ add_executable(polygonbackshape
                common/plot/tractorPolygonShow.h common/plot/tractorPolygonShow.cpp common/print/tractorPolyPrint.h
               Geometry/cornerTuring_FT_CPA_CV_Algorithm.h Geometry/cornerTuring_FT_CPA_CV_Algorithm.cpp common/print/tractorPolyPrint2.h
               common/plot/curveCurvatureCalculate.h common/plot/curveCurvatureCalculate.cpp Decision/curveDecision.h
-              Decision/curveDecision.cpp Decision/curveDecisionType.h Emplanner/frenet_converter.h Emplanner/frenet_converter.cpp Emplanner/customPJPO.h Emplanner/customPJPO.cpp Emplanner/piecewise_jerk_algorithm.h Emplanner/piecewise_jerk_algorithm.cpp Emplanner/piecewise_jerk_path_algorithm.h Emplanner/piecewise_jerk_path_algorithm.cpp)
+              Decision/curveDecision.cpp Decision/curveDecisionType.h Emplanner/frenet_converter.h
+              Emplanner/frenet_converter.cpp Emplanner/customPJPO.h Emplanner/customPJPO.cpp
+              Emplanner/piecewise_jerk_algorithm.h Emplanner/piecewise_jerk_algorithm.cpp
+              Emplanner/piecewise_jerk_path_algorithm.h Emplanner/piecewise_jerk_path_algorithm.cpp
+              smooth/customFemAlgorithm/fem_pos_deviation_sqp_osqp_interface.h smooth/customFemAlgorithm/fem_pos_deviation_sqp_osqp_interface.cc
+              smooth/customFemAlgorithm/fem_pos_deviation_osqp_interface.h smooth/customFemAlgorithm/fem_pos_deviation_osqp_interface.cc smooth/customFemAlgorithm/fem_pos_smoother.h)
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})

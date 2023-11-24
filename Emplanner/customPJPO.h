@@ -8,6 +8,7 @@
 #include <common/utilpath/path_polygonPoint.h>
 #include "Emplanner/piecewise_jerk_path_algorithm.h"
 #include <Emplanner/frenet_converter.h>
+#include <common/common_param/common_parameters.h>
 
 class customPJPO {
 public:

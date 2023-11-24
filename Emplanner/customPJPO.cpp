@@ -87,9 +87,26 @@ void customPJPO::testPjpo() {
     }
 
 
+#ifdef  DEBUG_PJPO_INFO
+    std::ofstream  testPath;
+    testPath.open("/home/zzm/Desktop/test_path_figure-main/src/testPath.txt",std::ios::out);
+    for(auto i : opt_l){
+        testPath << " " << i ;
+    }
+    testPath << std::endl;
 
+    for(auto j : boundary){
+        testPath << " " << j.first;
+    }
+    testPath << std::endl;
 
+    for(auto m : boundary){
+        testPath << " " << m.second;
+    }
+    testPath << std::endl;
+    testPath.close();
 
+#endif
 }
 
 

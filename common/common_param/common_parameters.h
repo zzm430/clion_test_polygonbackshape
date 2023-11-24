@@ -32,7 +32,9 @@
 #define  SET_HEADLAND_WIDTH_WHL   4       //地头宽度(具体指的是CPA算法中的whl)
 
 //LOG以及相关txt信息输出
-#define DEBUG_CPA_INFO                 //控制输出的txt文件debug使用
+#define DEBUG_CPA_INFO                    //控制输出的txt文件debug使用
+#define DEBUG_PJPO_INFO                   //控制PJPO相关算法的debug输出
+
 
 //回型部分弯道起始点和终点相关参数设置
 #define WROBOT                    1.8       //widtth of robot
@@ -72,5 +74,19 @@
 
 //将拐弯较小的弯道生成的弯道点替换为一个点
 #define  REPLACE_CURVE_PATH_THR    10
+
+//customFem算法相关参数设定
+#define APPLY_CURVATURE_CONSTRAINT  true
+#define WEIGHT_FEM_POS_DEVIATION    1e10
+#define WEIGHT_PATH_LEGNTH          1.0
+#define WEIGHT_REF_DEVIATION        2e10
+#define MAX_ITER                    500
+
+
+
+
+
+
+
 
 #endif // COMMON_PARAMETERS_H
