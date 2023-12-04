@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(polygonbackshape)
 find_package(Boost REQUIRED COMPONENTS )
-find_package(OpenCV REQUIRED)
+#find_package(OpenCV REQUIRED)
 find_package(CGAL REQUIRED)
 find_package(Matlab REQUIRED)
 find_package(osqp REQUIRED)
@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD 11)
 # 添加CGAL库的头文件路径
 include_directories(${CGAL_INCLUDE_DIRS})
 include_directories(.)
-include_directories(${OpenCV_INCLUDE_DIRS})
+#include_directories(${OpenCV_INCLUDE_DIRS})
 #include_directories(${PYTHON_INCLUDE_DIRS})
 
 
@@ -60,10 +60,15 @@ add_executable(polygonbackshape
               Emplanner/piecewise_jerk_algorithm.h Emplanner/piecewise_jerk_algorithm.cpp
               Emplanner/piecewise_jerk_path_algorithm.h Emplanner/piecewise_jerk_path_algorithm.cpp
               smooth/customFemAlgorithm/fem_pos_deviation_sqp_osqp_interface.h smooth/customFemAlgorithm/fem_pos_deviation_sqp_osqp_interface.cc
-              smooth/customFemAlgorithm/fem_pos_deviation_osqp_interface.h smooth/customFemAlgorithm/fem_pos_deviation_osqp_interface.cc smooth/customFemAlgorithm/fem_pos_smoother.h)
+              smooth/customFemAlgorithm/fem_pos_deviation_osqp_interface.h smooth/customFemAlgorithm/fem_pos_deviation_osqp_interface.cc
+              smooth/customFemAlgorithm/fem_pos_smooth_manager.h
+              Emplanner/curve_static_obstacles_manager.h Emplanner/curve_static_obstacles_manager.cpp common/utilpath/path_anchorPoint.h
+              smooth/customFemAlgorithm/fem_pos_smooth_manager.cpp
+              smooth/customFemAlgorithm/fem_pos_deviation_smoother.cc smooth/customFemAlgorithm/fem_pos_deviation_smoother.h common/plot/computePathProfile.h common/plot/computePathProfile.cpp common/utilpath/path_slPoint.h)
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 
-target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(polygonbackshape ${Boost_LIBRARIES})
+#target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
 target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})
 target_link_libraries(polygonbackshape ${Matlab_LIBRARIES})
 target_link_libraries(polygonbackshape  osqp::osqp)

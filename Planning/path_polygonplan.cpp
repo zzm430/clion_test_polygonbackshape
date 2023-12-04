@@ -3919,6 +3919,39 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
         temp_points.clear();
     }
 
+    //此处可直接完成对应的弯道处理
+    //画一个圆
+    polygonPoint circle_test(18,90);
+    std::vector<polygonPoint>  circle_polygon;
+    double invertal_dis = 2 * M_PI / 30;
+    for(int i = 0;i < 30;i++){
+        polygonPoint temp;
+        temp.x = circle_test.x + 1 * cos(invertal_dis * i);
+        temp.y = circle_test.y + 1 * sin(invertal_dis * i);
+        circle_polygon.push_back(temp);
+    }
+    circle_polygon.push_back(circle_polygon[0]);
+    std::vector<std::vector<polygonPoint>> obstacles_polygon;
+    obstacles_polygon.push_back(circle_polygon);
+
+    std::ofstream   testOriginPoly;
+    testOriginPoly.open("/home/zzm/Desktop/test_path_figure-main/src/testOriginPoly.txt",std::ios::out);
+    for(auto poly : obstacles_polygon){
+        for(auto pt : poly){
+            testOriginPoly << " " << pt.x ;
+        }
+        testOriginPoly << std::endl;
+        for(auto pt :poly){
+            testOriginPoly <<" " << pt.y;
+        }
+        testOriginPoly << std::endl;
+    }
+    testOriginPoly.close();
+
+    curveStaticObstaclesManager curveStaticObstaclesManager(
+                                                   cgalbackShape_keypoints_,
+                                                   obstacles_polygon);
+
     //此处需要添加关键点的弯道映射部分
     cgalComputeAKeyptsMapping();
     switch(cgalLastPolyType_){

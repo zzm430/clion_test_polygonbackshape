@@ -3,7 +3,7 @@
 
 #include <cmath>
 #include <limits>
-
+#include <iostream>
 namespace smoothalgorithm {
 
 bool FemPosDeviationSqpOsqpInterface::Solve() {
@@ -111,7 +111,7 @@ bool FemPosDeviationSqpOsqpInterface::Solve() {
   bool initial_solve_res = OptimizeWithOsqp(primal_warm_start, &work);
 
   if (!initial_solve_res) {
-    //    AERROR << "initial iteration solving fails";
+    std::cout  << "initial iteration solving fails" << std::endl;
     osqp_cleanup(work);
     c_free(data->A);
     c_free(data->P);

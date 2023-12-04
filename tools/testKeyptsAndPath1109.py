@@ -46,6 +46,10 @@ plt.plot(a[:,0],a[:,1],'-b',linewidth=0.3)                                      
 # for i in range(len(m)):
 #     ax.annotate(f"({m[i]}, {m[i]})", (m[i], m[i]))
 
+
+for a, b in zip(CC_x,CC_y):
+        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+
 plt.axis('equal')  # 让横坐标间隔等于纵坐标间隔
 
 f.tight_layout()

@@ -75,12 +75,28 @@
 //将拐弯较小的弯道生成的弯道点替换为一个点
 #define  REPLACE_CURVE_PATH_THR    10
 
+
 //customFem算法相关参数设定
-#define APPLY_CURVATURE_CONSTRAINT  true
-#define WEIGHT_FEM_POS_DEVIATION    1e10
-#define WEIGHT_PATH_LEGNTH          1.0
-#define WEIGHT_REF_DEVIATION        2e10
-#define MAX_ITER                    500
+#define  APPLY_CURVATURE_CONSTRAINT  true
+#define  WEIGHT_FEM_POS_DEVIATION    1e5
+#define  WEIGHT_PATH_LEGNTH          1
+#define  WEIGHT_REF_DEVIATION        1
+#define  MAX_ITER_FEM                4000
+#define  TIME_LIMIT                  3
+#define  VERBOSE                     false
+#define  SCALED_TERMINATION          true
+#define  WARM_START_M                true
+#define  BOUND                        0.5
+#define  WEIGHT_CURVATURE_CONSTRAINT_SLACK_VAR 1e5
+#define  SQP_SUB_MAX_ITER                      0.0
+#define  SQP_FTOL                              0.0
+#define  SQP_PEN_MAX_ITER                      0.0
+#define  SQP_CTOL                              0.0
+
+
+
+//static obstale manager
+#define  DEBUG_STATIC_OBSTACLE
 
 
 

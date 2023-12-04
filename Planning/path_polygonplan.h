@@ -42,6 +42,7 @@
 #include "common/plot/tractorPolygonShow.h"
 #include "common/print/tractorPolyPrint.h"
 #include "Decision/curveDecisionType.h"
+#include "Emplanner/curve_static_obstacles_manager.h"
 
 namespace aiforce{
 namespace Route_Planning

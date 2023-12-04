@@ -147,6 +147,23 @@ namespace common{
         }
 
 
+        static std::vector<polygonPoint> computePtsToOrderedDirectionMove(
+                                        std::vector<polygonPoint> originPts,
+                                        polygonPoint  direction,
+                                        double distance){
+            std::vector<polygonPoint> transdPts;
+            double length_squared  = direction.x * direction.x + direction.y * direction.y;
+            double u_x = direction.x / sqrt(length_squared);
+            double u_y = direction.y / sqrt(length_squared);
+            for(auto i : originPts){
+                double datax = i.x + distance * u_x;
+                double datay = i.y + distance * u_y;
+                transdPts.push_back(polygonPoint(datax,datay));
+            }
+            return transdPts;
+        }
+
+
         static std::vector<polygonPoint>   computeLineTranslationPoints(
                                                 std::vector<polygonPoint> initialPoints,
                                                 std::vector<polygonPoint> directionPoints,
@@ -311,6 +328,7 @@ namespace common{
             }
             return theta;
         }
+
         //1.计算两点之间的距离
         static double  distanceTwoPolygonPoints(polygonPoint  point_1,
                                                 polygonPoint point_2){
@@ -319,6 +337,7 @@ namespace common{
                                        (point_2.y - point_1.y) * (point_2.y - point_1.y));
             return  result;
         }
+
         //2.找到线段上固定端点固定距离的点
         static polygonPoint findPointOnSegment(
                 polygonPoint p1,
@@ -426,16 +445,7 @@ namespace common{
             densified_points.push_back(points.back());
             return densified_points;
         }
-        //5.计算点到线段所在直线距离
-        static double distanceToLineSegment(double x1, double y1,
-                                              double x2,double y2,
-                                              double x,double y){
-            double distanceAB =
-                    std::sqrt(std::pow(x2 - x1,2) + std::pow(y2 - y1,2));
-            double distancePToAB =
-                    std::abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - x1 * y2) / distanceAB;
-            return distanceAB;
-        }
+
         //6.计算点p在线段AB上的投影点
         static polygonPoint  projectPointOnSegment(
                 polygonPoint p,
@@ -490,6 +500,15 @@ namespace common{
            footPoint.x = A.x + t * AB.x;
            footPoint.y = A.y + t * AB.y;
            return footPoint;
+        }
+
+        //5.计算点到线段所在直线距离
+        static double distanceToLineSegment(polygonPoint P,
+                                            polygonPoint A,
+                                            polygonPoint B){
+           auto pt1 = common::commonMath::computeFootPoint(P,A,B);
+           double distance = common::commonMath::distance2(P,pt1);
+           return distance;
         }
 
         //基础数学运算

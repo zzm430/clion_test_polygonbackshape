@@ -3,9 +3,10 @@
 #include <utility>
 #include <vector>
 
-#include "data/config/cfg_smoother.hpp"
+#include "common/common_param/common_parameters.h"
+#include "smooth/customFemAlgorithm/fem_pos_deviation_sqp_osqp_interface.h"
 
-namespace math {
+namespace smoothalgorithm {
 
 /*
  * @brief:
@@ -25,17 +26,17 @@ namespace math {
 
 class FemPosDeviationSmoother {
  public:
-  explicit FemPosDeviationSmoother(const pnc::data::CfgSmoother& config);
+  explicit FemPosDeviationSmoother();
 
   bool Solve(const std::vector<std::pair<double, double>>& raw_point2d,
              const std::vector<double>& bounds,
              std::vector<double>* opt_x,
              std::vector<double>* opt_y);
 
-  bool QpWithOsqp(const std::vector<std::pair<double, double>>& raw_point2d,
-                  const std::vector<double>& bounds,
-                  std::vector<double>* opt_x,
-                  std::vector<double>* opt_y);
+//  bool QpWithOsqp(const std::vector<std::pair<double, double>>& raw_point2d,
+//                  const std::vector<double>& bounds,
+//                  std::vector<double>* opt_x,
+//                  std::vector<double>* opt_y);
 
   bool SqpWithOsqp(const std::vector<std::pair<double, double>>& raw_point2d,
                    const std::vector<double>& bounds,
@@ -43,7 +44,7 @@ class FemPosDeviationSmoother {
                    std::vector<double>* opt_y);
 
  private:
-  pnc::data::CfgSmoother config_;
+
 };
 }  // namespace math
 

@@ -68,6 +68,7 @@ typedef CGAL::Circle_2<Circular_k>                Circle1_2;
 typedef CGAL::Circular_arc_2<Circular_k>          Circular_arc_2;
 typedef CGAL::CK2_Intersection_traits<Circular_k, Circle1_2, Circle1_2>::type Intersection_result;
 
-using boostRetVal = std::pair<CGAL::Circular_arc_point_2<CGAL::Filtered_bbox_circular_kernel_2<CGAL::Circular_kernel_2<CGAL::Cartesian<CGAL::Gmpq>, CGAL::Algebraic_kernel_for_circles_2_2<CGAL::Gmpq> > > > , unsigned>;
+using boostRetVal = std::pair<CGAL::Circular_arc_point_2<CGAL::Filtered_bbox_circular_kernel_2<CGAL::Circular_kernel_2<CGAL::Cartesian<CGAL::Gmpq>,
+        CGAL::Algebraic_kernel_for_circles_2_2<CGAL::Gmpq> > > > , unsigned>;
 
 #endif //POLYGONBACKSHAPE_COMMON_TYPEDEF_H

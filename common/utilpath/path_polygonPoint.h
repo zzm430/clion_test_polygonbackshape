@@ -58,6 +58,51 @@ public:
     double distanceTo(const polygonPoint & other) const{
         return std::sqrt((x - other.x) * (x - other.x ) + (y - other.y) * (y - other.y));
     }
+
+    void set_x(double value_x){
+        x = value_x;
+    }
+
+    void set_y(double value_y){
+        y = value_y;
+    }
+
+    void set_theta(double theta){
+        theta_ = theta;
+    }
+
+    void set_s(double s){
+        s_ = s;
+    }
+
+    void set_kappa(double kappa){
+        kappa_ = kappa;
+    }
+
+    void set_dkappa(double dkappa){
+        dkappa_ = dkappa;
+    }
+
+    double get_theta(){
+        return theta_;
+    }
+
+    double get_s(){
+        return s_;
+    }
+
+    double get_kappa(){
+        return kappa_;
+    }
+
+    double get_dkappa(){
+        return dkappa_;
+    }
+private:
+    double theta_;
+    double s_;
+    double kappa_;
+    double dkappa_;
 };
 
 struct polyPointHash{
