@@ -75,7 +75,6 @@
 //将拐弯较小的弯道生成的弯道点替换为一个点
 #define  REPLACE_CURVE_PATH_THR    10
 
-
 //customFem算法相关参数设定
 #define  APPLY_CURVATURE_CONSTRAINT  true
 #define  WEIGHT_FEM_POS_DEVIATION    1e5
@@ -93,12 +92,12 @@
 #define  SQP_PEN_MAX_ITER                      0.0
 #define  SQP_CTOL                              0.0
 
+
 #define A1_DISTANCE        6
 #define A3_DISTANCE        12
 #define A2_DISTANCE        6
 #define A4_DISTANCE        12
-#define FIRST_REFER_PTS_COUNT 10
-#define SECOND_REFER_PTS_COUNT 10
+
 #define VIRTUAL_CENTROID_LINE 4
 #define SIDE_PASS_CHOOSE   true  //true逆时针为正
 
@@ -112,6 +111,7 @@
 #define MAX_STEER_ANGLE   38
 #define WHEEL_BASE        3.35
 #define PJPO_USE_SWITCH   true
+#define DELTA_S           0.6
 
 
 

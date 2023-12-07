@@ -31,20 +31,6 @@ public:
             std::vector<double>* ddx
             );
 
-     bool OptimizePathWithKappaMax(
-            const std::array<double, 3>& init_state,
-            const std::array<double, 3>& end_state,
-            const std::vector<double>& path_reference_l,
-            bool is_valid_path_reference,
-            std::vector<std::pair<double, double>>& boundary,
-            const std::vector<double>& kappa_ref,
-            double kappa_max,
-            const std::array<double, 5>& w,
-            int max_iter,
-            std::vector<double>* x,
-            std::vector<double>* dx,
-            std::vector<double>* ddx);
-
      double GaussianWeighting( double x,
                                double peak_weighting,
                                double peak_weighting_x);

@@ -105,25 +105,41 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
             A4_DISTANCE,
             true);
 
-    std::vector<polygonPoint>  line1;
-    line1.push_back(A3);
-    line1.push_back(A1);
+//    std::vector<polygonPoint>  line1;
+//    line1.push_back(A3);
+//    line1.push_back(A1);
+//
+//    std::vector<polygonPoint>  line2;
+//    line2.push_back(polygonPoint(A2));
+//    line2.push_back(polygonPoint(A4));
+//
+//    std::vector<polygonPoint>  line3;
+//    line3.push_back(polygonPoint(A1));
+//    line3.push_back(polygonPoint(A2));
 
-    std::vector<polygonPoint>  line2;
-    line2.push_back(polygonPoint(A2));
-    line2.push_back(polygonPoint(A4));
 
-    std::vector<polygonPoint>  line3;
-    line3.push_back(polygonPoint(A1));
-    line3.push_back(polygonPoint(A2));
 
-    reference_pts1 = common::commonMath::densify2(
-            line1,
-            FIRST_REFER_PTS_COUNT);
-    reference_pts3 = common::commonMath::densify2(
-            line2,
-            SECOND_REFER_PTS_COUNT);
+    //保证等间隔取点
+    std::vector<polygonPoint> line_diff_use;
+    line_diff_use.push_back(A3);
+    line_diff_use.push_back(A4);
+    auto reference_diff_allpts = common::commonMath::densify2(
+                   line_diff_use,
+                   40);
+    double dis_s = 0;
+    for(int i = 0; i < reference_diff_allpts.size();i++){
+         double dis_2pt = common::commonMath::distance2(A3,reference_diff_allpts[i]);
+         if(dis_2pt < A1_DISTANCE){
+             reference_pts1.push_back(reference_diff_allpts[i]);
+         }else if( dis_2pt >= A1_DISTANCE && dis_2pt < A3_DISTANCE + A2_DISTANCE){
+             reference_pts2.push_back(reference_diff_allpts[i]);
+         }else{
+             reference_pts3.push_back(reference_diff_allpts[i]);
+         }
+    }
 
+
+    //更新reference_pts2
     //计算C、D点
     polygonPoint vector_origin_line(work_line[1].x - work_line[0].x,
                                     work_line[1].y - work_line[0].x);
@@ -173,13 +189,6 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
     std::cout << "the distance C and D is : " << distanceC << " " << distanceD << std::endl;
 
 
-    //计算第3条参考线的离散
-    double temp = static_cast<double>(A1_DISTANCE)/FIRST_REFER_PTS_COUNT;
-    int pt_numbers = ceil(A1_DISTANCE * 2 / temp);
-   auto  reference_pts2_temp = common::commonMath::densify2(
-            line3,
-            pt_numbers);
-
     //将第三条参考线上的点按照指定垂直中心线的方向平移
     //假如往C方向平移
     std::cout <<"the distance C is : " << distanceC << std::endl;
@@ -187,8 +196,9 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
     if(!SIDE_PASS_CHOOSE){
         distance_virtual_line = RIDGE_WIDTH_LENGTH/2 + distanceD + SAFE_OBSTACLE_THR;
     }
+    auto reference_pts2_center = reference_pts2;
     reference_pts2 = common::commonMath::computePtsToOrderedDirectionMove(
-            reference_pts2_temp,
+            reference_pts2,
             vector_vertical_line,
             distance_virtual_line);
 
@@ -205,33 +215,16 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
      streamLine << std::endl;
 #endif
 
-     //应该是5段参考线组成
-     //计算第4段参考线，A1和第三段的起点
-     auto line4size = reference_pts2.size();
-     std::vector<polygonPoint>  line4;
-     std::vector<polygonPoint>  line5;
-     line4.push_back(A1);
-     line4.push_back(reference_pts2[line4size/2]);
-     line5.push_back(reference_pts2[line4size/2]);
-     line5.push_back(A2);
-
-     reference_pts4 = common::commonMath::densify2(line4,5);
-     reference_pts5 = common::commonMath::densify2(line5,5);
-
      //整合所有参考线
      std::vector<polygonPoint>  reference_allpts;
      for(auto i : reference_pts1){
          reference_allpts.push_back(i);
      }
-//     for(int i = 0;i < reference_pts4.size()-1;i++){
-//         reference_allpts.push_back(reference_pts4[i]);
-//     }
+
      for(int i = 0;i < reference_pts2.size() ;i++){
          reference_allpts.push_back(reference_pts2[i]);
      }
-//     for(auto i : reference_pts5){
-//         reference_allpts.push_back(i);
-//     }
+
      for(auto i : reference_pts3){
          reference_allpts.push_back(i);
      }
@@ -255,15 +248,12 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
      if(PJPO_USE_SWITCH) {
          //pjpo处理
          //针对参考线A3到A4初始参考线进行差值
-         std::vector<polygonPoint> line_A34;
-         //line_A34.push_back(A3);
-         //line_A34.push_back(A4);
          std::vector<polygonPoint> inter_pts;
          for (auto i : reference_pts1) {
              inter_pts.push_back(i);
          }
 
-         for (auto i: reference_pts2_temp) {
+         for (auto i: reference_pts2_center) {
              inter_pts.push_back(i);
          }
 
@@ -362,13 +352,8 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
 
          std::vector<std::pair<double, double>> boundary(center_refer_path.size());
 
-         double lower_bound = -3;
-         double upper_bound = 3;
-
-//    for (int i = 0; i < boundary.size(); i++) {
-//        boundary[i] = std::make_pair(lower_bound,upper_bound);
-//    }
-
+         double lower_bound ;
+         double upper_bound ;
 
          for (int i = 0; i < boundary.size(); i++) {
              lower_bound = -7;

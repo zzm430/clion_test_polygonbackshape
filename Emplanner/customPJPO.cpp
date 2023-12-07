@@ -167,7 +167,7 @@ bool customPJPO::optimizePath(
     piecewiseJerkPathAlgorithm_inst.set_scale_factor({1, 10.0, 1000.0});  //重要参数
 
     piecewiseJerkPathAlgorithm_inst.set_x_bounds(boundary);
-    piecewiseJerkPathAlgorithm_inst.set_dx_bounds(-3, 3);
+    piecewiseJerkPathAlgorithm_inst.set_dx_bounds(-1.6, 1.6);
     piecewiseJerkPathAlgorithm_inst.set_ddx_bounds(ddl_boundary);
 
     const double axis_distance = 3 ;
@@ -194,77 +194,6 @@ bool customPJPO::optimizePath(
 
     return true;
 }
-
-
-bool customPJPO::OptimizePathWithKappaMax(
-        const std::array<double, 3>& init_state,
-        const std::array<double, 3>& end_state,
-        const std::vector<double>& path_reference_l,
-        const bool is_valid_path_reference,
-        std::vector<std::pair<double, double>>& boundary,
-        const std::vector<double>& kappa_ref,
-        const double kappa_max,
-        const std::array<double, 5>& w,
-        const int max_iter,
-        std::vector<double>* x,
-        std::vector<double>* dx,
-        std::vector<double>* ddx) {
-    /// num of knots
-    auto k_num_knots = boundary.size();
-
-    piecewiseJerkPathAlgorithm piecewiseJerkPathAlgorithm_ins(
-            k_num_knots, 0.5, init_state);
-    piecewiseJerkPathAlgorithm_ins.set_end_state_ref(
-            {1000,0.0,0.0},
-            end_state
-            );
-
-    if (end_state[0] != 0 && !is_valid_path_reference) {
-        std::vector<double> x_ref(k_num_knots, end_state[0]);
-        const double weight_x_ref = 10.0;
-        piecewiseJerkPathAlgorithm_ins.set_x_ref(weight_x_ref, std::move(x_ref));
-    }
-
-    if (is_valid_path_reference) {
-        std::vector<double> weight_x_ref_vec(k_num_knots, w[4]);
-        piecewiseJerkPathAlgorithm_ins.set_x_ref(std::move(weight_x_ref_vec),
-                                         path_reference_l);
-    }
-
-    piecewiseJerkPathAlgorithm_ins.set_weight_x(w[0]);
-    piecewiseJerkPathAlgorithm_ins.set_weight_dx(w[1]);
-    piecewiseJerkPathAlgorithm_ins.set_weight_ddx(w[2]);
-    piecewiseJerkPathAlgorithm_ins.set_weight_dddx(w[3]);
-
-    piecewiseJerkPathAlgorithm_ins.set_scale_factor({1.0, 1.0, 1.0});
-
-    piecewiseJerkPathAlgorithm_ins.set_x_bounds(boundary);
-    piecewiseJerkPathAlgorithm_ins.set_dx_bounds(-1e10, 1e10);
-    piecewiseJerkPathAlgorithm_ins.set_ddx_bounds(-1e10, 1e10);
-    piecewiseJerkPathAlgorithm_ins.set_dddx_bound(-1e10, 1e10);
-    piecewiseJerkPathAlgorithm_ins.set_kappa_max(kappa_max);
-    piecewiseJerkPathAlgorithm_ins.set_kappa_ref(kappa_ref);
-
-
-    bool success = false;
-    try {
-        success = piecewiseJerkPathAlgorithm_ins.Optimize(max_iter);
-    } catch (const std::exception& ex) {
-        LOG(ERROR) << "Optimize error: " << ex.what();
-        success = false;
-    }
-
-    if (!success) {
-        return false;
-    }
-
-
-    *x = piecewiseJerkPathAlgorithm_ins.opt_x();
-    *dx = piecewiseJerkPathAlgorithm_ins.opt_dx();
-    *ddx = piecewiseJerkPathAlgorithm_ins.opt_ddx();
-    return true;
-}
-
 
 
 double customPJPO::GaussianWeighting(double x,
