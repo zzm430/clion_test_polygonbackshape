@@ -365,7 +365,7 @@ namespace common{
                 endPoint.x = startPoint.x - dx * dist;
                 endPoint.y = startPoint.y - dy * dist;
             }
-            endPoint.heading = atan2(dy,dx);
+            endPoint.set_heading(atan2(dy,dx));
             return endPoint;
         }
         //3.找到线段上固定端点的延长线上固定距离的点

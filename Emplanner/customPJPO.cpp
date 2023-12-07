@@ -15,12 +15,13 @@ void customPJPO::testPjpo() {
             2,
             0,
             0};
+
     std::array<double,5> w = {
-            10000.0,
+            10.0,
             1.0,
             1.0,
             1,
-            1000
+            10000
     };
 
     std::array<double,3> end_state = {
@@ -53,8 +54,8 @@ void customPJPO::testPjpo() {
             lower_bound = -2;
             upper_bound = 4;
         } else if(i >= 10 && i <=13){
-            lower_bound = -1;
-            upper_bound = 4;
+            lower_bound = -5;
+            upper_bound = 1;
         }else{
             lower_bound = -2;
             upper_bound = 4;
@@ -126,7 +127,7 @@ bool customPJPO::optimizePath(
         ){
 
     auto k_num_knots = boundary.size();
-    auto delta_s = 0.25;
+    auto delta_s = 0.6;
 
     piecewiseJerkPathAlgorithm piecewiseJerkPathAlgorithm_inst(
             k_num_knots,
@@ -134,7 +135,7 @@ bool customPJPO::optimizePath(
             init_state);
     piecewiseJerkPathAlgorithm_inst.set_use_old_method(true);
     piecewiseJerkPathAlgorithm_inst.set_end_state_ref(
-            {1000.0,0.0,0.0},end_state);
+            {100000.0,0.0,0.0},end_state);
 
     if (end_state[0] != 0 && !is_valid_path_reference) {
         std::vector<double> x_ref(k_num_knots, end_state[0]);
@@ -163,17 +164,16 @@ bool customPJPO::optimizePath(
     piecewiseJerkPathAlgorithm_inst.set_weight_ddx(w[2]);
     piecewiseJerkPathAlgorithm_inst.set_weight_dddx(w[3]);
 
-    piecewiseJerkPathAlgorithm_inst.set_scale_factor({1000.0, 10.0, 1.0});  //重要参数
+    piecewiseJerkPathAlgorithm_inst.set_scale_factor({1, 10.0, 1000.0});  //重要参数
 
     piecewiseJerkPathAlgorithm_inst.set_x_bounds(boundary);
-    piecewiseJerkPathAlgorithm_inst.set_dx_bounds(-2, 2);
+    piecewiseJerkPathAlgorithm_inst.set_dx_bounds(-3, 3);
     piecewiseJerkPathAlgorithm_inst.set_ddx_bounds(ddl_boundary);
 
     const double axis_distance = 3 ;
     const double max_yaw_rate = 8.5 / 22.4 / 2.0;
-    const double jerk_bound = EstimateJerkBoundary(
+     double jerk_bound = EstimateJerkBoundary(
             std::fmax(init_state[1], 0.3), axis_distance, max_yaw_rate);
-
 
     piecewiseJerkPathAlgorithm_inst.set_dddx_bound(-jerk_bound, jerk_bound);
     bool success = false;

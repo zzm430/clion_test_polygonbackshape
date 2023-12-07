@@ -118,7 +118,7 @@ class FemPosDeviationSqpOsqpInterface {
   // Init states and constraints
   std::vector<std::pair<double, double>> ref_points_;
   std::vector<double> bounds_around_refs_;
-  double curvature_constraint_ = 0.2;
+  double curvature_constraint_ = 0.1;
 
   // Weights in optimization cost function
   double weight_fem_pos_deviation_ = 1.0e5;

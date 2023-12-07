@@ -64,17 +64,21 @@ namespace  smoothalgorithm{
         }
         testCurve << std::endl;
 
-        for(int  im = 1 ;im < last_pts.size();im++) {
-            tractorPolygonShow tractorPolygonShowInstance(im,
-                                                          last_pts);
-            auto tractorHeadPts = tractorPolygonShowInstance.getTractorPolygonHeadPts();
-            auto tractorTailPts = tractorPolygonShowInstance.getTractorPolygonTailPts();
-            std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorObstacles.txt";
-            auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
-            tractorHeadPtsStream.writePts(tractorHeadPts,tractorTailPts);
-        }
+//        for(int  im = 1 ;im < last_pts.size();im++) {
+//            tractorPolygonShow tractorPolygonShowInstance(im,
+//                                                          last_pts);
+//            auto tractorHeadPts = tractorPolygonShowInstance.getTractorPolygonHeadPts();
+//            auto tractorTailPts = tractorPolygonShowInstance.getTractorPolygonTailPts();
+//            std::string test1 =  "/home/zzm/Desktop/test_path_figure-main/src/tractorObstacles.txt";
+//            auto & tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
+//            tractorHeadPtsStream.writePts(tractorHeadPts,tractorTailPts);
+//        }
 
 #endif
+
+        for(auto i : last_pts){
+            last_smoothed_pts_.push_back(i);
+        }
 
     }
 

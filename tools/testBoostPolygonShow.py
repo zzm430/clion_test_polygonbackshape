@@ -24,8 +24,11 @@ testObstacleOriginLine = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools
 testObstacleOriginLine_x = testObstacleOriginLine[0]
 testObstacleOriginLine_y = testObstacleOriginLine[1]
 
+tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
 
-tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstacles.txt')
+test_PJPO_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path.txt')
+test_PJPO_path_x = test_PJPO_path[0]
+test_PJPO_path_y = test_PJPO_path[1]
 
 # 读取txt文件中的多边形点集
 with open('testOriginPolyBoost.txt') as g:
@@ -55,6 +58,7 @@ ax.plot(testObstacleOriginLine_x,testObstacleOriginLine_y,color='b',markerfaceco
 
 ax.plot(testVirtualLIne_x,testVirtualLIne_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=4)
 
+ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=4)
 
 for m in range(len(tractorHeadPtsStream111) - 1):
     if m % 2 == 0:

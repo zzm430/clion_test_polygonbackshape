@@ -12,6 +12,8 @@
 #include "smooth/customFemAlgorithm/fem_pos_smooth_manager.h"
 #include "common/utilpath/path_slPoint.h"
 #include "Emplanner/frenet_converter.h"
+#include "common/utilpath/discretizedPath.h"
+#include "Emplanner/customPJPO.h"
 
 class curveStaticObstaclesManager{
 public:

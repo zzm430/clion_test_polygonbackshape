@@ -19,7 +19,7 @@
 #define RIDGE_WIDTH_LENGTH        4       //垄宽设置
 #define MAX_TRAVERSALS_NUMBERS    500     //最大遍历次数
 #define CHOOSE_NARROW_TYPE                //定义则选择点内缩，未定义选择边内缩
-#define JUDGE_CLOCKWISE            true   //判断回字形按照顺时针走还是逆时针，true为逆时针，false为顺时针
+#define JUDGE_CLOCKWISE           true   //判断回字形按照顺时针走还是逆时针，true为逆时针，false为顺时针
 #define  SET_STARTTURN_DISTANCE   6       //设置起始转弯距离
 #define  SET_ENDTURN_DISTANCE     6       //末尾转弯距离设置
 #define  SET_CONVERTDIRECTION_DIST 0.1    //设置转换方向点的间距
@@ -86,17 +86,34 @@
 #define  VERBOSE                     false
 #define  SCALED_TERMINATION          true
 #define  WARM_START_M                true
-#define  BOUND                        0.5
+#define  BOUND                       1.7
 #define  WEIGHT_CURVATURE_CONSTRAINT_SLACK_VAR 1e5
 #define  SQP_SUB_MAX_ITER                      0.0
 #define  SQP_FTOL                              0.0
 #define  SQP_PEN_MAX_ITER                      0.0
 #define  SQP_CTOL                              0.0
 
+#define A1_DISTANCE        6
+#define A3_DISTANCE        12
+#define A2_DISTANCE        6
+#define A4_DISTANCE        12
+#define FIRST_REFER_PTS_COUNT 10
+#define SECOND_REFER_PTS_COUNT 10
+#define VIRTUAL_CENTROID_LINE 4
+#define SIDE_PASS_CHOOSE   true  //true逆时针为正
 
 
 //static obstale manager
 #define  DEBUG_STATIC_OBSTACLE
+#define  SAFE_OBSTACLE_THR  0.3
+
+
+//PJPO算法
+#define MAX_STEER_ANGLE   38
+#define WHEEL_BASE        3.35
+#define PJPO_USE_SWITCH   true
+
+
 
 
 

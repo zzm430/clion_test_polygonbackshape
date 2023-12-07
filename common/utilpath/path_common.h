@@ -27,8 +27,11 @@ public:
             return y < other.y;
         }
     }
+
+
     double x;
     double y;
+    double z;
     double  heading;
     bool  flag;
 };

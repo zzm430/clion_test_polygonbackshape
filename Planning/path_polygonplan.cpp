@@ -2428,10 +2428,10 @@ std::vector<pathInterface::pathPoint>  pathPolygonPlan::cgalComputeRidgeRoutingp
         int  n_size =   cgalbackShape_keypoints_[ridge_index-1].size();
         startPoint[0] = cgalbackShape_keypoints_[ridge_index-1][n_size-1].x;
         startPoint[1] = cgalbackShape_keypoints_[ridge_index-1][n_size-1].y;
-        startPoint[2] = cgalbackShape_keypoints_[ridge_index-1][n_size-1].heading;
+        startPoint[2] = cgalbackShape_keypoints_[ridge_index-1][n_size-1].heading();
         endPoint[0] = storage_keypts_inner_skeleton_[0].x;
         endPoint[1] = storage_keypts_inner_skeleton_[0].y;
-        endPoint[2] = storage_keypts_inner_skeleton_[0].heading;
+        endPoint[2] = storage_keypts_inner_skeleton_[0].heading();
         r->reedsShepp(startPoint,endPoint);
         finalpath = r->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
         for(int j = 0;j < finalpath.size();j++){
@@ -2874,7 +2874,7 @@ std::vector<pathInterface::pathPoint> pathPolygonPlan::computeRidgeRoutingpts(in
             if(heading < 0){
                 heading += 2 * M_PI;
             }
-            filtered_backshape_keypoints_[ridge_index][num+1].heading = heading;
+            filtered_backshape_keypoints_[ridge_index][num+1].set_heading(heading) ;
         }
         return storageAllPath;
 }
@@ -3387,10 +3387,10 @@ void pathPolygonPlan::cgalComputeLastRidgeRoutingParallelLines(
     //计算第一个弯道
     startPoint[0] = spec_point.x;
     startPoint[1] = spec_point.y;
-    startPoint[2] = spec_point.heading;
+    startPoint[2] = spec_point.heading();
     endPoint[0] = ordered_pts[0].x;
     endPoint[1] = ordered_pts[0].y;
-    endPoint[2] = ordered_pts[0].heading;
+    endPoint[2] = ordered_pts[0].heading();
     p->reedsShepp(startPoint,endPoint);
     finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
     for(int j = 0; j < finalpath.size();j++){
@@ -3435,10 +3435,10 @@ void pathPolygonPlan::cgalComputeLastRidgeRoutingParallelLines(
         }
         startPoint[0] = ordered_pts[i].x;
         startPoint[1] = ordered_pts[i].y;
-        startPoint[2] = ordered_pts[i].heading;
+        startPoint[2] = ordered_pts[i].heading();
         endPoint[0] = ordered_pts[i+1].x;
         endPoint[1] = ordered_pts[i+1].y;
-        endPoint[2] = ordered_pts[i+1].heading;
+        endPoint[2] = ordered_pts[i+1].heading();
         p->reedsShepp(startPoint,endPoint);
         finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
         for(int j = 0; j < finalpath.size();j++){
@@ -3489,10 +3489,10 @@ void   pathPolygonPlan::computeLastRidgeRoutingFourAndFour(std::vector<pathInter
     //计算第一个弯道
     startPoint[0] = spec_point.x;
     startPoint[1] = spec_point.y;
-    startPoint[2] = spec_point.heading;
+    startPoint[2] = spec_point.heading();
     endPoint[0] = filtered_backshape_keypoints_[ridge_index][0].x;
     endPoint[1] = filtered_backshape_keypoints_[ridge_index][0].y;
-    endPoint[2] = filtered_backshape_keypoints_[ridge_index][0].heading;
+    endPoint[2] = filtered_backshape_keypoints_[ridge_index][0].heading();
     p->reedsShepp(startPoint,endPoint);
     finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
     for(int j = 0; j < finalpath.size();j++){
@@ -3517,10 +3517,10 @@ void   pathPolygonPlan::computeLastRidgeRoutingFourAndFour(std::vector<pathInter
         }
         startPoint[0] = filtered_backshape_keypoints_[ridge_index][i].x;
         startPoint[1] = filtered_backshape_keypoints_[ridge_index][i].y;
-        startPoint[2] = filtered_backshape_keypoints_[ridge_index][i].heading;
+        startPoint[2] = filtered_backshape_keypoints_[ridge_index][i].heading();
         endPoint[0] = filtered_backshape_keypoints_[ridge_index][i+1].x;
         endPoint[1] = filtered_backshape_keypoints_[ridge_index][i+1].y;
-        endPoint[2] = filtered_backshape_keypoints_[ridge_index][i+1].heading;
+        endPoint[2] = filtered_backshape_keypoints_[ridge_index][i+1].heading();
         p->reedsShepp(startPoint,endPoint);
         finalpath = p->xingshensample(startPoint,endPoint,REEDSHEPP_SAMPLE_INTERVAL);
         for(int j = 0; j < finalpath.size();j++){
@@ -3560,8 +3560,8 @@ void pathPolygonPlan::computeKeypointsHeading(){
             vector_p.y = ridge_last_pts[i+1].y - ridge_last_pts[i].y;
             heading = common::commonMath::calculateHeading(vector_p);
             LOG(INFO) <<"the last ridge  compute heading is : " << heading;
-            filtered_backshape_keypoints_[num - 1][i].heading = heading;
-            filtered_backshape_keypoints_[num - 1][i + 1].heading = heading;
+            filtered_backshape_keypoints_[num - 1][i].set_heading(heading) ;
+            filtered_backshape_keypoints_[num - 1][i + 1].set_heading(heading);
             i++;
     }
 }
@@ -3990,21 +3990,20 @@ void pathPolygonPlan::cgalIncludeLastskeletonMap(){
     int last_size = cgalbackShape_keypoints_[last_poly-1].size();
     auto last_key_pt_1 = cgalbackShape_keypoints_[last_poly - 1][last_size - 1];
     auto last_key_pt_2 = cgalbackShape_keypoints_[last_poly - 1][last_size - 2];
-    cgalbackShape_keypoints_[last_poly - 1][last_size - 1].heading
-            = atan2(last_key_pt_1.y - last_key_pt_2.y,
-                    last_key_pt_1.x - last_key_pt_2.x);
+    cgalbackShape_keypoints_[last_poly - 1][last_size - 1].set_heading(atan2(last_key_pt_1.y - last_key_pt_2.y,
+                                                                             last_key_pt_1.x - last_key_pt_2.x));
     LOG(INFO) <<" the last key pt heading is : " <<
-                 cgalbackShape_keypoints_[last_poly - 1][last_size - 1].heading * 180 / M_PI;
+                 cgalbackShape_keypoints_[last_poly - 1][last_size - 1].heading() * 180 / M_PI;
 
     //计算对应的弯道关键点位
     //计算第一个点位的heading
     int m_size = storage_keypts_inner_skeleton_.size();
-    storage_keypts_inner_skeleton_[0].heading =
+    storage_keypts_inner_skeleton_[0].set_heading (
             atan2(storage_keypts_inner_skeleton_[1].y - storage_keypts_inner_skeleton_[0].y,
-                  storage_keypts_inner_skeleton_[1].x - storage_keypts_inner_skeleton_[0].x);
+                  storage_keypts_inner_skeleton_[1].x - storage_keypts_inner_skeleton_[0].x));
 
     LOG(INFO) <<"the first skeleton  pt heading is : " <<
-                                    storage_keypts_inner_skeleton_[0].heading * 180 / M_PI;
+                                    storage_keypts_inner_skeleton_[0].heading() * 180 / M_PI;
     //计算中间点位的映射关键点
     for(int i = 1;i <  m_size - 1; i++){
         //计算指定点的前后弯道关键点
@@ -4035,8 +4034,8 @@ void pathPolygonPlan::cgalComputeParallelLinesHeading(
         vector_p.x = lastRidgePts[i+1].x - lastRidgePts[i].x;
         vector_p.y = lastRidgePts[i+1].y - lastRidgePts[i].y;
         heading = common::commonMath::calculateHeading(vector_p);
-        lastRidgePts[i].heading = heading;
-        lastRidgePts[i + 1].heading = heading;
+        lastRidgePts[i].set_heading (heading);
+        lastRidgePts[i + 1].set_heading(heading);
         i++;
     }
 }
@@ -4558,10 +4557,10 @@ void pathPolygonPlan::cgalComputeBRidgeKeyPointsLeave(){
               << ")";
     //计算指定点的heading
     auto spec_pt_forwardpt = cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-2];
-    specify_point.heading = atan2(specify_point.y - spec_pt_forwardpt.y,
-                                  specify_point.x - spec_pt_forwardpt.x);
-    cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-1].heading =
-            specify_point.heading;
+    specify_point.set_heading(atan2(specify_point.y - spec_pt_forwardpt.y,
+                                    specify_point.x - spec_pt_forwardpt.x)) ;
+    cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-1].set_heading (
+            specify_point.heading());
 
     //利用排好序的索引
     for(int m = 0;m < move_pts_line_B_all_1_.size();m++ ){
@@ -4679,10 +4678,10 @@ void pathPolygonPlan::cgalComputeRidgeKeyPointsLeave(){
               << ")";
     //计算指定点的heading
     auto spec_pt_forwardpt = cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-2];
-    specify_point.heading = atan2(specify_point.y - spec_pt_forwardpt.y,
-                                  specify_point.x - spec_pt_forwardpt.x);
-    cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-1].heading =
-                                                                 specify_point.heading;
+    specify_point.set_heading(atan2(specify_point.y - spec_pt_forwardpt.y,
+                                    specify_point.x - spec_pt_forwardpt.x)) ;
+    cgalbackShape_keypoints_[cgalbackShape_keypoints_.size()-1][number_m-1].set_heading( specify_point.heading());
+                                                                ;
     //根据line1和line2 确定哪个距离最近
     double distance1 =
             common::commonMath::distance2(specify_point,move_pts_line_1_[0]);
@@ -5016,8 +5015,8 @@ void  pathPolygonPlan::computeLastRidgeKeyPoints4and3(int count_flag){
         }
 
       LOG(INFO) << "the last ridege entrance point is : (" << specify_point.x << "," << specify_point.y << ")";
-      specify_point.heading = atan2(filtered_points[1].y - filtered_points[0].y,
-                                    filtered_points[1].x - filtered_points[0].x);
+      specify_point.set_heading(atan2(filtered_points[1].y - filtered_points[0].y,
+                                      filtered_points[1].x - filtered_points[0].x)) ;
         //根据line1和line2 确定哪个距离最近
         double distance1 = common::commonMath::distance2(specify_point,move_pts_tangle_line_1_[0]);
         double distance2 = common::commonMath::distance2(specify_point,move_pts_tangle_line_2_[0]);
@@ -5124,8 +5123,8 @@ void pathPolygonPlan::computeLastRidgeKeyPoints4and4(int count_flag){
             specify_point = filtered_points[1];
     }
     LOG(INFO) << "the last ridege entrance point is : (" << specify_point.x << "," << specify_point.y << ")";
-    specify_point.heading = atan2(filtered_points[1].y - filtered_points[0].y,
-                                  filtered_points[1].x - filtered_points[0].x);
+    specify_point.set_heading(atan2(filtered_points[1].y - filtered_points[0].y,
+                                    filtered_points[1].x - filtered_points[0].x));
 
     //根据line1和line2 确定哪个距离最近
     double distance1 = common::commonMath::distance2(specify_point,move_pts_line_1_[0]);

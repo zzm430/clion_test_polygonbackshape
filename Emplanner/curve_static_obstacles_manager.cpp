@@ -87,22 +87,22 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
     auto A1 = common::commonMath::findPointOnSegment(
             work_line[0],
             projection_pt,
-            6,
+            A1_DISTANCE,
             false);
     auto A3 = common::commonMath::findPointOnSegment(
             work_line[0],
             projection_pt,
-            10,
+            A3_DISTANCE,
             false);
     auto A2 = common::commonMath::findPointOnSegment(
             projection_pt,
             work_line[1],
-            6,
+            A2_DISTANCE,
             true);
     auto A4 = common::commonMath::findPointOnSegment(
             projection_pt,
             work_line[1],
-            10,
+            A4_DISTANCE,
             true);
 
     std::vector<polygonPoint>  line1;
@@ -119,20 +119,25 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
 
     reference_pts1 = common::commonMath::densify2(
             line1,
-            10);
+            FIRST_REFER_PTS_COUNT);
     reference_pts3 = common::commonMath::densify2(
             line2,
-            10);
+            SECOND_REFER_PTS_COUNT);
 
     //计算C、D点
     polygonPoint vector_origin_line(work_line[1].x - work_line[0].x,
                                     work_line[1].y - work_line[0].x);
     polygonPoint vector_vertical_line(-vector_origin_line.y,vector_origin_line.x);
 
+    if(!SIDE_PASS_CHOOSE){
+        vector_vertical_line.x = vector_vertical_line.x * (-1);
+        vector_vertical_line.y = vector_vertical_line.y * (-1);
+    }
+
     //计算虚拟垂直线段
     std::vector<polygonPoint>  vertical_line;
     polygonPoint  vertical_pt1,vertical_pt2;
-    double distance  = 4;
+    double distance  = VIRTUAL_CENTROID_LINE;
     double segmentLength = sqrt(pow(vector_vertical_line.x,2) + pow(vector_vertical_line.y,2));
     double dx = vector_vertical_line.x / segmentLength;
     double dy = vector_vertical_line.y / segmentLength;
@@ -167,15 +172,21 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
     distanceD = common::commonMath::distanceToLineSegment(tempPts[1],work_line[0],work_line[1]);
     std::cout << "the distance C and D is : " << distanceC << " " << distanceD << std::endl;
 
-    //计算第3条参考线的离散点
+
+    //计算第3条参考线的离散
+    double temp = static_cast<double>(A1_DISTANCE)/FIRST_REFER_PTS_COUNT;
+    int pt_numbers = ceil(A1_DISTANCE * 2 / temp);
    auto  reference_pts2_temp = common::commonMath::densify2(
             line3,
-            10);
+            pt_numbers);
 
     //将第三条参考线上的点按照指定垂直中心线的方向平移
     //假如往C方向平移
     std::cout <<"the distance C is : " << distanceC << std::endl;
-    double distance_virtual_line  = RIDGE_WIDTH_LENGTH/2 + distanceC + 0.5;
+    double distance_virtual_line  = RIDGE_WIDTH_LENGTH/2 + distanceC + SAFE_OBSTACLE_THR;
+    if(!SIDE_PASS_CHOOSE){
+        distance_virtual_line = RIDGE_WIDTH_LENGTH/2 + distanceD + SAFE_OBSTACLE_THR;
+    }
     reference_pts2 = common::commonMath::computePtsToOrderedDirectionMove(
             reference_pts2_temp,
             vector_vertical_line,
@@ -204,27 +215,26 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
      line5.push_back(reference_pts2[line4size/2]);
      line5.push_back(A2);
 
-     reference_pts4 = common::commonMath::densify2(line4,10);
-     reference_pts5 = common::commonMath::densify2(line5,10);
+     reference_pts4 = common::commonMath::densify2(line4,5);
+     reference_pts5 = common::commonMath::densify2(line5,5);
 
      //整合所有参考线
      std::vector<polygonPoint>  reference_allpts;
      for(auto i : reference_pts1){
          reference_allpts.push_back(i);
      }
-     for(auto i : reference_pts4){
-         reference_allpts.push_back(i);
+//     for(int i = 0;i < reference_pts4.size()-1;i++){
+//         reference_allpts.push_back(reference_pts4[i]);
+//     }
+     for(int i = 0;i < reference_pts2.size() ;i++){
+         reference_allpts.push_back(reference_pts2[i]);
      }
-//     for(auto i : reference_pts2){
+//     for(auto i : reference_pts5){
 //         reference_allpts.push_back(i);
 //     }
-     for(auto i : reference_pts5){
-         reference_allpts.push_back(i);
-     }
      for(auto i : reference_pts3){
          reference_allpts.push_back(i);
      }
-
 
 
      //参考线平滑算法
@@ -235,71 +245,248 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
          std::pair<double,double> temp(i.x,i.y);
          transd_referencePts.push_back(temp);
      }
-    smoothalgorithm::femSmoothManager  smoothFem(transd_referencePts);
 
-    smoothFem.initiate();
+     smoothalgorithm::femSmoothManager  smoothFem(transd_referencePts);
 
-    auto consider_static_obstacles_pts = smoothFem.get_smoothed_pts();
+     smoothFem.initiate();
 
-    //pjpo处理
-    //针对参考线A3到A4初始参考线进行差值
-    std::vector<polygonPoint>   line_A34;
-    line_A34.push_back(A3);
-    line_A34.push_back(A4);
-    std::vector<polygonPoint> inter_pts =  common::commonMath::densify2(line_A34,80);
-    //计算点位初始值
-    std::vector<std::pair<double,double>> trans_pts ;
-    for(auto i : inter_pts){
-        trans_pts.push_back({i.x,i.y});
-    }
+     auto consider_static_obstacles_pts = smoothFem.get_smoothed_pts();
 
-    std::vector<double> headings;
-    std::vector<double> accumulated_s;
-    std::vector<double> kappas;
-    std::vector<double> dkappas;
+     if(PJPO_USE_SWITCH) {
+         //pjpo处理
+         //针对参考线A3到A4初始参考线进行差值
+         std::vector<polygonPoint> line_A34;
+         //line_A34.push_back(A3);
+         //line_A34.push_back(A4);
+         std::vector<polygonPoint> inter_pts;
+         for (auto i : reference_pts1) {
+             inter_pts.push_back(i);
+         }
 
-    computePathProfileInfo::ComputePathProfile(
-                                              trans_pts,
-                                              &headings,
-                                              &accumulated_s,
-                                              &kappas,
-                                              &dkappas);
-    std::vector<slPoint> reference_sl_pts;
-    for(int i = 0;i < trans_pts.size();i++){
-        slPoint tempPt;
-        tempPt.x = trans_pts[i].first;
-        tempPt.y = trans_pts[i].second;
-        tempPt.heading = headings[i];
-        tempPt.s_ = accumulated_s[i];
-        reference_sl_pts.push_back(tempPt);
-    }
+         for (auto i: reference_pts2_temp) {
+             inter_pts.push_back(i);
+         }
+
+         for (auto i: reference_pts3) {
+             inter_pts.push_back(i);
+         }
+
+         //计算点位初始值
+         std::vector<std::pair<double, double>> trans_pts;
+         for (auto i : inter_pts) {
+             trans_pts.push_back({i.x, i.y});
+         }
+
+         std::vector<double> headings;
+         std::vector<double> accumulated_s;
+         std::vector<double> kappas;
+         std::vector<double> dkappas;
+
+         computePathProfileInfo::ComputePathProfile(
+                 trans_pts,
+                 &headings,
+                 &accumulated_s,
+                 &kappas,
+                 &dkappas);
 
 
-    //将平滑过的参考线转到sl坐标系下
-//    std::vector<std::pair<double,double>>  transd_reference_sl_pts;
+         //将平滑过的参考线转到sl坐标系下
+         std::vector<std::pair<double, double>> transd_reference_sl_pts;
 
 
-//    for(auto i : consider_static_obstacles_pts){
-//        //从原始参考线中找到距离最近的那个点
-//
+         //计算中线的路径信息
+         DiscretizedPath center_refer_path;
+         std::vector<polygonPoint> temp_storage_ori_path;
+         for (int i = 0; i < inter_pts.size(); i++) {
+             PathPoint temp(
+                     inter_pts[i].x,
+                     inter_pts[i].y,
+                     0,
+                     accumulated_s[i],
+                     headings[i],
+                     headings[i],
+                     kappas[i],
+                     dkappas[i],
+                     0);
+             center_refer_path.push_back(temp);
+         }
+
+
+         //计算带有障碍物的上下界
+         std::vector<double> compute_l_path;
+         for (int i = 0; i < consider_static_obstacles_pts.size(); i++) {
+             math::Vec2d temp(consider_static_obstacles_pts[i].x,
+                              consider_static_obstacles_pts[i].y);
+             double accumulate_s;
+             double lateral;
+             double min_distance;
+             int min_index;
+             center_refer_path.GetProjection(temp,
+                                             &accumulate_s,
+                                             &lateral,
+                                             &min_distance,
+                                             &min_index);
+             compute_l_path.push_back(lateral);
+         }
+
+         //得到偏移的参考线之后，需要和原始参考线的点位一一对应
+
+         //调用pjpo算法实现sl坐标系下路径优化
+
+         std::vector<double> opt_l;
+         std::vector<double> opt_dl;
+         std::vector<double> opt_ddl;
+
+         std::array<double, 3> start_state = {
+                 0,
+                 0,
+                 0};
+
+         std::array<double, 5> w = {
+                 1000.0,
+                 1.0,
+                 1.0,
+                 1,
+                 100000
+         };
+
+         std::array<double, 3> end_state = {
+                 0,
+                 0,
+                 0
+         };
+
+         std::cout << "the refer 1 size is : " << compute_l_path.size() << std::endl;
+         std::cout << "the center size is : " << center_refer_path.size() << std::endl;
+         std::cout << "the center size is : " << accumulated_s.size() << std::endl;
+
+         std::vector<std::pair<double, double>> boundary(center_refer_path.size());
+
+         double lower_bound = -3;
+         double upper_bound = 3;
+
+//    for (int i = 0; i < boundary.size(); i++) {
+//        boundary[i] = std::make_pair(lower_bound,upper_bound);
 //    }
-//    for(auto i : reference_sl_pts){
-//        transd_reference_sl_pts  = FrenetConverter::cartesianToFrenet1D(
-//               i.s_,
-//               i.x,
-//               i.y,
-//               i.heading,
-//
-//        );
-//    }
 
 
+         for (int i = 0; i < boundary.size(); i++) {
+             lower_bound = -7;
+             upper_bound = 7;
+             boundary[i] = std::make_pair(lower_bound, upper_bound);  // 修改第i个元素的值
+         }
 
 
+         //计算ddl的边界条件
+         std::vector<double> headings_M;
+         std::vector<double> accumulated_s_M;
+         std::vector<double> kappas_M;
+         std::vector<double> dkappas_M;
+
+         computePathProfileInfo::ComputePathProfile(
+                 trans_pts,
+                 &headings_M,
+                 &accumulated_s_M,
+                 &kappas_M,
+                 &dkappas_M);
+
+         std::vector<std::pair<double, double>> ddl_bounds;
+         const double lat_acc_bound =
+                 std::tan(MAX_STEER_ANGLE * M_PI / 180.0) /
+                 WHEEL_BASE;
+         for (int i = 0; i < consider_static_obstacles_pts.size(); i++) {
+             double kappa = kappas_M[i];
+             ddl_bounds.emplace_back(
+                     -lat_acc_bound - kappa,
+                     lat_acc_bound + kappa);
+         }
 
 
-    std::cout << "the bbbbb 2" <<  boost::geometry::wkt(result) << std::endl;
+         customPJPO customPJPOM;
+
+         auto path_reference_l = compute_l_path;
+         if (customPJPOM.optimizePath(start_state,
+                                      end_state,
+                                      path_reference_l,
+                                      true,
+                                      boundary,
+                                      ddl_bounds,
+                                      w,
+                                      4000,
+                                      &opt_l,
+                                      &opt_dl,
+                                      &opt_ddl)) {
+             auto optm_l = opt_l;
+             for (auto i : optm_l) {
+                 std::cout << i;
+             }
+             std::cout << std::endl;
+             std::cout << optm_l.size() << std::endl;
+
+         }
+
+         //将对应的s.l转到大地坐标系下
+         std::vector<polygonPoint> storage_path;
+         for (int i = 0; i < center_refer_path.size(); i++) {
+             polygonPoint temp;
+             center_refer_path.SLToXY(
+                     accumulated_s[i],
+                     opt_l[i],
+                     temp);
+             storage_path.push_back(temp);
+         }
+
+         std::ofstream test_PJPO_path;
+         test_PJPO_path.open("/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path.txt", std::ios::out);
+         for (auto i : storage_path) {
+             test_PJPO_path << " " << i.x;
+         }
+
+         test_PJPO_path << std::endl;
+         for (auto j : storage_path) {
+             test_PJPO_path << " " << j.y;
+         }
+
+         test_PJPO_path << std::endl;
+
+         std::cout << "the bbbbb 2" << boost::geometry::wkt(result) << std::endl;
 
 
+         std::vector<double> headings1;
+         std::vector<double> accumulated_s1;
+         std::vector<double> kappas1;
+         std::vector<double> dkappas1;
+
+         std::vector<std::pair<double, double>> trans_storage_path;
+
+         for (auto i : storage_path) {
+             trans_storage_path.push_back({i.x, i.y});
+         }
+         computePathProfileInfo::ComputePathProfile(
+                 trans_storage_path,
+                 &headings1,
+                 &accumulated_s1,
+                 &kappas1,
+                 &dkappas1);
+
+
+         std::ofstream test_pjpo_curve;
+         test_pjpo_curve.open("/home/zzm/Desktop/test_path_figure-main/src/test_pjpo_curve.txt", std::ios::out);
+         for (auto i : kappas1) {
+             test_pjpo_curve << " " << i;
+         }
+         test_pjpo_curve << std::endl;
+
+
+         for (int im = 1; im < storage_path.size(); im++) {
+             tractorPolygonShow tractorPolygonShowInstance(im,
+                                                           storage_path);
+             auto tractorHeadPts = tractorPolygonShowInstance.getTractorPolygonHeadPts();
+             auto tractorTailPts = tractorPolygonShowInstance.getTractorPolygonTailPts();
+             std::string test1 = "/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt";
+             auto &tractorHeadPtsStream = common::Singleton::GetInstance<tractorPolyPrint>(test1);
+             tractorHeadPtsStream.writePts(tractorHeadPts, tractorTailPts);
+         }
+     }
 
 }

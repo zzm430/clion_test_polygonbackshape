@@ -67,6 +67,10 @@ public:
         y = value_y;
     }
 
+    void set_heading(double heading){
+        heading_ = heading;
+    }
+
     void set_theta(double theta){
         theta_ = theta;
     }
@@ -98,11 +102,43 @@ public:
     double get_dkappa(){
         return dkappa_;
     }
+
+    double s()  const {
+        return s_;
+    }
+
+    double kappa() const {
+        return kappa_;
+    }
+
+    double theta() const {
+        return theta_;
+    }
+
+    double dkappa()  const {
+        return dkappa_;
+    }
+
+    double ddkappa() const {
+        return ddkappa_;
+    }
+
+    double heading() const {
+        return heading_;
+    }
+
+
+
+
 private:
+
     double theta_;
     double s_;
     double kappa_;
     double dkappa_;
+    double ddkappa_;
+    double heading_;
+
 };
 
 struct polyPointHash{
