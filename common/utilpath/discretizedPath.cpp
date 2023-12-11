@@ -185,7 +185,7 @@ bool DiscretizedPath::SLToXY(double s, double l, polygonPoint& xy_point) {
     return true;
 }
 
-//
+
 //data::Point2D DiscretizedPath::SLToXY(double s,
 //                                      double l,
 //                                      data::PathPoint& ref_pt) {
@@ -195,7 +195,7 @@ bool DiscretizedPath::SLToXY(double s, double l, polygonPoint& xy_point) {
 //    xy_point.y_ = ref_pt.y_ + std::cos(angle) * l;
 //    return xy_point;
 //}
-//
+
 
 PathPoint DiscretizedPath::GetPathPtFromS(double s) const {
 //    LOG_ASSERT(s >= front().s() - 1e-3 && s <= back().s() + 1e-3);
@@ -277,14 +277,14 @@ PathPoint DiscretizedPath::GetPathPtFromS(double s) const {
 //
 //DiscretizedPath::DiscretizedPath(const std::vector<PathPoint>& path_points)
 //        : math::DiscreteMatchHelper<PathPoint>(path_points) {}
-//
-//double DiscretizedPath::Length() const {
-//    if (empty()) {
-//        return 0.0;
-//    }
-//    return back().s() - front().s();
-//}
-//
+
+double DiscretizedPath::Length() const {
+    if (empty()) {
+        return 0.0;
+    }
+    return back().s() - front().s();
+}
+
 //PathPoint DiscretizedPath::Evaluate(double path_s) const {
 //    CHECK(!empty());
 //    auto it_lower = QueryLowerBound(path_s);
@@ -389,29 +389,59 @@ PathPoint DiscretizedPath::GetPathPtFromS(double s) const {
 //    sl_boundary->set_end_l(end_l);
 //    return true;
 //}
-//
-//bool DiscretizedPath::XYToSL(const Point2D& xy_point, SLPoint* sl_point) const {
-//    double s = 0.0, l = 0.0;
-//    auto ok = GetProjection(xy_point, &s, &l);
-//    if (ok) {
-//        sl_point->set_l(l);
-//        sl_point->set_s(s);
-//    }
-//    return ok;
-//}
+
+bool DiscretizedPath::GetSlBoundary(const std::vector<polygonPoint>& polygon,
+                   SLBoundary* slBoundary) const{
+    double start_s(std::numeric_limits<double>::max());
+    double end_s(std::numeric_limits<double>::lowest());
+    double start_l(std::numeric_limits<double>::max());
+    double end_l(std::numeric_limits<double>::lowest());
+
+    std::vector<slPoint>  temp_slPts;
+    for (const auto& point : polygon) {
+        slPoint sl_point;
+        if (!XYToSL(math::Vec2d(point.x,point.y), &sl_point)) return false;
+
+        temp_slPts.push_back(sl_point);
+        start_s = std::fmin(start_s, sl_point.s());
+        end_s = std::fmax(end_s, sl_point.s());
+        start_l = std::fmin(start_l, sl_point.l());
+        end_l = std::fmax(end_l, sl_point.l());
+    }
+
+    slBoundary->set_start_s(start_s);
+    slBoundary->set_end_s(end_s);
+    slBoundary->set_start_l(start_l);
+    slBoundary->set_end_l(end_l);
+    slBoundary->set_boundary_pts(temp_slPts);
+
+    return true;
+}
 
 
-//bool DiscretizedPath::GetProjection(const Point2D& point,
-//                                    double* accumulate_s,
-//                                    double* lateral) const {
-//    double min_distance = 0.0;
-//    int min_index = 0;
-//    return GetProjection(math::Vec2d(point.x(), point.y()),
-//                         accumulate_s,
-//                         lateral,
-//                         &min_distance,
-//                         &min_index);
-//}
+
+bool DiscretizedPath::XYToSL(const math::Vec2d& xy_point, slPoint* sl_point) const {
+    double s = 0.0, l = 0.0;
+    auto ok = GetProjection(xy_point, &s, &l);
+    if (ok) {
+        sl_point->set_l(l);
+        sl_point->set_s(s);
+    }
+    return ok;
+}
+
+
+bool DiscretizedPath::GetProjection(const math::Vec2d& point,
+                                    double* accumulate_s,
+                                    double* lateral) const {
+    double min_distance = 0.0;
+    int min_index = 0;
+    return GetProjection(math::Vec2d(point.x(), point.y()),
+                         accumulate_s,
+                         lateral,
+                         &min_distance,
+                         &min_index);
+}
 
 
 //计算一个点距离一些路径点组成的线段集最近的距离带方向，左正右负

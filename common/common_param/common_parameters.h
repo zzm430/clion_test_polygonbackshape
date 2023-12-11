@@ -99,7 +99,9 @@
 #define A4_DISTANCE        12
 
 #define VIRTUAL_CENTROID_LINE 4
-#define SIDE_PASS_CHOOSE   true  //true逆时针为正
+#define SIDE_PASS_CHOOSE   false     //true逆时针为正
+
+#define DIFF_PTS           0.6
 
 
 //static obstale manager
@@ -112,6 +114,8 @@
 #define WHEEL_BASE        3.35
 #define PJPO_USE_SWITCH   true
 #define DELTA_S           0.6
+#define LOWER_BOUND       -5
+#define UPPER_BOUND        5
 
 
 

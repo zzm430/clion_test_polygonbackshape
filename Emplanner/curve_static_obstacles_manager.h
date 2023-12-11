@@ -23,6 +23,10 @@ public:
     curveStaticObstaclesManager(std::vector<std::vector<polygonPoint>>  & originPath,
                                 std::vector<std::vector<polygonPoint>> &polygonPts);
 
+    bool curveGeneratePathFromDiscretePts(
+            const DiscretizedPath& anchor_pts,
+            DiscretizedPath& pathProfile);
+
 
 private:
     std::vector<std::vector<polygonPoint>>  three_custom_referencePts_;  //三段定制参考线

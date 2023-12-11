@@ -64,7 +64,7 @@ add_executable(polygonbackshape
               smooth/customFemAlgorithm/fem_pos_smooth_manager.h
               Emplanner/curve_static_obstacles_manager.h Emplanner/curve_static_obstacles_manager.cpp common/utilpath/path_anchorPoint.h
               smooth/customFemAlgorithm/fem_pos_smooth_manager.cpp
-              smooth/customFemAlgorithm/fem_pos_deviation_smoother.cc smooth/customFemAlgorithm/fem_pos_deviation_smoother.h common/plot/computePathProfile.h common/plot/computePathProfile.cpp common/utilpath/path_slPoint.h common/math/algebra.h common/math/vec_2d.h common/math/vec_2d.cpp common/math/algebra.cpp common/utilpath/discrete_match_helper.h common/math/line_segment_2d.h common/math/line_segment_2d.cpp common/utilpath/discretizedPath.h common/utilpath/discretizedPath.cpp common/utilpath/point.h common/utilpath/point.cpp)
+              smooth/customFemAlgorithm/fem_pos_deviation_smoother.cc smooth/customFemAlgorithm/fem_pos_deviation_smoother.h common/plot/computePathProfile.h common/plot/computePathProfile.cpp common/utilpath/path_slPoint.h common/math/algebra.h common/math/vec_2d.h common/math/vec_2d.cpp common/math/algebra.cpp common/utilpath/discrete_match_helper.h common/math/line_segment_2d.h common/math/line_segment_2d.cpp common/utilpath/discretizedPath.h common/utilpath/discretizedPath.cpp common/utilpath/point.h common/utilpath/point.cpp common/utilpath/pt_slboundary.h)
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
 
 target_link_libraries(polygonbackshape ${Boost_LIBRARIES})

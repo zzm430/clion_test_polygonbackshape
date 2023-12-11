@@ -25,9 +25,14 @@ testObstacleOriginLine_y = testObstacleOriginLine[1]
 
 tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
 
-test_PJPO_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path.txt')
+test_PJPO_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt')
 test_PJPO_path_x = test_PJPO_path[0]
 test_PJPO_path_y = test_PJPO_path[1]
+
+
+pathProfile1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/pathProfile1.txt')
+pathProfile1_x = pathProfile1[0]
+pathProfile1_y = pathProfile1[1]
 
 # 读取txt文件中的多边形点集
 with open('testOriginPolyBoost.txt') as g:
@@ -50,30 +55,31 @@ y_values1 = [float(point.split()[1]) for point in polygon_points1]
 f=plt.figure();
 ax=f.add_subplot(111)
 ax.plot(x_values,y_values,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(testfemSmooth_x,testfemSmooth_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
+# ax.plot(testfemSmooth_x,testfemSmooth_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1,markersize=1)
 
 ax.plot(testOriginPoly_x,testOriginPoly_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(testObstacleOriginLine_x,testObstacleOriginLine_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(testVirtualLIne_x,testVirtualLIne_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=4)
-ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=4)
+ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.4,markersize=4)
+ax.plot(pathProfile1_x,pathProfile1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
 
-# for m in range(len(tractorHeadPtsStream111) - 1):
-#     if m % 2 == 0:
-#         coords11 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4)]
-#         coords12 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4, 8)]
-#         polygon1 = Polygon(coords12, closed=True, fill=False, edgecolor='green', alpha=0.9, linewidth=1)
-#         polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor='gray', alpha=0.9, linewidth=1)
-#         # 设置透明度为 0.5
-#         ax.add_patch(polygon1)
-#         ax.add_patch(polygonf1)
+for m in range(len(tractorHeadPtsStream111) - 1):
+    if m % 2 == 0:
+        coords11 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4)]
+        coords12 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4, 8)]
+        polygon1 = Polygon(coords12, closed=True, fill=False, edgecolor='green', alpha=0.9, linewidth=1)
+        polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor='gray', alpha=0.9, linewidth=1)
+        # 设置透明度为 0.5
+        ax.add_patch(polygon1)
+        ax.add_patch(polygonf1)
 
 # ax.plot(referenceLine2_x,referenceLine2_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 
 print("x values:", x_values)
 print("y values:", y_values)
 
-for a, b in zip(testObstacleOriginLine_x,testObstacleOriginLine_y):
-        plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
+# for a, b in zip(pathProfile1_x,pathProfile1_y):
+#         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
 plt.axis('equal')  # 让横坐标间隔等于纵坐标间隔
 

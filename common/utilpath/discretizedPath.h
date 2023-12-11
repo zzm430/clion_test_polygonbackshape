@@ -9,6 +9,7 @@
 #include "common/utilpath/discrete_match_helper.h"
 #include "common/utilpath/path_polygonPoint.h"
 #include "common/math/line_segment_2d.h"
+#include "common/utilpath/pt_slboundary.h"
 
 struct PathPoint   {
     PathPoint();
@@ -112,7 +113,6 @@ private:
     double dkappa_;
     double ddkappa_;
 
-
 private:
 
 };
@@ -126,7 +126,7 @@ public:
 
 //    explicit DiscretizedPath(std::vector<polygonPoint>& path_points);
 
-//    double Length() const;
+    double Length() const;
 //
 //    data::PathPoint Evaluate(double path_s) const;
 //
@@ -152,11 +152,11 @@ public:
 //
 //    data::Point2D SLToXY(double s, double l, data::PathPoint& ref_pt);
 //
-//    bool XYToSL(const Point2D& xy_point, SLPoint* sl_point) const;
-//
-//    bool GetProjection(const Point2D& point,
-//                       double* accumulate_s,
-//                       double* lateral) const;
+    bool XYToSL(const math::Vec2d& xy_point, slPoint* sl_point) const;
+
+    bool GetProjection(const math::Vec2d& point,
+                       double* accumulate_s,
+                       double* lateral) const;
     bool GetProjection(const math::Vec2d& point,
                        double* accumulate_s,
                        double* lateral,
@@ -184,6 +184,8 @@ public:
 //
 //    bool GetSLBoundary(const std::vector<Point2D>& pts,
 //                       SLBoundary* sl_boundary) const;
+      bool GetSlBoundary(const std::vector<polygonPoint>& polygon,
+                         SLBoundary* slBoundary) const;
 
 protected:
 //    std::vector<data::PathPoint>::const_iterator QueryLowerBound(

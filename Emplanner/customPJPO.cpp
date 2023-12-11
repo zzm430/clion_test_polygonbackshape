@@ -127,7 +127,7 @@ bool customPJPO::optimizePath(
         ){
 
     auto k_num_knots = boundary.size();
-    auto delta_s = 0.6;
+    auto delta_s = DIFF_PTS;
 
     piecewiseJerkPathAlgorithm piecewiseJerkPathAlgorithm_inst(
             k_num_knots,
