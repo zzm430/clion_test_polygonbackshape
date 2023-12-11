@@ -27,6 +27,25 @@ public:
             const DiscretizedPath& anchor_pts,
             DiscretizedPath& pathProfile);
 
+    void computeOriginReferenceLinePts(  const polygon& obstacle_polygon,
+                                         const polygonPoint&  centroid_pt,
+                                         std::vector<polygonPoint> & reference_pts1,
+                                         std::vector<polygonPoint> & reference_pts2,
+                                         std::vector<polygonPoint> & reference_pts3,
+                                         std::vector<polygonPoint> & reference_allpts);
+    void computeOriginReferenceCenterLinePts(  const polygon& obstacle_polygon,
+                                         const polygonPoint&  centroid_pt,
+                                         std::vector<polygonPoint> & reference_pts1,
+                                         std::vector<polygonPoint> & reference_pts2,
+                                         std::vector<polygonPoint> & reference_pts3,
+                                         std::vector<polygonPoint> & reference_allpts);
+
+    void computeObstacleCrashCheck(
+                          const  std::vector<std::vector<polygonPoint>> &polygonPts,
+                          polygon& obstacle_polygon,
+                          polygonPoint & centroid_pt);
+
+
 
 private:
     std::vector<std::vector<polygonPoint>>  three_custom_referencePts_;  //三段定制参考线

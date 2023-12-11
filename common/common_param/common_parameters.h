@@ -42,8 +42,8 @@
 #define DCRR                      0.8        //distance center of rotation to rear hitch
 #define DCRI                      0.8       //车体相关参数1,distance center of rotation to implement
 #define DWA                       0.3       //车体相关参数2,distance to working area
-#define LIM                       0.8       //implement length
-#define LWORK                     0.5       //车体相关参数3, working length
+#define LIM                       3.8       //implement length
+#define LWORK                     3.5       //车体相关参数3, working length
 #define WIM                       4         //Implement width
 #define WWORK                     4         //垄宽,working width
 #define OFFIM                     0         //implement offset
@@ -53,6 +53,8 @@
 #define DIS_2                     1.6       //包含农具到车后轮中心的距离
 #define TRACTOR_WIDTH             1         //拖拉机车头宽度
 #define TRACTOR_HEIGH             2         //拖拉机车头长度
+
+#define HEAD_WHEELBASE            2.1
 
 //FT-CPA-CV
 #define DNCZ                      0.1      //the distance for the no-crop zone，对于弯道属于part1、part2、part3起重要作用
@@ -97,33 +99,28 @@
 #define A3_DISTANCE        12
 #define A2_DISTANCE        6
 #define A4_DISTANCE        12
+#define REFERENCE_DIFF_NUMBER 40
 
 #define VIRTUAL_CENTROID_LINE 4
-#define SIDE_PASS_CHOOSE   false     //true逆时针为正
+#define SIDE_PASS_CHOOSE   true     //true逆时针为正
 
 #define DIFF_PTS           0.6
-
 
 //static obstale manager
 #define  DEBUG_STATIC_OBSTACLE
 #define  SAFE_OBSTACLE_THR  0.3
-
+#define  USE_REFERENCE_CENTER_LINE false
 
 //PJPO算法
-#define MAX_STEER_ANGLE   38
-#define WHEEL_BASE        3.35
+#define MAX_STEER_ANGLE   38            //最大转角
+#define WHEEL_BASE        3.35          //前后轮轴距
 #define PJPO_USE_SWITCH   true
 #define DELTA_S           0.6
 #define LOWER_BOUND       -5
 #define UPPER_BOUND        5
-
-
-
-
-
-
-
-
+#define MAX_TRANSVERSE_ACCELETATION  4   //最大侧向加速度
+#define STEER_GEAR_RATIO   22.4          //传动比
+#define CURVE_VEL          1             //转弯时参考速度
 
 
 #endif // COMMON_PARAMETERS_H

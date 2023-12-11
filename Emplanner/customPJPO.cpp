@@ -167,13 +167,13 @@ bool customPJPO::optimizePath(
     piecewiseJerkPathAlgorithm_inst.set_scale_factor({1, 10.0, 1000.0});  //重要参数
 
     piecewiseJerkPathAlgorithm_inst.set_x_bounds(boundary);
-    piecewiseJerkPathAlgorithm_inst.set_dx_bounds(-1.6, 1.6);
+    piecewiseJerkPathAlgorithm_inst.set_dx_bounds(-2, 2);
     piecewiseJerkPathAlgorithm_inst.set_ddx_bounds(ddl_boundary);
 
-    const double axis_distance = 3 ;
-    const double max_yaw_rate = 8.5 / 22.4 / 2.0;
+    const double axis_distance = HEAD_WHEELBASE ;
+    const double max_yaw_rate = MAX_TRANSVERSE_ACCELETATION / STEER_GEAR_RATIO / 2.0;
      double jerk_bound = EstimateJerkBoundary(
-            std::fmax(init_state[1], 0.3), axis_distance, max_yaw_rate);
+            std::fmax(init_state[1], CURVE_VEL), axis_distance, max_yaw_rate);
 
     piecewiseJerkPathAlgorithm_inst.set_dddx_bound(-jerk_bound, jerk_bound);
     bool success = false;
@@ -205,10 +205,12 @@ double customPJPO::GaussianWeighting(double x,
     return Gaussian(u, std, x_updated);
 }
 
+
 double customPJPO::Gaussian(double u, double std, double x) {
     return (1.0 / std::sqrt(2 * M_PI * std * std)) *
            std::exp(-(x - u) * (x - u) / (2 * std * std));
 }
+
 
 double customPJPO::EstimateJerkBoundary(double vehicle_speed,
                                   double axis_distance,
