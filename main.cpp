@@ -71,7 +71,6 @@ int main(int argc, char **argv) {
     origin_polygon.close();
 
     aiforce::Route_Planning::pathPolygonPlan   instance_pathPolygonPlan;
-//    instance_pathPolygonPlan.computeNarrowPolygons(narrowingPolygonPoints);
     instance_pathPolygonPlan.initialize();
     instance_pathPolygonPlan.cgalNarrowPolygons(narrowingPolygonPoints);
 
@@ -79,55 +78,11 @@ int main(int argc, char **argv) {
     temp_point.x = (narrowingPolygonPoints[0].x + narrowingPolygonPoints[1].x)/2;
     temp_point.y = (narrowingPolygonPoints[0].y + narrowingPolygonPoints[1].y)/2;
 
-//    auto points = instance_pathPolygonPlan.getNarrowPolygonPoints();
-//    std::ofstream  polyps;
-//    polyps.open("/home/zzm/Desktop/test_path_figure-main/src/narrow_points.txt",std::ios::out);
-//    int pt_number = points.size();
-//    for(int i  = 0;i < pt_number;i++){
-//        for(auto j : points[i]){
-//            polyps << " " << j.x;
-//        }
-//    }
-//    polyps << std::endl;
-//    for(int i = 0; i < pt_number;i++){
-//        for(auto j : points[i]){
-//            polyps << " " << j.y;
-//        }
-//    }
-//    polyps << std::endl;
-//    polyps.close();
-
-    //将计算得到的回字形入口线段延长一段距离
-    //auto real_line_extend = common::commonMath::extendLineLength(real_line,0.5);
-    //计算平移后的向量和内缩多边形们的交点
-
-//    instance_pathPolygonPlan.updatePolygonPointsIncrease();
-//    instance_pathPolygonPlan.updatePolygonPointsSequence1();
-//    auto m = instance_pathPolygonPlan.getMiddlePointsPolygon();
 
     instance_pathPolygonPlan.cgalUpdatePolygonPointsINcrease();
     instance_pathPolygonPlan.cgalUpatePolygonPointsSequence();
     instance_pathPolygonPlan.cgalComputebackShapeKeypoints();
 
-//    std::ofstream  increaseNodes;
-//    increaseNodes.open("/home/zzm/Desktop/test_path_figure-main/src/increaseNodes.txt",std::ios::out);
-//    for(auto it : m ){
-//        for(auto j : it){
-//            increaseNodes << " " << j.x ;
-//        }
-//    }
-//    increaseNodes << std::endl;
-//    for(auto it : m){
-//        for(auto j : it){
-//            increaseNodes << " " << j.y;
-//        }
-//    }
-//    increaseNodes << std::endl;
-//    increaseNodes.close();
-
-//    instance_pathPolygonPlan.computebackShapeKeypoints();
-//    instance_pathPolygonPlan.filteredBackShapeKeyPoints();
-//    instance_pathPolygonPlan.computeKeypointsRelativeInfo();
 
     auto keypoints_m = instance_pathPolygonPlan.cgalGetBackShapeKeyPoints();
     LOG(INFO) << "the all ridge number is : " << keypoints_m.size();
