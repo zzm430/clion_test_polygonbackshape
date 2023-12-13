@@ -141,7 +141,6 @@ namespace  smoothalgorithm{
 
     }
 
-
     std::vector<polygonPoint> femSmoothManager::get_smoothed_pts(){
         return last_smoothed_pts_;
     }

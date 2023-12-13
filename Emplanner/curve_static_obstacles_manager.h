@@ -14,6 +14,8 @@
 #include "Emplanner/frenet_converter.h"
 #include "common/utilpath/discretizedPath.h"
 #include "Emplanner/customPJPO.h"
+#include <cmath>
+#include <algorithm>
 
 class curveStaticObstaclesManager{
 public:
@@ -29,26 +31,51 @@ public:
 
     void computeOriginReferenceLinePts(  const polygon& obstacle_polygon,
                                          const polygonPoint&  centroid_pt,
+                                         const std::vector<polygonPoint> & path_line,
                                          std::vector<polygonPoint> & reference_pts1,
                                          std::vector<polygonPoint> & reference_pts2,
                                          std::vector<polygonPoint> & reference_pts3,
                                          std::vector<polygonPoint> & reference_allpts);
-    void computeOriginReferenceCenterLinePts(  const polygon& obstacle_polygon,
+    void computeOriginReferenceCenterLinePts(
+                                         const polygon& obstacle_polygon,
                                          const polygonPoint&  centroid_pt,
+                                         const std::vector<polygonPoint> & path_line,
                                          std::vector<polygonPoint> & reference_pts1,
                                          std::vector<polygonPoint> & reference_pts2,
                                          std::vector<polygonPoint> & reference_pts3,
                                          std::vector<polygonPoint> & reference_allpts);
 
-    void computeObstacleCrashCheck(
+    bool computeObstacleCrashCheck(
                           const  std::vector<std::vector<polygonPoint>> &polygonPts,
+                          const  std::vector<polygonPoint> & path_line,
                           polygon& obstacle_polygon,
                           polygonPoint & centroid_pt);
 
+    std::vector<polygonPoint> computeReferenceLine(
+            const polygon& obstacle_polygon,
+            const polygonPoint & centroid_pt,
+            const std::vector<polygonPoint> & path_line);
 
+    void pjpoInitialize(
+            const std::vector<polygonPoint> & consider_static_obstacles_pts,
+            DiscretizedPath & pathProfile);
+
+    void pjpodealSLBoundary(
+            const  DiscretizedPath & pathProfile,
+            const  std::vector<polygonPoint> orderedPolygon,
+            std::vector<std::pair<double, double>> * boundary);
+
+    std::vector<polygonPoint>  getCurvePath(const polygonPoint orderedPt);
+
+    void dealPJPO(
+            const std::vector<polygonPoint> & consider_static_obstacles_pts,
+            const polygon & obstacle_polygon,
+            const polygonPoint & centroid_pt,
+            const std::vector<polygonPoint> &path_line);
 
 private:
     std::vector<std::vector<polygonPoint>>  three_custom_referencePts_;  //三段定制参考线
+    std::unordered_map<polygonPoint,std::vector<polygonPoint>,polyPointHash>  storage_last_path_;  //最终path输出
 
 };
 #endif //POLYGONBACKSHAPE_CURVE_STATIC_OBSTACLES_MANAGER_H

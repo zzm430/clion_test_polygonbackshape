@@ -3921,21 +3921,36 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
 
     //此处可直接完成对应的弯道处理
     //画一个圆
-    polygonPoint circle_test(18,90);
-    std::vector<polygonPoint>  circle_polygon;
+    polygonPoint circle_test(18,90),circle_test1(200,480),circle_test2(175,280),circle_test3(173,30);
+    std::vector<polygonPoint>  circle_polygon,circle_polygon1,circle_polygon2,circle_polygon3;
     double invertal_dis = 2 * M_PI / 30;
-    for(int i = 0;i < 30;i++){
-        polygonPoint temp;
+    for( int i = 0;i < 30 ; i++ ){
+        polygonPoint temp,temp1,temp2,temp3;
         temp.x = circle_test.x + 1 * cos(invertal_dis * i);
         temp.y = circle_test.y + 1 * sin(invertal_dis * i);
+        temp1.x = circle_test1.x + 1 * cos(invertal_dis * i);
+        temp1.y = circle_test1.y + 1 * sin(invertal_dis * i);
+        temp2.x = circle_test2.x + 1 * cos(invertal_dis * i);
+        temp2.y = circle_test2.y + 1 * sin(invertal_dis * i);
+        temp3.x = circle_test3.x + 1 * cos(invertal_dis * i);
+        temp3.y = circle_test3.y + 1 * sin(invertal_dis * i);
         circle_polygon.push_back(temp);
+        circle_polygon1.push_back(temp1);
+        circle_polygon2.push_back(temp2);
+        circle_polygon3.push_back(temp3);
     }
     circle_polygon.push_back(circle_polygon[0]);
+    circle_polygon1.push_back(circle_polygon1[0]);
+    circle_polygon2.push_back(circle_polygon2[0]);
+    circle_polygon3.push_back(circle_polygon3[0]);
     std::vector<std::vector<polygonPoint>> obstacles_polygon;
     obstacles_polygon.push_back(circle_polygon);
+    obstacles_polygon.push_back(circle_polygon1);
+    obstacles_polygon.push_back(circle_polygon2);
+    obstacles_polygon.push_back(circle_polygon3);
 
     std::ofstream   testOriginPoly;
-    testOriginPoly.open("/home/zzm/Desktop/test_path_figure-main/src/testOriginPoly.txt",std::ios::out);
+    testOriginPoly.open("/home/zzm/Desktop/test_path_figure-main/src/testOriginPoly1.txt",std::ios::out);
     for(auto poly : obstacles_polygon){
         for(auto pt : poly){
             testOriginPoly << " " << pt.x ;
@@ -3947,6 +3962,24 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
         testOriginPoly << std::endl;
     }
     testOriginPoly.close();
+
+    //障碍物可视化
+    std::ofstream obstaclesShow1;
+    obstaclesShow1.open("/home/zzm/Desktop/test_path_figure-main/src/obstaclesShow1.txt",std::ios::out);
+    if(!obstaclesShow1){
+        std::cout << "ERRRRRRRRRRRRRRRRRRRRRRRRR" << std::endl;
+    }
+    for(int  i  = 0; i < obstacles_polygon.size();i++){
+        for(int j = 0 ;j < obstacles_polygon[i].size();j++){
+            if(j != obstacles_polygon[i].size() -1){
+                obstaclesShow1 << obstacles_polygon[i][j].x << " " << obstacles_polygon[i][j].y << ",";
+            }else{
+                obstaclesShow1 << obstacles_polygon[i][j].x << " " << obstacles_polygon[i][j].y;
+            }
+        }
+        obstaclesShow1 << std::endl;
+    }
+    obstaclesShow1.close();
 
     curveStaticObstaclesManager curveStaticObstaclesManager(
                                                    cgalbackShape_keypoints_,

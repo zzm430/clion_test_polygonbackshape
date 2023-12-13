@@ -101,14 +101,15 @@
 #define A4_DISTANCE        12
 #define REFERENCE_DIFF_NUMBER 40
 
-#define VIRTUAL_CENTROID_LINE 4
+#define VIRTUAL_CENTROID_LINE 7
 #define SIDE_PASS_CHOOSE   true     //true逆时针为正
 
 #define DIFF_PTS           0.6
 
 //static obstale manager
 #define  DEBUG_STATIC_OBSTACLE
-#define  SAFE_OBSTACLE_THR  0.3
+#define  SAFE_OBSTACLE_THR  1
+#define  CONSIDER_CARBODY_SAFE_THR 3.5
 #define  USE_REFERENCE_CENTER_LINE false
 
 //PJPO算法
@@ -123,4 +124,4 @@
 #define CURVE_VEL          1             //转弯时参考速度
 
 
-#endif // COMMON_PARAMETERS_H
+#endif    //COMMON_PARAMETERS_H
