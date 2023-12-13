@@ -164,7 +164,7 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
     for(auto i = iss.get()->halfedges_begin();
              i != iss.get()->halfedges_end();
              i++){
-        print_point(i->opposite()->vertex()->point()) ;
+//        print_point(i->opposite()->vertex()->point()) ;
         polygonPoint temp;
         temp.x = i->opposite()->vertex()->point()[0];
         temp.y = i->opposite()->vertex()->point()[1];
@@ -176,21 +176,21 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
         if(i->is_inner_bisector()){
             temp.judge_bisector_ = sideBisector::INNER_BISECTOR;
         }
-        std::cout << "->" ;
-        print_point(i->vertex()->point());
-        std::cout << " " << ( i->is_bisector() ? "bisector" : "contour" ) << std::endl;
+//        std::cout << "->" ;
+//        print_point(i->vertex()->point());
+//        std::cout << " " << ( i->is_bisector() ? "bisector" : "contour" ) << std::endl;
         polygonPoint temdd;
         temdd.x = i->vertex()->point()[0];
         temdd.y = i->vertex()->point()[1];
         storage_polypts.push_back(temp);
         storage_polypts.push_back(temdd);
         if(i->is_inner_bisector()){
-            print_point(i->opposite()->vertex()->point());
+//            print_point(i->opposite()->vertex()->point());
             polygonPoint temp_m;
             temp_m.x = i->opposite()->vertex()->point()[0];
             temp_m.y = i->opposite()->vertex()->point()[1];
-            std::cout << "->";
-            print_point(i->vertex()->point());
+//            std::cout << "->";
+//            print_point(i->vertex()->point());
             polygonPoint temp_n;
             temp_n.x = i->vertex()->point()[0];
             temp_n.y = i->vertex()->point()[1];
@@ -347,22 +347,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
             break;
         }
     }
-//    std::ofstream test_skeleton_4;
-//    test_skeleton_4.open("/home/zzm/Desktop/test_path_figure-main/src/test_skeleton_4.txt",
-//                         std::ios::out);
-//    for(int i  = 0;i < bufferspiltPolysAandBs_[1].size() ;i++){
-//        for(auto j : bufferspiltPolysAandBs_[1][i]){
-//            test_skeleton_4 << " " << j.x;
-//        }
-//    }
-//    test_skeleton_4 << std::endl;
-//    for(int i = 0; i < bufferspiltPolysAandBs_[1].size() ;i++){
-//        for(auto j : bufferspiltPolysAandBs_[1][i]){
-//            test_skeleton_4 << " " << j.y;
-//        }
-//    }
-//    test_skeleton_4 << std::endl;
-//    test_skeleton_4.close();
 
     //计算回字形入口需要的线段们
     computeEntranceLines(points);
@@ -522,9 +506,6 @@ void pathPolygonPlan::cgalNarrowPolygons(std::vector<Point> &points){
                          std::ios::out);
     test_skeleton_3 << std::endl;
     test_skeleton_3.close();
-
-
-    LOG(INFO) <<"the enter here ---------------------------------------!!!!!!!!!!!!!!!!!!!!!!";
 
     std::ofstream   test_111_poly;
     test_111_poly.open("/home/zzm/Desktop/test_path_figure-main/src/test_111_poly.txt",std::ios::out);
