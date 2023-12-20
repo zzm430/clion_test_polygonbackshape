@@ -3902,11 +3902,31 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
 
     //此处可直接完成对应的弯道处理
     //画一个圆
-    polygonPoint circle_test(18,90),circle_test1(200,480),circle_test2(175,280),circle_test3(173,30);
-    std::vector<polygonPoint>  circle_polygon,circle_polygon1,circle_polygon2,circle_polygon3;
+    polygonPoint circle_test(18,90),circle_test1(200,480),
+                 circle_test2(175,280),circle_test3(173,30),
+                 circle_test4(50,160),circle_test5(100,160),
+                 circle_test6(70,230),circle_test7(90,220),circle_test8(110,410),
+                 circle_test9(130,370),circle_test10(180,380),
+                 circle_test11(160,180),circle_test12(120,125),
+                 circle_test13(20,110),circle_test14(40,110),
+                 circle_test15(60,260),circle_test16(45,195),
+                 circle_test17(45,195),circle_test18(52.5,210),
+                 circle_test19(75,370),circle_test20(210,325),
+                 circle_test21(145,450),circle_test22(92,440),
+                 circle_test23(65,110),circle_test24(70,105),
+                 circle_test25(190,225);
+    std::vector<polygonPoint>  circle_polygon,circle_polygon1,circle_polygon2,circle_polygon3,circle_polygon4,circle_polygon5,
+                               circle_polygon6,circle_polygon7,circle_polygon8,circle_polygon9,circle_polygon10,circle_polygon11,
+                               circle_polygon12,circle_polygon13,circle_polygon14,circle_polygon15,
+                               circle_polygon16,circle_polygon17,circle_polygon18,circle_polygon19,
+                               circle_polygon20, circle_polygon21,circle_polygon22,circle_polygon23,circle_polygon24,circle_polygon25;
     double invertal_dis = 2 * M_PI / 30;
     for( int i = 0;i < 30 ; i++ ){
-        polygonPoint temp,temp1,temp2,temp3;
+        polygonPoint temp,temp1,temp2,temp3,temp4,temp5,
+                     temp6,temp7,temp8,temp9,temp10,
+                     temp11,temp12,temp13,temp14,temp15,
+                     temp16,temp17,temp18,temp19,temp20,
+                     temp21,temp22,temp23,temp24,temp25;
         temp.x = circle_test.x + 1 * cos(invertal_dis * i);
         temp.y = circle_test.y + 1 * sin(invertal_dis * i);
         temp1.x = circle_test1.x + 1 * cos(invertal_dis * i);
@@ -3915,20 +3935,132 @@ void pathPolygonPlan::cgalComputebackShapeKeypoints(){
         temp2.y = circle_test2.y + 1 * sin(invertal_dis * i);
         temp3.x = circle_test3.x + 1 * cos(invertal_dis * i);
         temp3.y = circle_test3.y + 1 * sin(invertal_dis * i);
+        temp4.x = circle_test4.x + 1 * cos(invertal_dis * i);
+        temp4.y = circle_test4.y + 1 * sin(invertal_dis * i);
+        temp5.x = circle_test5.x + 1 * cos(invertal_dis * i);
+        temp5.y = circle_test5.y + 1 * sin(invertal_dis * i);
+        temp6.x = circle_test6.x + 1 * cos(invertal_dis * i);
+        temp6.y = circle_test6.y + 1 * sin(invertal_dis * i);
+        temp7.x = circle_test7.x + 1 * cos(invertal_dis * i);
+        temp7.y = circle_test7.y + 1 * sin(invertal_dis * i);
+        temp8.x = circle_test8.x + 1 * cos(invertal_dis * i);
+        temp8.y = circle_test8.y + 1 * sin(invertal_dis * i);
+        temp9.x = circle_test9.x + 1 * cos(invertal_dis * i);
+        temp9.y = circle_test9.y + 1 * sin(invertal_dis * i);
+        temp10.x = circle_test10.x + 1 * cos(invertal_dis * i);
+        temp10.y = circle_test10.y + 1 * sin(invertal_dis * i);
+        temp11.x = circle_test11.x + 1 * cos(invertal_dis * i);
+        temp11.y = circle_test11.y + 1 * sin(invertal_dis * i);
+        temp12.x = circle_test12.x + 1 * cos(invertal_dis * i);
+        temp12.y = circle_test12.y + 1 * sin(invertal_dis * i);
+        temp13.x = circle_test13.x + 1 * cos(invertal_dis * i);
+        temp13.y = circle_test13.y + 1 * sin(invertal_dis * i);
+        temp14.x = circle_test14.x + 1 * cos(invertal_dis * i);
+        temp14.y = circle_test14.y + 1 * sin(invertal_dis * i);
+        temp15.x = circle_test15.x + 1 * cos(invertal_dis * i);
+        temp15.y = circle_test15.y + 1 * sin(invertal_dis * i);
+        temp16.x = circle_test16.x + 1 * cos(invertal_dis * i);
+        temp16.y = circle_test16.y + 1 * sin(invertal_dis * i);
+        temp17.x = circle_test17.x + 1 * cos(invertal_dis * i);
+        temp17.y = circle_test17.y + 1 * sin(invertal_dis * i);
+        temp18.x = circle_test18.x + 1 * cos(invertal_dis * i);
+        temp18.y = circle_test18.y + 1 * sin(invertal_dis * i);
+        temp19.x = circle_test19.x + 1 * cos(invertal_dis * i);
+        temp19.y = circle_test19.y + 1 * sin(invertal_dis * i);
+        temp20.x = circle_test20.x + 1 * cos(invertal_dis * i);
+        temp20.y = circle_test20.y + 1 * sin(invertal_dis * i);
+        temp21.x = circle_test21.x + 1 * cos(invertal_dis * i);
+        temp21.y = circle_test21.y + 1 * sin(invertal_dis * i);
+        temp22.x = circle_test22.x + 1 * cos(invertal_dis * i);
+        temp22.y = circle_test22.y + 1 * sin(invertal_dis * i);
+        temp23.x = circle_test23.x + 1 * cos(invertal_dis * i);
+        temp23.y = circle_test23.y + 1 * sin(invertal_dis * i);
+        temp24.x = circle_test24.x + 1 * cos(invertal_dis * i);
+        temp24.y = circle_test24.y + 1 * sin(invertal_dis * i);
+        temp25.x = circle_test25.x + 1 * cos(invertal_dis * i);
+        temp25.y = circle_test25.y + 1 * sin(invertal_dis * i);
         circle_polygon.push_back(temp);
         circle_polygon1.push_back(temp1);
         circle_polygon2.push_back(temp2);
         circle_polygon3.push_back(temp3);
+        circle_polygon4.push_back(temp4);
+        circle_polygon5.push_back(temp5);
+        circle_polygon6.push_back(temp6);
+        circle_polygon7.push_back(temp7);
+        circle_polygon8.push_back(temp8);
+        circle_polygon9.push_back(temp9);
+        circle_polygon10.push_back(temp10);
+        circle_polygon11.push_back(temp11);
+        circle_polygon12.push_back(temp12);
+        circle_polygon13.push_back(temp13);
+        circle_polygon14.push_back(temp14);
+        circle_polygon15.push_back(temp15);
+        circle_polygon16.push_back(temp16);
+        circle_polygon17.push_back(temp17);
+        circle_polygon18.push_back(temp18);
+        circle_polygon19.push_back(temp19);
+        circle_polygon20.push_back(temp20);
+        circle_polygon21.push_back(temp21);
+        circle_polygon22.push_back(temp22);
+        circle_polygon23.push_back(temp23);
+        circle_polygon24.push_back(temp24);
+        circle_polygon25.push_back(temp25);
     }
     circle_polygon.push_back(circle_polygon[0]);
     circle_polygon1.push_back(circle_polygon1[0]);
     circle_polygon2.push_back(circle_polygon2[0]);
     circle_polygon3.push_back(circle_polygon3[0]);
+    circle_polygon4.push_back(circle_polygon4[0]);
+    circle_polygon5.push_back(circle_polygon5[0]);
+    circle_polygon5.push_back(circle_polygon5[0]);
+    circle_polygon6.push_back(circle_polygon6[0]);
+    circle_polygon7.push_back(circle_polygon7[0]);
+    circle_polygon8.push_back(circle_polygon8[0]);
+    circle_polygon9.push_back(circle_polygon9[0]);
+    circle_polygon10.push_back(circle_polygon10[0]);
+    circle_polygon11.push_back(circle_polygon11[0]);
+    circle_polygon12.push_back(circle_polygon12[0]);
+    circle_polygon13.push_back(circle_polygon13[0]);
+    circle_polygon14.push_back(circle_polygon14[0]);
+    circle_polygon15.push_back(circle_polygon15[0]);
+    circle_polygon16.push_back(circle_polygon16[0]);
+    circle_polygon17.push_back(circle_polygon17[0]);
+    circle_polygon18.push_back(circle_polygon18[0]);
+    circle_polygon19.push_back(circle_polygon19[0]);
+    circle_polygon20.push_back(circle_polygon20[0]);
+    circle_polygon21.push_back(circle_polygon21[0]);
+    circle_polygon22.push_back(circle_polygon22[0]);
+    circle_polygon23.push_back(circle_polygon23[0]);
+    circle_polygon24.push_back(circle_polygon24[0]);
+    circle_polygon25.push_back(circle_polygon25[0]);
+
     std::vector<std::vector<polygonPoint>> obstacles_polygon;
     obstacles_polygon.push_back(circle_polygon);
     obstacles_polygon.push_back(circle_polygon1);
     obstacles_polygon.push_back(circle_polygon2);
     obstacles_polygon.push_back(circle_polygon3);
+    obstacles_polygon.push_back(circle_polygon4);
+    obstacles_polygon.push_back(circle_polygon5);
+    obstacles_polygon.push_back(circle_polygon6);
+    obstacles_polygon.push_back(circle_polygon7);
+    obstacles_polygon.push_back(circle_polygon8);
+    obstacles_polygon.push_back(circle_polygon9);
+    obstacles_polygon.push_back(circle_polygon10);
+    obstacles_polygon.push_back(circle_polygon11);
+    obstacles_polygon.push_back(circle_polygon12);
+    obstacles_polygon.push_back(circle_polygon13);
+    obstacles_polygon.push_back(circle_polygon14);
+    obstacles_polygon.push_back(circle_polygon15);
+    obstacles_polygon.push_back(circle_polygon16);
+    obstacles_polygon.push_back(circle_polygon17);
+    obstacles_polygon.push_back(circle_polygon18);
+    obstacles_polygon.push_back(circle_polygon19);
+    obstacles_polygon.push_back(circle_polygon20);
+    obstacles_polygon.push_back(circle_polygon21);
+    obstacles_polygon.push_back(circle_polygon22);
+    obstacles_polygon.push_back(circle_polygon23);
+    obstacles_polygon.push_back(circle_polygon24);
+    obstacles_polygon.push_back(circle_polygon25);
 
     std::ofstream   testOriginPoly;
     testOriginPoly.open("/home/zzm/Desktop/test_path_figure-main/src/testOriginPoly1.txt",std::ios::out);

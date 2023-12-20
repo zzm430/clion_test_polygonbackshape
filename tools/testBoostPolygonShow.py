@@ -25,9 +25,19 @@ testObstacleOriginLine_y = testObstacleOriginLine[1]
 
 tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
 
-test_PJPO_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt')
-test_PJPO_path_x = test_PJPO_path[0]
-test_PJPO_path_y = test_PJPO_path[1]
+# test_PJPO_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt')
+# test_PJPO_path_x = test_PJPO_path[0]
+# test_PJPO_path_y = test_PJPO_path[1]
+
+with open('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt', 'r') as file:
+    lines = file.readlines()
+
+paths = []
+for i in range(0, len(lines), 2):
+    x_values = list(map(float, lines[i].split()))
+    y_values = list(map(float, lines[i + 1].split()))
+    paths.append((x_values, y_values))
+
 
 pathProfile1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/pathProfile1.txt')
 pathProfile1_x = pathProfile1[0]
@@ -55,7 +65,6 @@ for line in lines:
     polygon = [(float(vertex.split()[0]), float(vertex.split()[1])) for vertex in vertices]
     polygons.append(polygon)
 
-
 with open('testInsectPolygon1127.txt') as m:
     polygon_str1 = m.read().strip()
 
@@ -66,23 +75,24 @@ y_values1 = [float(point.split()[1]) for point in polygon_points1]
 
 f=plt.figure();
 ax=f.add_subplot(111)
-ax.plot(x_values,y_values,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+# ax.plot(x_values,y_values,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 ax.plot(CC_x,CC_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-
 ax.plot(referenceLine2_x,referenceLine2_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3,markersize=1)
-
-ax.plot(testOriginPoly_x,testOriginPoly_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 8.3,markersize=1)
+# ax.plot(testOriginPoly_x,testOriginPoly_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 8.3,markersize=1)
 ax.plot(testObstacleOriginLine_x,testObstacleOriginLine_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 ax.plot(testVirtualLIne_x,testVirtualLIne_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
-ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.4,markersize=4)
+# ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.4,markersize=4)
 ax.plot(pathProfile1_x,pathProfile1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
+
+for path in paths:
+    ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
 
 #绘制多边形
 for polygon in polygons:
    x,y = zip(*polygon)
    ax.plot(x,y,marker = 'o')
-   for i, vertex in enumerate(polygon):
-       plt.text(vertex[0], vertex[1], f'({vertex[0]}, {vertex[1]})', fontsize=8)
+   # for i, vertex in enumerate(polygon):
+   #     plt.text(vertex[0], vertex[1], f'({vertex[0]}, {vertex[1]})', fontsize=8)
 
 for m in range(len(tractorHeadPtsStream111) - 1):
     if m % 2 == 0:
@@ -98,7 +108,7 @@ for m in range(len(tractorHeadPtsStream111) - 1):
 
 print("x values:", x_values)
 print("y values:", y_values)
-
+#
 # for a, b in zip(CC_x,CC_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 

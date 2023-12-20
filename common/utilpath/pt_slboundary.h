@@ -52,6 +52,8 @@ public:
         boundary_pts_ = boundary_pts;
     }
 
+
+
 private:
     double start_s_;
     double end_s_;

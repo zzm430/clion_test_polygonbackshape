@@ -13,9 +13,11 @@
 #include "common/utilpath/path_slPoint.h"
 #include "Emplanner/frenet_converter.h"
 #include "common/utilpath/discretizedPath.h"
+#include "common/print/tractorPolyPrintCurve.h"
 #include "Emplanner/customPJPO.h"
 #include <cmath>
 #include <algorithm>
+#include "common/print/tractorPJPOPathPrint.h"
 
 class curveStaticObstaclesManager{
 public:
@@ -55,6 +57,10 @@ public:
             const polygon& obstacle_polygon,
             const polygonPoint & centroid_pt,
             const std::vector<polygonPoint> & path_line);
+
+    void transOriginPathToDiscretizedPath(
+            const std::vector<polygonPoint> & origin_path,
+            DiscretizedPath & anchor_path);
 
     void pjpoInitialize(
             const std::vector<polygonPoint> & consider_static_obstacles_pts,

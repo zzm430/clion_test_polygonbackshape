@@ -79,9 +79,7 @@ namespace  smoothalgorithm{
         for(auto i : last_pts){
             last_smoothed_pts_.push_back(i);
         }
-
     }
-
 
     void femSmoothManager::normalizePoints(
             std::vector<std::pair<double, double>>* xy_points) {
@@ -138,7 +136,6 @@ namespace  smoothalgorithm{
             raw_path_points.push_back(path_pt);
         }
         return true;
-
     }
 
     std::vector<polygonPoint> femSmoothManager::get_smoothed_pts(){

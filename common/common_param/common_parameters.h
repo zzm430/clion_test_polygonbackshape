@@ -35,7 +35,6 @@
 #define DEBUG_CPA_INFO                    //控制输出的txt文件debug使用
 #define DEBUG_PJPO_INFO                   //控制PJPO相关算法的debug输出
 
-
 //回型部分弯道起始点和终点相关参数设置
 #define WROBOT                    1.8       //widtth of robot
 #define DCRF                      1.5        //distance center of rotation to front side
@@ -59,7 +58,6 @@
 //FT-CPA-CV
 #define DNCZ                      0.1      //the distance for the no-crop zone，对于弯道属于part1、part2、part3起重要作用
 #define DEXTRA                    0.0       //the distance an implement can cross the field border
-
 
 //鱼尾弯道参数
 //#define  F1                       1
@@ -87,29 +85,30 @@
 #define  VERBOSE                     false
 #define  SCALED_TERMINATION          true
 #define  WARM_START_M                true
-#define  BOUND                       1.7
+#define  BOUND                       2.5
 #define  WEIGHT_CURVATURE_CONSTRAINT_SLACK_VAR 1e5
 #define  SQP_SUB_MAX_ITER                      0.0
 #define  SQP_FTOL                              0.0
 #define  SQP_PEN_MAX_ITER                      0.0
 #define  SQP_CTOL                              0.0
 
-
-#define A1_DISTANCE        6
-#define A3_DISTANCE        12
-#define A2_DISTANCE        6
-#define A4_DISTANCE        12
-#define REFERENCE_DIFF_NUMBER 40
+#define A1_DISTANCE        4
+#define A3_DISTANCE        14
+#define A2_DISTANCE        10
+#define A4_DISTANCE        14
+#define REFERENCE_DIFF_NUMBER 50
 
 #define VIRTUAL_CENTROID_LINE 7
-#define SIDE_PASS_CHOOSE   true     //true逆时针为正
+#define SIDE_PASS_CHOOSE   false     //从障碍物左侧绕为正
 
-#define DIFF_PTS           0.6
+#define DIFF_PTS           0.4
 
 //static obstale manager
 #define  DEBUG_STATIC_OBSTACLE
-#define  SAFE_OBSTACLE_THR  1
-#define  CONSIDER_CARBODY_SAFE_THR 3.5
+#define  SAFE_OBSTACLE_THR_ZERO  0.0
+#define  SAFE_OBSTACLE_THR_FIRST  1
+#define  SAFE_OBSTACLE_THR_SECOND 0.6
+#define  CONSIDER_CARBODY_SAFE_THR 4
 #define  USE_REFERENCE_CENTER_LINE false
 
 //PJPO算法
@@ -117,11 +116,12 @@
 #define WHEEL_BASE        3.35          //前后轮轴距
 #define PJPO_USE_SWITCH   true
 #define DELTA_S           0.6
-#define LOWER_BOUND       -5
-#define UPPER_BOUND        5
-#define MAX_TRANSVERSE_ACCELETATION  4   //最大侧向加速度
+#define LOWER_BOUND       -10
+#define UPPER_BOUND        10
+#define MAX_TRANSVERSE_ACCELETATION  6   //最大侧向加速度
 #define STEER_GEAR_RATIO   22.4          //传动比
-#define CURVE_VEL          1             //转弯时参考速度
-
+#define CURVE_VEL          2             //转弯时参考速度
+#define PJPO_SAFE_OBSTACLE_THR  1
+#define PJPO_SAFE_OBSTACLE_THR_FIRST 2.3
 
 #endif    //COMMON_PARAMETERS_H

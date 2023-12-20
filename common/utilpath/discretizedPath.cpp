@@ -229,7 +229,7 @@ PathPoint DiscretizedPath::GetPathPtFromS(double s) const {
 //                                : std::distance(begin(), it_lower) - 1;
 //    }
 //}
-//
+
 //PathPoint DiscretizedPath::GetPathPtFromS(double s, size_t& idx) {
 //    LOG_ASSERT(s >= front().s() - 1e-3 && s <= back().s() + 1e-3);
 //    auto comp = [](const PathPoint& pt, double s) { return pt.s() < s; };
@@ -274,7 +274,7 @@ PathPoint DiscretizedPath::GetPathPtFromS(double s) const {
 //    }
 //}
 //
-//
+
 //DiscretizedPath::DiscretizedPath(const std::vector<PathPoint>& path_points)
 //        : math::DiscreteMatchHelper<PathPoint>(path_points) {}
 
@@ -297,7 +297,7 @@ double DiscretizedPath::Length() const {
 //    return math::InterpolateUsingLinearApproximation(
 //            *(it_lower - 1), *it_lower, path_s);
 //}
-//
+
 //std::vector<PathPoint>::const_iterator DiscretizedPath::QueryLowerBound(
 //        double path_s) const {
 //    auto func = [](const PathPoint& tp, double path_s) {
@@ -305,7 +305,7 @@ double DiscretizedPath::Length() const {
 //    };
 //    return std::lower_bound(begin(), end(), path_s, func);
 //}
-//
+
 //PathPoint DiscretizedPath::EvaluateReverse(double path_s) const {
 //    CHECK(!empty());
 //    auto it_upper = QueryUpperBound(path_s);
@@ -318,7 +318,7 @@ double DiscretizedPath::Length() const {
 //    return math::InterpolateUsingLinearApproximation(
 //            *(it_upper - 1), *it_upper, path_s);
 //}
-//
+
 //std::vector<PathPoint>::const_iterator DiscretizedPath::QueryUpperBound(
 //        double path_s) const {
 //    auto func = [](double path_s, const PathPoint& tp) {

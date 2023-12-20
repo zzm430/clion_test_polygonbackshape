@@ -23,7 +23,7 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
                     obstacle_polygon,
                     centroid_pt);
             std::vector<polygonPoint> consider_static_obstacles_pts;
-            if ( crash_flag ) {
+            if (crash_flag) {
                consider_static_obstacles_pts = computeReferenceLine(obstacle_polygon,
                                      centroid_pt,
                                      path_line);
@@ -83,9 +83,7 @@ std::vector<polygonPoint> curveStaticObstaclesManager::computeReferenceLine(
     }
 
     smoothalgorithm::femSmoothManager  smoothFem(transd_referencePts);
-
     smoothFem.initiate();
-
     auto  consider_static_obstacles_pts = smoothFem.get_smoothed_pts();
     return consider_static_obstacles_pts;
 }
@@ -101,7 +99,7 @@ void curveStaticObstaclesManager::computeOriginReferenceLinePts(
     std::vector<polygonPoint>  work_line;
     work_line.push_back(path_line[0]);
     work_line.push_back(path_line[1]);
-//    polygonPoint centroid_pt(centroid.x(),centroid.y());
+   //polygonPoint centroid_pt(centroid.x(),centroid.y());
 
     //计算质心投影到中心线上的点
     auto projection_pt = common::commonMath::computeFootPoint(
@@ -141,13 +139,12 @@ void curveStaticObstaclesManager::computeOriginReferenceLinePts(
         double dis_2pt = common::commonMath::distance2(A3,reference_diff_allpts[i]);
         if( dis_2pt < A1_DISTANCE ){
             reference_pts1.push_back(reference_diff_allpts[i]);
-        }else if( dis_2pt >= A1_DISTANCE && dis_2pt < A3_DISTANCE + A2_DISTANCE){
+        } else if ( dis_2pt >= A1_DISTANCE && dis_2pt < A3_DISTANCE + A2_DISTANCE){
             reference_pts2.push_back(reference_diff_allpts[i]);
         } else {
             reference_pts3.push_back(reference_diff_allpts[i]);
         }
     }
-
 
     //更新reference_pts2
     //计算C、D点
@@ -188,41 +185,49 @@ void curveStaticObstaclesManager::computeOriginReferenceLinePts(
     for(auto i : intersectionGeometry1){
         tempPts.push_back(polygonPoint(i.x(),i.y()));
     }
-
     std::cout << "the intersectionGeometry1 size is : "
               << intersectionGeometry1.size()
               << std::endl;
 
-    //计算C、D点到中心线的距离
-    double distanceC,distanceD;
-    distanceC = common::commonMath::distanceToLineSegment(tempPts[0],work_line[0],work_line[1]);
-    distanceD = common::commonMath::distanceToLineSegment(tempPts[1],work_line[0],work_line[1]);
-    std::cout << "the distance C and D is : "
-              << distanceC
-              << " "
-              << distanceD
-              << std::endl;
-
-    //将第三条参考线上的点按照指定垂直中心线的方向平移
-    //假如往C方向平移
-    std::cout <<"the distance C is : "
-              << distanceC
-              << std::endl;
-
-    double distance_virtual_line  = RIDGE_WIDTH_LENGTH/2 + distanceC + SAFE_OBSTACLE_THR ;
+    //计算障碍物到中心线的最大距离
+    //1.将三段中心参考线转换为离散path
+    DiscretizedPath anchor_path;
+    transOriginPathToDiscretizedPath(reference_diff_allpts,anchor_path);
+    //2.计算障碍物的l距离
+    double obs_min_l(std::numeric_limits<double>::max());
+    double obs_max_l(std::numeric_limits<double>::lowest());
+    for(auto it = obstacle_polygon.outer().begin();
+             it != obstacle_polygon.outer().end();
+             it ++){
+        slPoint slPointtemp;
+        anchor_path.XYToSL(math::Vec2d(it->x(),it->y()),&slPointtemp);
+        obs_min_l = std::fmin(obs_min_l,slPointtemp.l());
+        obs_max_l = std::fmax(obs_max_l,slPointtemp.l());
+    }
+    //3.根据绕障规则确定需要移动的距离
+    double move_thr;
+    double distance_virtual_line;
     if(!SIDE_PASS_CHOOSE){
-        distance_virtual_line = RIDGE_WIDTH_LENGTH/2 + distanceD + SAFE_OBSTACLE_THR;
-    }
-    if(distance_virtual_line < 4){
-        distance_virtual_line = std::max(distance_virtual_line, static_cast<double>(CONSIDER_CARBODY_SAFE_THR));
+        if(obs_max_l >= 0 && obs_min_l >=0){
+            distance_virtual_line =  SAFE_OBSTACLE_THR_ZERO + RIDGE_WIDTH_LENGTH/2 - fabs(obs_min_l);
+        }else if( obs_max_l > 0 && obs_min_l < 0){
+            distance_virtual_line = SAFE_OBSTACLE_THR_ZERO + RIDGE_WIDTH_LENGTH/2 + fabs(obs_min_l);
+        }else if(obs_max_l < 0  && obs_min_l < 0){
+            distance_virtual_line = SAFE_OBSTACLE_THR_ZERO + fabs(obs_min_l) + RIDGE_WIDTH_LENGTH/2;
+        }
+    } else {
+       if(obs_max_l >= 0 && obs_min_l >=0){
+           distance_virtual_line = SAFE_OBSTACLE_THR_ZERO + RIDGE_WIDTH_LENGTH/2 + fabs(obs_max_l);
+       }else if(obs_max_l > 0 && obs_min_l < 0){
+           distance_virtual_line = SAFE_OBSTACLE_THR_ZERO + RIDGE_WIDTH_LENGTH/2 + fabs(obs_max_l);
+       }else if(obs_max_l < 0 && obs_min_l < 0){
+           distance_virtual_line = SAFE_OBSTACLE_THR_ZERO + RIDGE_WIDTH_LENGTH/2 - fabs(obs_max_l);
+       }
     }
 
-    std::cout << "the distance_virtual_line is : "
+    std::cout << "the distance virtual line is : "
               << distance_virtual_line
-              << "  distance D is : "
-              << distanceD
               << std::endl;
-
     auto reference_pts2_center = reference_pts2;
     reference_pts2 = common::commonMath::computePtsToOrderedDirectionMove(
             reference_pts2,
@@ -252,6 +257,42 @@ void curveStaticObstaclesManager::computeOriginReferenceLinePts(
 
     for(auto i : reference_pts3){
         reference_allpts.push_back(i);
+    }
+
+}
+
+void curveStaticObstaclesManager::transOriginPathToDiscretizedPath(
+                                    const std::vector<polygonPoint> & origin_path,
+                                    DiscretizedPath & anchor_path){
+
+    std::vector<std::pair<double, double>> trans_pts;
+    std::vector<double> headings;
+    std::vector<double> accumulated_s;
+    std::vector<double> kappas;
+    std::vector<double> dkappas;
+
+    for(auto i : origin_path){
+        trans_pts.push_back({i.x,i.y});
+    }
+
+    computePathProfileInfo::ComputePathProfile(
+            trans_pts,
+            &headings,
+            &accumulated_s,
+            &kappas,
+            &dkappas);
+
+    for(int i = 0 ; i <  origin_path.size();i++){
+        PathPoint  temp(origin_path[i].x,
+                        origin_path[i].y,
+                        0,
+                        accumulated_s[i],
+                        headings[i],
+                        headings[i],
+                        kappas[i],
+                        dkappas[i],
+                        0);
+        anchor_path.push_back(temp);
     }
 
 }
@@ -402,19 +443,18 @@ bool curveStaticObstaclesManager::computeObstacleCrashCheck(
 
     // Declare/fill a linestring
     boost::geometry::model::linestring<point> ls;
-//    ls.push_back(point(11.25,53.3));
-//    ls.push_back(point(97.658,487));
+    // ls.push_back(point(11.25,53.3));
+    // ls.push_back(point(97.658,487));
     ls.push_back(point(path_line[0].x,path_line[0].y));
     ls.push_back(point(path_line[1].x,path_line[1].y));
-
 
     boost::geometry::buffer(ls, result,
                             distance_strategy,side_strategy,
                             join_strategy, end_strategy, circle_strategy);
 
-//    std::cout << "expend line wkt style is : "
-//              << boost::geometry::wkt(result.front())
-//              << std::endl;
+    //std::cout << "expend line wkt style is : "
+    //<< boost::geometry::wkt(result.front())
+    //<< std::endl;
 
     //判断扩展的多边形与障碍物多边形们是否相交
     for(int  i = 0;i < polygonPts.size(); i++){
@@ -430,7 +470,7 @@ bool curveStaticObstaclesManager::computeObstacleCrashCheck(
 //        std::cout << "the obstalce size is ： "
 //                  << flag
 //                  << std::endl;
-        if(flag){
+        if( flag ){
 
             std::cout << "expend line wkt style is : "
                       << boost::geometry::wkt(result.front())
@@ -470,38 +510,8 @@ void curveStaticObstaclesManager::pjpoInitialize(
     //pjpo处理
     //对平滑过后的点重新进行差值
     //先获取其属性
-    std::vector<std::pair<double, double>> trans_pts;
-    std::vector<double> headings;
-    std::vector<double> accumulated_s;
-    std::vector<double> kappas;
-    std::vector<double> dkappas;
-
-    for(auto i : consider_static_obstacles_pts){
-        trans_pts.push_back({i.x,i.y});
-    }
-
-    computePathProfileInfo::ComputePathProfile(
-            trans_pts,
-            &headings,
-            &accumulated_s,
-            &kappas,
-            &dkappas);
-
-    DiscretizedPath   anchor_path;
-    for(int i = 0 ; i <  consider_static_obstacles_pts.size();i++){
-        PathPoint  temp(consider_static_obstacles_pts[i].x,
-                        consider_static_obstacles_pts[i].y,
-                        0,
-                        accumulated_s[i],
-                        headings[i],
-                        headings[i],
-                        kappas[i],
-                        dkappas[i],
-                        0);
-        anchor_path.push_back(temp);
-    }
-
-
+    DiscretizedPath anchor_path;
+    transOriginPathToDiscretizedPath(consider_static_obstacles_pts,anchor_path);
     curveGeneratePathFromDiscretePts(anchor_path,pathProfile);
 
 #ifdef DEBUG_STATIC_OBSTACLE
@@ -531,8 +541,8 @@ void curveStaticObstaclesManager::pjpodealSLBoundary(
     SLBoundary obstacleSL_pts;
     pathProfile.GetSlBoundary(orderedPolygon,&obstacleSL_pts);
 
-    auto start_idx = static_cast<size_t>((obstacleSL_pts.start_s() - 2)/DIFF_PTS);
-    auto end_idx = static_cast<size_t>((obstacleSL_pts.end_s() + 2) /DIFF_PTS);
+    auto start_idx = static_cast<size_t>((obstacleSL_pts.start_s() )/DIFF_PTS);
+    auto end_idx = static_cast<size_t>((obstacleSL_pts.end_s() ) /DIFF_PTS);
 
     auto min_l = obstacleSL_pts.start_l();
     auto max_l = obstacleSL_pts.end_l();
@@ -541,31 +551,53 @@ void curveStaticObstaclesManager::pjpodealSLBoundary(
     double upper_bound ;
 
     (*boundary).resize(pathProfile.size());
+
     for (int i = 0; i < pathProfile.size(); i++) {
         if(i >= start_idx && i <= end_idx){
             if(USE_REFERENCE_CENTER_LINE){
                 if(!SIDE_PASS_CHOOSE){    //绕右
-                    lower_bound =  LOWER_BOUND  - fabs(min_l) - RIDGE_WIDTH_LENGTH/2 -  SAFE_OBSTACLE_THR;
-                    upper_bound =  UPPER_BOUND - fabs(min_l) -  RIDGE_WIDTH_LENGTH/2 -  SAFE_OBSTACLE_THR;
+                    lower_bound =  LOWER_BOUND  - fabs(min_l) - RIDGE_WIDTH_LENGTH/2 -  PJPO_SAFE_OBSTACLE_THR;
+                    upper_bound =  UPPER_BOUND - fabs(min_l) -  RIDGE_WIDTH_LENGTH/2 -  PJPO_SAFE_OBSTACLE_THR;
                 } else {   //绕左
-                    lower_bound =  LOWER_BOUND  + fabs(max_l) * 2  +  RIDGE_WIDTH_LENGTH/2  +  SAFE_OBSTACLE_THR;
-                    upper_bound =  UPPER_BOUND  + fabs(max_l) * 2  +  RIDGE_WIDTH_LENGTH/2 +  SAFE_OBSTACLE_THR;
+                    lower_bound =  LOWER_BOUND  + fabs(max_l) * 2  +  RIDGE_WIDTH_LENGTH/2  +  PJPO_SAFE_OBSTACLE_THR;
+                    upper_bound =  UPPER_BOUND  + fabs(max_l) * 2  +  RIDGE_WIDTH_LENGTH/2 +  PJPO_SAFE_OBSTACLE_THR;
                 }
             } else {
-                lower_bound = LOWER_BOUND ;
-                upper_bound = UPPER_BOUND ;
-
+//                  lower_bound = LOWER_BOUND ;
+//                  upper_bound = UPPER_BOUND ;
+                if(!SIDE_PASS_CHOOSE) {    //绕右
+                    if(fabs(min_l) < PJPO_SAFE_OBSTACLE_THR_FIRST){
+                        double dis_thr = PJPO_SAFE_OBSTACLE_THR_FIRST - fabs(min_l);
+                        if(dis_thr < 0.5){
+                            lower_bound = LOWER_BOUND - 2;
+                            upper_bound = UPPER_BOUND - 2;
+                        }else{
+                            lower_bound =  LOWER_BOUND  - fabs(dis_thr*2) * 2 - PJPO_SAFE_OBSTACLE_THR;
+                            upper_bound =  UPPER_BOUND  - fabs(dis_thr*2) * 2 - PJPO_SAFE_OBSTACLE_THR;
+                        }
+                    } else {
+                        lower_bound = LOWER_BOUND;
+                        upper_bound = UPPER_BOUND;
+                    }
+                } else {                   //绕左
+                    if(fabs(max_l) < PJPO_SAFE_OBSTACLE_THR_FIRST){
+                        double dis_thr = PJPO_SAFE_OBSTACLE_THR_FIRST - fabs(max_l);
+                        lower_bound = LOWER_BOUND + fabs(dis_thr) * 2 + PJPO_SAFE_OBSTACLE_THR;
+                        upper_bound = UPPER_BOUND + fabs(dis_thr) * 2 + PJPO_SAFE_OBSTACLE_THR;
+                    } else {
+                        lower_bound =  LOWER_BOUND ;
+                        upper_bound =  UPPER_BOUND ;
+                    }
+                }
             }
-
         } else {
-
             lower_bound = LOWER_BOUND;
             upper_bound = UPPER_BOUND;
-
         }
         (*boundary)[i].first  =  lower_bound ;  // 修改第i个元素的值
         (*boundary)[i].second =  upper_bound ;
     }
+
 }
 
 
@@ -585,6 +617,7 @@ void curveStaticObstaclesManager::dealPJPO(
             i++){
             transd_polygon.push_back(polygonPoint(i->x(),i->y()));
         }
+
         pjpodealSLBoundary(pathProfile,transd_polygon,&boundary);
 
         //调用pjpo算法实现sl坐标系下路径优化
@@ -612,7 +645,6 @@ void curveStaticObstaclesManager::dealPJPO(
                 0
         };
 
-
         std::vector<std::pair<double, double>> ddl_bounds;
         const double lat_acc_bound =
                 std::tan(MAX_STEER_ANGLE * M_PI / 180.0) /
@@ -623,12 +655,11 @@ void curveStaticObstaclesManager::dealPJPO(
             double r_thr = lat_acc_bound + kappa;
             if(l_thr > r_thr){
                 ddl_bounds.emplace_back(0,0);
-            }else{
+            } else {
                 ddl_bounds.emplace_back(
                         l_thr,
                         r_thr);
             }
-
         }
 
         customPJPO customPJPOM;
@@ -640,7 +671,7 @@ void curveStaticObstaclesManager::dealPJPO(
 
         if (customPJPOM.optimizePath(start_state,
                                      end_state,
-                                     path_reference_l,
+                                        path_reference_l,
                                      true,
                                      boundary,
                                      ddl_bounds,
@@ -669,25 +700,13 @@ void curveStaticObstaclesManager::dealPJPO(
             storage_path.push_back(temp);
         }
 
-
        storage_last_path_[path_line[0]] = storage_path;
 
-
 #ifdef DEBUG_STATIC_OBSTACLE
-        std::ofstream test_PJPO_path;
-        test_PJPO_path.open("/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt", std::ios::out);
-        for (auto i : storage_path) {
-            test_PJPO_path << " " << i.x;
-        }
-
-        test_PJPO_path << std::endl;
-        for (auto j : storage_path) {
-            test_PJPO_path << " " << j.y;
-        }
-
-        test_PJPO_path << std::endl;
+        std::string test_PJPO_path1 = "/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt";
+        auto &test_PJPO_pathM = common::Singleton::GetInstance<tractorPolyPathPrint>(test_PJPO_path1);
+        test_PJPO_pathM.writePts(storage_path);
 #endif
-
         std::vector<double> headings1;
         std::vector<double> accumulated_s1;
         std::vector<double> kappas1;
@@ -707,13 +726,9 @@ void curveStaticObstaclesManager::dealPJPO(
                 &dkappas1);
 
 #ifdef DEBUG_STATIC_OBSTACLE
-        std::ofstream test_pjpo_curve;
-        test_pjpo_curve.open("/home/zzm/Desktop/test_path_figure-main/src/test_pjpo_curve.txt", std::ios::out);
-        for (auto i : kappas1) {
-            test_pjpo_curve << " " << i;
-        }
-        test_pjpo_curve << std::endl;
-
+        std::string testCurve = "/home/zzm/Desktop/test_path_figure-main/src/test_pjpo_curve.txt";
+        auto &test_pjpo_curve = common::Singleton::GetInstance<tractorPolyCurve>(testCurve);
+        test_pjpo_curve.writePts(kappas1);
 
         for (int im = 1; im < storage_path.size(); im++) {
             tractorPolygonShow tractorPolygonShowInstance(im,
@@ -727,8 +742,6 @@ void curveStaticObstaclesManager::dealPJPO(
 #endif
 
 }
-
-
 
 
 std::vector<polygonPoint> curveStaticObstaclesManager::getCurvePath(const polygonPoint orderedPt){

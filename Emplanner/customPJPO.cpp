@@ -158,7 +158,6 @@ bool customPJPO::optimizePath(
                                          std::move(path_reference_l));
     }
 
-
     piecewiseJerkPathAlgorithm_inst.set_weight_x(w[0]);
     piecewiseJerkPathAlgorithm_inst.set_weight_dx(w[1]);
     piecewiseJerkPathAlgorithm_inst.set_weight_ddx(w[2]);
@@ -167,7 +166,7 @@ bool customPJPO::optimizePath(
     piecewiseJerkPathAlgorithm_inst.set_scale_factor({1, 10.0, 1000.0});  //重要参数
 
     piecewiseJerkPathAlgorithm_inst.set_x_bounds(boundary);
-    piecewiseJerkPathAlgorithm_inst.set_dx_bounds(-2, 2);
+    piecewiseJerkPathAlgorithm_inst.set_dx_bounds(-1.75, 1.75);
     piecewiseJerkPathAlgorithm_inst.set_ddx_bounds(ddl_boundary);
 
     const double axis_distance = HEAD_WHEELBASE ;
