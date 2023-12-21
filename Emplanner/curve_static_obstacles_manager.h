@@ -47,11 +47,11 @@ public:
                                          std::vector<polygonPoint> & reference_pts3,
                                          std::vector<polygonPoint> & reference_allpts);
 
-    bool computeObstacleCrashCheck(
+    void computeObstacleCrashCheck(
                           const  std::vector<std::vector<polygonPoint>> &polygonPts,
                           const  std::vector<polygonPoint> & path_line,
-                          polygon& obstacle_polygon,
-                          polygonPoint & centroid_pt);
+                          std::vector<polygon>& obstacle_polygon,
+                          std::vector<polygonPoint> & centroid_pt);
 
     std::vector<polygonPoint> computeReferenceLine(
             const polygon& obstacle_polygon,

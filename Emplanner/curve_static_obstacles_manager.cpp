@@ -12,29 +12,34 @@ curveStaticObstaclesManager::curveStaticObstaclesManager(std::vector<std::vector
     for(int i = 0;i < originPath.size(); i++) {
         for (int j = 0;j < originPath[i].size() - 2;j++){
             std::vector<polygonPoint> path_line;
-            polygon obstacle_polygon;      //选中的障碍物
-            polygonPoint centroid_pt;      //障碍物质心
+            std::vector<polygon> obstacle_polygons;      //选中的障碍物
+            std::vector<polygonPoint> centroid_pts;      //障碍物质心
+            bool crash_flag = false;
             path_line.push_back(originPath[i][j]);
             path_line.push_back(originPath[i][j+1]);
             //针对障碍物们做碰撞检测
-            bool crash_flag = computeObstacleCrashCheck(
+            computeObstacleCrashCheck(
                     polygonPts,
                     path_line,
-                    obstacle_polygon,
-                    centroid_pt);
+                    obstacle_polygons,
+                    centroid_pts);
+            if(obstacle_polygons.size()){
+                crash_flag = true;
+            }
             std::vector<polygonPoint> consider_static_obstacles_pts;
             if (crash_flag) {
-               consider_static_obstacles_pts = computeReferenceLine(obstacle_polygon,
-                                     centroid_pt,
-                                     path_line);
+                for(int  i = 0 ;i < obstacle_polygons.size();i++){
+                    consider_static_obstacles_pts = computeReferenceLine(obstacle_polygons[i],
+                                                                         centroid_pts[i],
+                                                                         path_line);
 
-                if (PJPO_USE_SWITCH) {
-                    dealPJPO(consider_static_obstacles_pts,
-                             obstacle_polygon,
-                             centroid_pt,
-                             path_line);
+                    if (PJPO_USE_SWITCH) {
+                        dealPJPO(consider_static_obstacles_pts,
+                                 obstacle_polygons[i],
+                                 centroid_pts[i],
+                                 path_line);
+                    }
                 }
-                obstacle_polygon.clear();
             }
         }
     }
@@ -420,11 +425,11 @@ bool curveStaticObstaclesManager::curveGeneratePathFromDiscretePts(
 
 
 
-bool curveStaticObstaclesManager::computeObstacleCrashCheck(
+void curveStaticObstaclesManager::computeObstacleCrashCheck(
                          const  std::vector<std::vector<polygonPoint>> &polygonPts,
                          const  std::vector<polygonPoint> & path_line,
-                         polygon& obstacle_polygon,
-                         polygonPoint & centroid_pt){
+                         std::vector<polygon>& obstacle_polygons,
+                         std::vector<polygonPoint> & centroid_pts){
     typedef double coordinate_type;
     typedef boost::geometry::model::d2::point_xy<coordinate_type> point;
     typedef boost::geometry::model::polygon<point> polygon;
@@ -457,13 +462,15 @@ bool curveStaticObstaclesManager::computeObstacleCrashCheck(
     //<< std::endl;
 
     //判断扩展的多边形与障碍物多边形们是否相交
+    polygon  obstacle_polygonTemp;
+    polygonPoint centroid_pt_temp;
     for(int  i = 0;i < polygonPts.size(); i++){
         for(auto j : polygonPts[i]){
-            obstacle_polygon.outer().push_back(point(j.x,j.y));
+            obstacle_polygonTemp.outer().push_back(point(j.x,j.y));
         }
 //        std::deque<polygon> intersectionGeometry;
 ////        boost::geometry::intersection(result,obstacle_polygon,intersectionGeometry);
-         bool flag =  boost::geometry::intersects(result,obstacle_polygon);
+         bool flag =  boost::geometry::intersects(result,obstacle_polygonTemp);
 //        std::cout << "the obstacle is : "
 //                  << boost::geometry::wkt(obstacle_polygon.outer())
 //                  << std::endl;
@@ -477,12 +484,12 @@ bool curveStaticObstaclesManager::computeObstacleCrashCheck(
                       << std::endl;
 
             std::cout << "the obstacle is : "
-                      << boost::geometry::wkt(obstacle_polygon.outer())
+                      << boost::geometry::wkt(obstacle_polygonTemp.outer())
                       << std::endl;
 
             //计算多边形的质心
             point centroid;
-            boost::geometry::centroid(obstacle_polygon, centroid);
+            boost::geometry::centroid(obstacle_polygonTemp, centroid);
 
             std::cout << "the  polygon centroid is :"
                       << "["
@@ -492,13 +499,15 @@ bool curveStaticObstaclesManager::computeObstacleCrashCheck(
                       << "]"
                       << std::endl;
 
-            centroid_pt.x = centroid.x();
-            centroid_pt.y = centroid.y();
-            return true;
+            centroid_pt_temp.x = centroid.x();
+            centroid_pt_temp.y = centroid.y();
+            obstacle_polygons.push_back(obstacle_polygonTemp);
+            obstacle_polygonTemp.clear();
+            centroid_pts.push_back(centroid_pt_temp);
+            continue;
         }
-        obstacle_polygon.clear();
+        obstacle_polygonTemp.clear();
     }
-    return false;
 }
 
 
