@@ -30,8 +30,7 @@ add_executable(polygonbackshape
 #              Planning/path_common.h
 #              Planning/path_common.cpp
 #              Planning/path_baseplan.h
-              Planning/path_baseplan.cpp
-              Geometry/reeds_shepp.cpp
+        Geometry/reeds_shepp.cpp
               Geometry/reeds_shepp.h
               Geometry/dubins.cpp
               Geometry/dubins.h

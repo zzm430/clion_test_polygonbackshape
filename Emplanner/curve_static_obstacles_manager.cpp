@@ -466,7 +466,6 @@ void curveStaticObstaclesManager::computeObstacleCrashCheck(
             obstacle_polygonTemp.outer().push_back(point(j.x,j.y));
         }
 
-////        boost::geometry::intersection(result,obstacle_polygon,intersectionGeometry);
          bool flag =  boost::geometry::intersects(result,obstacle_polygonTemp);
 //        std::cout << "the obstacle is : "
 //                  << boost::geometry::wkt(obstacle_polygon.outer())
@@ -479,7 +478,6 @@ void curveStaticObstaclesManager::computeObstacleCrashCheck(
             std::cout << "expend line wkt style is : "
                       << boost::geometry::wkt(result.front())
                       << std::endl;
-
             std::cout << "the obstacle is : "
                       << boost::geometry::wkt(obstacle_polygonTemp.outer())
                       << std::endl;
