@@ -99,7 +99,7 @@
 #define REFERENCE_DIFF_NUMBER 50
 
 #define VIRTUAL_CENTROID_LINE 7
-#define SIDE_PASS_CHOOSE   false     //从障碍物左侧绕为正
+#define SIDE_PASS_CHOOSE  false     //从障碍物左侧绕为正
 
 #define DIFF_PTS           0.4
 
@@ -121,7 +121,7 @@
 #define MAX_TRANSVERSE_ACCELETATION  6   //最大侧向加速度
 #define STEER_GEAR_RATIO   22.4          //传动比
 #define CURVE_VEL          2             //转弯时参考速度
-#define PJPO_SAFE_OBSTACLE_THR  1
+#define PJPO_SAFE_OBSTACLE_THR  1.5
 #define PJPO_SAFE_OBSTACLE_THR_FIRST 2.3
 
 #endif    //COMMON_PARAMETERS_H

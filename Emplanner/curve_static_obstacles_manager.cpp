@@ -86,7 +86,6 @@ std::vector<polygonPoint> curveStaticObstaclesManager::computeReferenceLine(
         std::pair<double,double> temp(i.x,i.y);
         transd_referencePts.push_back(temp);
     }
-
     smoothalgorithm::femSmoothManager  smoothFem(transd_referencePts);
     smoothFem.initiate();
     auto  consider_static_obstacles_pts = smoothFem.get_smoothed_pts();
@@ -468,7 +467,7 @@ void curveStaticObstaclesManager::computeObstacleCrashCheck(
         for(auto j : polygonPts[i]){
             obstacle_polygonTemp.outer().push_back(point(j.x,j.y));
         }
-//        std::deque<polygon> intersectionGeometry;
+
 ////        boost::geometry::intersection(result,obstacle_polygon,intersectionGeometry);
          bool flag =  boost::geometry::intersects(result,obstacle_polygonTemp);
 //        std::cout << "the obstacle is : "
@@ -524,18 +523,9 @@ void curveStaticObstaclesManager::pjpoInitialize(
     curveGeneratePathFromDiscretePts(anchor_path,pathProfile);
 
 #ifdef DEBUG_STATIC_OBSTACLE
-    std::ofstream pathProfile1;
-    pathProfile1.open("/home/zzm/Desktop/test_path_figure-main/src/pathProfile1.txt", std::ios::out);
-    for (auto i : pathProfile) {
-        pathProfile1 << " " << i.x();
-    }
-
-    pathProfile1 << std::endl;
-    for (auto j : pathProfile) {
-        pathProfile1 << " " << j.y();
-    }
-
-    pathProfile1 << std::endl;
+    std::string pathM  = "/home/zzm/Desktop/test_path_figure-main/src/pathProfile1.txt";
+    auto &pathProfile1 = common::Singleton::GetInstance<tractorPolyPathPrint>(pathM);
+    pathProfile1.writePts(pathProfile);
 #endif
 
 }
@@ -589,10 +579,10 @@ void curveStaticObstaclesManager::pjpodealSLBoundary(
                         upper_bound = UPPER_BOUND;
                     }
                 } else {                   //绕左
-                    if(fabs(max_l) < PJPO_SAFE_OBSTACLE_THR_FIRST){
-                        double dis_thr = PJPO_SAFE_OBSTACLE_THR_FIRST - fabs(max_l);
-                        lower_bound = LOWER_BOUND + fabs(dis_thr) * 2 + PJPO_SAFE_OBSTACLE_THR;
-                        upper_bound = UPPER_BOUND + fabs(dis_thr) * 2 + PJPO_SAFE_OBSTACLE_THR;
+                    double dis_thr = RIDGE_WIDTH_LENGTH/2 + PJPO_SAFE_OBSTACLE_THR - fabs(max_l);
+                    if(dis_thr > 0){
+                        lower_bound = LOWER_BOUND + dis_thr * 2;
+                        upper_bound = UPPER_BOUND + dis_thr * 2;
                     } else {
                         lower_bound =  LOWER_BOUND ;
                         upper_bound =  UPPER_BOUND ;
@@ -713,7 +703,7 @@ void curveStaticObstaclesManager::dealPJPO(
 
 #ifdef DEBUG_STATIC_OBSTACLE
         std::string test_PJPO_path1 = "/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt";
-        auto &test_PJPO_pathM = common::Singleton::GetInstance<tractorPolyPathPrint>(test_PJPO_path1);
+        auto &test_PJPO_pathM = common::Singleton::GetInstance<tractorPolyReferencePathPrint>(test_PJPO_path1);
         test_PJPO_pathM.writePts(storage_path);
 #endif
         std::vector<double> headings1;

@@ -18,6 +18,7 @@
 #include <cmath>
 #include <algorithm>
 #include "common/print/tractorPJPOPathPrint.h"
+#include "common/print/tractorPolyReferencePath.h"
 
 class curveStaticObstaclesManager{
 public:

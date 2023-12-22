@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include "common/utilpath/path_polygonPoint.h"
+#include "common/utilpath/discretizedPath.h"
 
 class tractorPolyPathPrint{
 public:
@@ -22,13 +23,13 @@ public:
         }
     }
 
-    void writePts(std::vector<polygonPoint> storage_path){
+    void writePts(DiscretizedPath storage_path){
         for(auto i : storage_path){
-            file_ << " " << i.x;
+            file_ << " " << i.x();
         }
         file_ << std::endl;
         for(auto j : storage_path){
-            file_ << " " << j.y;
+            file_ << " " << j.y();
         }
         file_ << std::endl;
     }

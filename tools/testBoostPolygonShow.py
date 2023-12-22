@@ -38,10 +38,13 @@ for i in range(0, len(lines), 2):
     y_values = list(map(float, lines[i + 1].split()))
     paths.append((x_values, y_values))
 
-
-pathProfile1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/pathProfile1.txt')
-pathProfile1_x = pathProfile1[0]
-pathProfile1_y = pathProfile1[1]
+with open('/home/zzm/Desktop/test_path_figure-main/src/pathProfile1.txt','r') as file1:
+    lines1 = file1.readlines()
+referpaths1 = []
+for m in range(0,len(lines1),2):
+    x_values1 = list(map(float, lines1[m].split()))
+    y_values1 = list(map(float, lines1[m+1].split()))
+    referpaths1.append((x_values1, y_values1))
 
 CC = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/keypoints.txt')
 CC_x = CC[0]
@@ -82,10 +85,14 @@ ax.plot(referenceLine2_x,referenceLine2_y,color='b',markerfacecolor='green',mark
 ax.plot(testObstacleOriginLine_x,testObstacleOriginLine_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 ax.plot(testVirtualLIne_x,testVirtualLIne_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
 # ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.4,markersize=4)
-ax.plot(pathProfile1_x,pathProfile1_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
+
 
 for path in paths:
     ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
+
+for path1 in referpaths1:
+    ax.plot(path1[0], path1[1], color='g', markerfacecolor='green', marker='o', label='keypoints data', linewidth=1.3,
+                markersize=4)
 
 #绘制多边形
 for polygon in polygons:
