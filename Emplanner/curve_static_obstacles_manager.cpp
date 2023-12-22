@@ -422,8 +422,6 @@ bool curveStaticObstaclesManager::curveGeneratePathFromDiscretePts(
 }
 
 
-
-
 void curveStaticObstaclesManager::computeObstacleCrashCheck(
                          const  std::vector<std::vector<polygonPoint>> &polygonPts,
                          const  std::vector<polygonPoint> & path_line,

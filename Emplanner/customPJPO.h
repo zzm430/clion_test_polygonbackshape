@@ -14,9 +14,6 @@ class customPJPO {
 public:
     customPJPO() = default;
     virtual  ~customPJPO()= default;
-
-    void testPjpo();
-
     bool optimizePath(
             std::array<double, 3>& init_state,
             std::array<double, 3>& end_state,

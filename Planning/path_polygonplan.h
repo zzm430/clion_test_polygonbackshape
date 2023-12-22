@@ -98,24 +98,13 @@ namespace Route_Planning
  private:
 
  public:
-     virtual void computeNarrowPolygons(std::vector<Point> & points); //计算缩小后的轮廓点信息
-     virtual void computePolygonsAndLineNode(Point node);             //计算多边形与线段的交点
-     virtual void computePolygonsAndLineNode(std::vector<Point> linePoints); //计算多边形与线段的交点
-     virtual void computeEveryKbLine();                               //计算kbline
-     virtual void computebackShapeKeypoints();                        //计算回字形关键点信息
-     virtual void judgePointPosition(int i,                           //判断点位信息
-                                     boost::geometry::model::multi_polygon<polygon> result);
-     virtual void computeOriginPolygonKbline(std::vector<Point> &points);
-     virtual void findSuitableEntrance(std::vector<Point> points );
      virtual void updatePolygonPointsSequence1();                      //更新多边形顶点存储的顺序
      virtual void updatePolygonPointsIncrease();                       //向多边形中增加点
      virtual std::vector<polygonPoint> anewStoragePolygonPoints(std::vector<polygonPoint> points,
                                                                           polygonPoint given_point);  //给定点距离最近对多边形重新排序存储
      virtual std::vector<polygonPoint>  deleteRepeatPolyPts(std::vector<polygonPoint> points);   //删除多边形中的重复点并返回
-     virtual void  filteredBackShapeKeyPoints();  //删除关键点中的重复点
      virtual void  computeKeypointsRelativeInfo();  //计算后续用于弯道处理信息
      virtual std::vector<pathInterface::pathPoint> computeRidgeRoutingpts(int ridge_index); //根据垄号计算routingpath信息
-//     virtual void dealWithLastSeveralPolygons();   //根据最后几垄的情况分类处理
      virtual void computeLastRidgePoints4and3();     //提供用于处理最后几垄的关键点4边行内嵌3角形信息
      virtual void computeLastRidgeKeyPoints4and3(int count_flag);  //计算得到最后几垄的关键点4边行内嵌3角形信息
      virtual void computeLastRidgePoints4and4();     //提供用于处理最后的4边形内嵌4边形信息
