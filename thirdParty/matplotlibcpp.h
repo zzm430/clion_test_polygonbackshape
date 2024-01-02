@@ -3,7 +3,14 @@
 // Python headers must be included before any system headers, since
 // they define _POSIX_C_SOURCE
 #undef slots
+#ifdef _DEBUG
+#undef _DEBUG
 #include <python3.8/Python.h>
+#define _DEBUG
+#else
+#include <python3.8/Python.h>
+#endif
+//#include <python3.8/Python.h>
 #define slots Q_SLOTS
 
 #include <vector>

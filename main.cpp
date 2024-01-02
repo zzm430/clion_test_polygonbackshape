@@ -18,6 +18,7 @@
 #include "Geometry/newCornerTuring_location.h"
 
 #include "Emplanner/curve_static_obstacles_manager.h"
+#include "HybridAStar/hybrid_AStar_test.h"
 
 namespace bg = boost::geometry;
 
@@ -25,8 +26,11 @@ INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char **argv) {
 
-//    customPJPO  customPJPOtest;
-//    customPJPOtest.testPjpo();
+
+    searchAlgorithm::hybridAStarTest hybridAStarTest1;
+    hybridAStarTest1.test();
+    std::cout <<" adfdsf!" << std::endl;
+    return 0;
 
 //    return 0;
     //获取到原始点位信息

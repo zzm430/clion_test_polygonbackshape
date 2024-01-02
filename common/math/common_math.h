@@ -207,6 +207,7 @@ namespace common{
                     return storagePoints;
                 }
             }
+            return storagePoints;
         }
 
         //7.对于给定点，求出给定点的前向点和后向点
@@ -228,6 +229,7 @@ namespace common{
                     return storagePoints;
                 }
             }
+            return storagePoints;
         }
 
         //11.针对给定的多边形的点位信息，找到x最小的点作为起始点，开始逆时针排序存储

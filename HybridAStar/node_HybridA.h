@@ -57,10 +57,8 @@ public:
     void SetHeuCost(double cost) { heuristic_cost_ = cost; }
     void SetSteer(double steering) { steering_ = steering; }
 
-
 private:
     static std::string ComputeStringIndex(int x_grid, int y_grid, int phi_grid);
-
 
 private:
     double x_ = 0.0;

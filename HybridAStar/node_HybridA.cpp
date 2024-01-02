@@ -90,7 +90,10 @@ namespace searchAlgorithm {
 
     std::string nodeTractor::ComputeStringIndex(int x_grid, int y_grid, int phi_grid) {
 //        return absl::StrCat(x_grid, "_", y_grid, "_", phi_grid);
-         return "";
+        return std::to_string(x_grid) + "_"
+               + std::to_string(y_grid)
+               + "_"
+               + std::to_string(phi_grid);
     }
 
 

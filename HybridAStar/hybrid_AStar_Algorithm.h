@@ -15,12 +15,14 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <chrono>
 
 #include "HybridAStar/dubin_path.h"
 #include "HybridAStar/grid_search.h"
 #include "HybridAStar/node_HybridA.h"
 #include "common/math/math_utils.h"
 #include "easylogging++.h"
+#include "common/common_param/common_parameters.h"
 
 namespace  searchAlgorithm {
 
@@ -34,7 +36,6 @@ namespace  searchAlgorithm {
         std::vector<double> accumulated_s;
     };
 
-
     class hybridAStarAlgorithm {
     public:
         explicit hybridAStarAlgorithm(
@@ -47,8 +48,6 @@ namespace  searchAlgorithm {
                   const std::vector<std::vector<math::Vec2d>>&
                   obstacles_vertices_vec,
                   HybridAStartResult* result);
-        bool TrajectoryPartition(const HybridAStartResult& result,
-                                 std::vector<HybridAStartResult>* partitioned_result);
 
     private:
         bool AnalyticExpansion(std::shared_ptr<nodeTractor> current_node);
@@ -64,7 +63,14 @@ namespace  searchAlgorithm {
                         std::shared_ptr<nodeTractor> next_node);
         double HoloObstacleHeuristic(std::shared_ptr<nodeTractor> next_node);
         bool GetResult(HybridAStartResult* result);
-        bool GetTemporalProfile(HybridAStartResult* result);
+        bool AnalyticExpansionCheck(const dubinPath& dubinPath_to_end);
+        bool ValidityCheckWithAnalysis(std::shared_ptr<nodeTractor> node);
+        double CalculateAnalyticPathCost(dubinPath& path);
+        std::shared_ptr<nodeTractor> LoadAnalyticPinCS(
+                const dubinPath& dubinPath_to_end,
+                std::shared_ptr<nodeTractor> current_node,
+                double db_path_cost);
+
 
     private:
 
@@ -76,11 +82,11 @@ namespace  searchAlgorithm {
         double step_size_ = 0.0;
         double xy_grid_resolution_ = 0.0;
         double delta_t_ = 0.0;
-        double traj_forward_penalty_ = 0.0;
-        double traj_back_penalty_ = 0.0;
-        double traj_gear_switch_penalty_ = 0.0;
-        double traj_steer_penalty_ = 0.0;
-        double traj_steer_change_penalty_ = 0.0;
+        double forward_penalty_ = 0.0;
+        double back_penalty_ = 0.0;
+        double gear_switch_penalty_ = 0.0;
+        double steer_penalty_ = 0.0;
+        double steer_change_penalty_ = 0.0;
         double heu_rs_forward_penalty_ = 0.0;
         double heu_rs_back_penalty_ = 0.0;
         double heu_rs_gear_switch_penalty_ = 0.0;
@@ -92,6 +98,9 @@ namespace  searchAlgorithm {
         std::shared_ptr<nodeTractor> final_node_;
         std::vector<std::vector<math::LineSegment2d>>
                 obstacles_linesegments_vec_;
+
+
+        double turing_radius_ = 0.0;
 
         struct cmp {
             bool operator()(const std::pair<std::string, double>& left,

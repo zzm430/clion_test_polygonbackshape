@@ -193,7 +193,7 @@ namespace  math{
          *
          * @return A string
          */
-        std::string DebugString() const;
+//        std::string DebugString() const;
 
     private:
         Vec2d center_;

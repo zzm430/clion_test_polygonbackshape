@@ -124,9 +124,9 @@ namespace math{
         half_width_ = width_ / 2.0;
     }
 
-    std::string AABox2d::DebugString() const {
-//        return absl::StrCat("aabox2d ( center = ", center_.DebugString(),
-//                            "  length = ", length_, "  width = ", width_, " )");
-    }
+//    std::string AABox2d::DebugString() const {
+////        return absl::StrCat("aabox2d ( center = ", center_.DebugString(),
+////                            "  length = ", length_, "  width = ", width_, " )");
+//    }
 
 }

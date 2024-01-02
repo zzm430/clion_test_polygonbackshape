@@ -16,6 +16,7 @@
 
 #include "common/math/line_segment_2d.h"
 #include "HybridAStar/hybridA_param.h"
+#include "easylogging++.h"
 
 namespace searchAlgorithm{
 class Node2d {

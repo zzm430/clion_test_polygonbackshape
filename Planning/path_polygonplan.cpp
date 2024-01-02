@@ -4913,6 +4913,7 @@ bool pathPolygonPlan::pointOnSegment(polygonPoint p, polygonPoint a, polygonPoin
         // 如果点与a、b两个点的向量夹角大于90度或者大于ab向量的长度，则点不在线段上
         return false;
     }
+    return true;
 }
 
 std::vector<polygonPoint> pathPolygonPlan::insertPointToPolygon(polygonPoint insertPoint,

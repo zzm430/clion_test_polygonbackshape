@@ -86,7 +86,6 @@ ax.plot(testObstacleOriginLine_x,testObstacleOriginLine_y,color='r',markerfaceco
 ax.plot(testVirtualLIne_x,testVirtualLIne_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
 # ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.4,markersize=4)
 
-
 for path in paths:
     ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
 

@@ -358,8 +358,6 @@ void curveDecisionManager::processBorderlessFishNail(polygonPoint curvePt){
     backshape_fishnail_curve_path_[curvePt] = storage_origin_path;
 }
 
-
-
 void curveDecisionManager::processCCPA(){
     //外扩arriveLine\leaveLine (垄宽/2)
     auto tempLeaveLine  = leaveLine_;

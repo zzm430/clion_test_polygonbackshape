@@ -148,11 +148,11 @@ namespace searchAlgorithm{
         }
 
         if (final_node_ == nullptr) {
-//            SPERROR << "Grid A searching return null ptr(open_set ran out)";
+             LOG(INFO) << "Grid A searching return null ptr(open_set ran out)";
             return false;
         }
         LoadGridAStarResult(result);
-//        SPDEBUG << "explored node num is " << explored_node_num;
+         LOG(INFO) << "explored node num is " << explored_node_num;
         return true;
     }
 
@@ -209,7 +209,7 @@ namespace searchAlgorithm{
                 }
             }
         }
-//        SPDEBUG << "explored node num is " << explored_node_num;
+         LOG(INFO) << "explored node num is " << explored_node_num;
         return true;
     }
 

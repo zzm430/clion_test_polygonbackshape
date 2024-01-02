@@ -13,41 +13,93 @@ hybridAStarAlgorithm::hybridAStarAlgorithm(const vehicleParam &vehicleParam,
     grid_a_star_heuristic_generator_ =
             std::make_unique<GridSearch>(coarse_search_param);
     next_node_num_ = coarse_search_param.next_node_num;
-    max_steer_angle_ =vehicleParam.max_frontWheel_SteerAngle;
+    max_steer_angle_ = vehicleParam.max_frontWheel_SteerAngle;
     step_size_ = coarse_search_param.step_size;
     xy_grid_resolution_ =
             coarse_search_param.xy_resolution;
     delta_t_ = coarse_search_param.delta_t;
-    traj_forward_penalty_ =
+    forward_penalty_ =
             coarse_search_param.forward_penalty;
-    traj_back_penalty_ =
+    back_penalty_ =
             coarse_search_param.back_penalty;
-    traj_gear_switch_penalty_ =
+    gear_switch_penalty_ =
             coarse_search_param.steer_change_penalty;
-    traj_steer_penalty_ =
+    steer_penalty_ =
             coarse_search_param.steer_penalty;
-    traj_steer_change_penalty_ =
+    steer_change_penalty_ =
             coarse_search_param.steer_change_penalty;
 }
 
 bool hybridAStarAlgorithm::AnalyticExpansion(std::shared_ptr<nodeTractor> current_node) {
-        std::shared_ptr<Dubin> dubin_to_check =
-                std::make_shared<Dubin>();
-//        if (!dubin_generator_->ShortestRSP(current_node, end_node_,
-//                                           dubin_to_check)) {
-////            ADEBUG << "ShortestRSP failed";
-//            return false;
-//        }
-//
-//        if (!RSPCheck(reeds_shepp_to_check)) {
-//            return false;
-//        }
+    std::vector<dubinPath> all_paths;
+    if (!dubin_generator_->AllDPs(current_node, end_node_, &all_paths)) {
+        LOG(ERROR) << "Analytic calc error.";
+        return false;
+    }
+    double min_cost = std::numeric_limits<double>::infinity();
+    double optimal_path_index = -1;
+    for (size_t i = 0; i < all_paths.size(); ++i) {
+        if (AnalyticExpansionCheck(all_paths[i])) {
+            double current_cost = CalculateAnalyticPathCost(all_paths[i]);
+            if (current_cost < min_cost) {
+                min_cost = current_cost;
+                optimal_path_index = i;
+            }
+        }
+    }
+    if (optimal_path_index == -1) {
+        return false;
+    }
 
-//        ADEBUG << "Reach the end configuration with Reed Sharp";
-        // load the whole RSP as nodes and add to the close set
-//        final_node_ = LoadRSPinCS(reeds_shepp_to_check, current_node);
-        return true;
+//    // 避免dubin曲线最后的大回环转圈
+//    if (min_cost > turing_radius_ * M_PI * 1.5) {
+//        return false;
+//    }
+
+    auto& optimal_path = all_paths[optimal_path_index];
+
+    final_node_ = LoadAnalyticPinCS(optimal_path, current_node, min_cost);
+    return true;
+
 }
+
+std::shared_ptr<nodeTractor> hybridAStarAlgorithm::LoadAnalyticPinCS(
+            const dubinPath& dubinPath_to_end,
+            std::shared_ptr<nodeTractor> current_node,
+            double db_path_cost) {
+        std::shared_ptr<nodeTractor> end_node =
+                std::shared_ptr<nodeTractor>(new nodeTractor(
+                                                             dubinPath_to_end.x,
+                                                   dubinPath_to_end.y,
+                                                             dubinPath_to_end.phi,
+                                                             XYbounds_,
+                                                   coarse_search_param_));
+        end_node->SetPre(current_node);
+        end_node->SetTrajCost(current_node->GetTrajCost() + db_path_cost);
+        close_set_.insert(std::make_pair(end_node->GetIndex(), end_node));
+        return end_node;
+}
+
+
+
+bool hybridAStarAlgorithm::AnalyticExpansionCheck(
+            const dubinPath& dubinPath_to_end) {
+        std::shared_ptr<nodeTractor> node =
+                std::shared_ptr<nodeTractor>(new nodeTractor(dubinPath_to_end.x,
+                                                             dubinPath_to_end.y,
+                                                             dubinPath_to_end.phi,
+                                                             XYbounds_,
+                                                   coarse_search_param_));
+        return ValidityCheckWithAnalysis(node);
+}
+
+
+bool hybridAStarAlgorithm::ValidityCheckWithAnalysis(std::shared_ptr<nodeTractor> node) {
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    bool is_validity = ValidityCheck(node);
+    return is_validity;
+}
+
 
 bool hybridAStarAlgorithm::ValidityCheck(std::shared_ptr<nodeTractor> node) {
         CHECK_NOTNULL(node);
@@ -64,6 +116,8 @@ bool hybridAStarAlgorithm::ValidityCheck(std::shared_ptr<nodeTractor> node) {
 
         // The first {x, y, phi} is collision free unless they are start and end
         // configuration of search problem
+        //只有起点和终点的node_step_size为1,nextNodeGenerator中都是将父节点先加入节点向量，
+        //再放入子节点，至少有两个
         size_t check_start_index = 0;
         if (node_step_size == 1) {
             check_start_index = 0;
@@ -72,6 +126,7 @@ bool hybridAStarAlgorithm::ValidityCheck(std::shared_ptr<nodeTractor> node) {
         }
 
         for (size_t i = check_start_index; i < node_step_size; ++i) {
+            //边界检查
             if (traversed_x[i] > XYbounds_[1] || traversed_x[i] < XYbounds_[0] ||
                 traversed_y[i] > XYbounds_[3] || traversed_y[i] < XYbounds_[2]) {
                 return false;
@@ -93,6 +148,37 @@ bool hybridAStarAlgorithm::ValidityCheck(std::shared_ptr<nodeTractor> node) {
         }
         return true;
 }
+
+
+double hybridAStarAlgorithm::CalculateAnalyticPathCost(dubinPath& path) {
+        double piecewise_cost = 0.0;
+        size_t path_segs_size = path.segs_lengths.size();
+        for (size_t i = 0; i < path_segs_size; ++i) {
+            piecewise_cost += std::abs(path.segs_lengths[i]) * forward_penalty_;
+        }
+
+        for (size_t i = 0; i < path_segs_size; ++i) {
+            if (path.segs_types[i] != 'S') {
+                piecewise_cost += std::abs(max_steer_angle_) * steer_penalty_;
+            }
+        }
+
+        std::vector<double> steering(path_segs_size, 0.0);
+        for (size_t i = 0; i < path_segs_size; ++i) {
+            if (path.segs_types[i] == 'L') {
+                steering[i] = max_steer_angle_;
+            } else if (path.segs_types[i] == 'R') {
+                steering[i] = -max_steer_angle_;
+            }
+        }
+        for (size_t i = 1; i < path_segs_size; ++i) {
+            piecewise_cost +=
+                    std::abs(steering[i] - steering[i - 1]) * steer_change_penalty_;
+        }
+        return piecewise_cost;
+}
+
+
 
 
 std::shared_ptr<nodeTractor> hybridAStarAlgorithm::Next_node_generator(
@@ -175,25 +261,24 @@ double hybridAStarAlgorithm::TrajCost(
         double piecewise_cost = 0.0;
         if (next_node->GetDirec()) {
             piecewise_cost += static_cast<double>(next_node->GetStepSize() - 1) *
-                              step_size_ * traj_forward_penalty_;
+                              step_size_ * forward_penalty_;
         } else {
             piecewise_cost += static_cast<double>(next_node->GetStepSize() - 1) *
-                              step_size_ * traj_back_penalty_;
+                              step_size_ * back_penalty_;
         }
         if (current_node->GetDirec() != next_node->GetDirec()) {
-            piecewise_cost += traj_gear_switch_penalty_;
+            piecewise_cost += gear_switch_penalty_;
         }
-        piecewise_cost += traj_steer_penalty_ * std::abs(next_node->GetSteer());
-        piecewise_cost += traj_steer_change_penalty_ *
+        piecewise_cost += steer_penalty_ * std::abs(next_node->GetSteer());
+        piecewise_cost += steer_change_penalty_ *
                           std::abs(next_node->GetSteer() - current_node->GetSteer());
         return piecewise_cost;
-    }
+}
 
-    double hybridAStarAlgorithm::HoloObstacleHeuristic(std::shared_ptr<nodeTractor> next_node) {
+double hybridAStarAlgorithm::HoloObstacleHeuristic(std::shared_ptr<nodeTractor> next_node) {
         return grid_a_star_heuristic_generator_->CheckDpMap(next_node->GetX(),
                                                             next_node->GetY());
 }
-
 
 bool hybridAStarAlgorithm::GetResult(HybridAStartResult* result) {
         std::shared_ptr<nodeTractor> current_node = final_node_;
@@ -223,9 +308,11 @@ bool hybridAStarAlgorithm::GetResult(HybridAStartResult* result) {
             hybrid_a_phi.insert(hybrid_a_phi.end(), phi.begin(), phi.end());
             current_node = current_node->GetPreNode();
         }
+
         hybrid_a_x.push_back(current_node->GetX());
         hybrid_a_y.push_back(current_node->GetY());
         hybrid_a_phi.push_back(current_node->GetPhi());
+
         std::reverse(hybrid_a_x.begin(), hybrid_a_x.end());
         std::reverse(hybrid_a_y.begin(), hybrid_a_y.end());
         std::reverse(hybrid_a_phi.begin(), hybrid_a_phi.end());
@@ -233,13 +320,7 @@ bool hybridAStarAlgorithm::GetResult(HybridAStartResult* result) {
         (*result).y = hybrid_a_y;
         (*result).phi = hybrid_a_phi;
 
-        if (!GetTemporalProfile(result)) {
-            std::cout << "GetSpeedProfile from Hybrid Astar path fails";
-            return false;
-        }
-
         if (result->x.size() != result->y.size() ||
-            result->x.size() != result->v.size() ||
             result->x.size() != result->phi.size()) {
             std::cout << "state sizes not equal, "
                    << "result->x.size(): " << result->x.size() << "result->y.size()"
@@ -247,117 +328,25 @@ bool hybridAStarAlgorithm::GetResult(HybridAStartResult* result) {
                    << "result->v.size()" << result->v.size();
             return false;
         }
-        if (result->a.size() != result->steer.size() ||
-            result->x.size() - result->a.size() != 1) {
-            std::cout << "control sizes not equal or not right";
-            std::cout << " acceleration size: " << result->a.size();
-            std::cout << " steer size: " << result->steer.size();
-            std::cout << " x size: " << result->x.size();
-            return false;
-        }
-        return true;
-}
 
-
-bool hybridAStarAlgorithm::TrajectoryPartition(
-            const HybridAStartResult& result,
-            std::vector<HybridAStartResult>* partitioned_result) {
-        const auto& x = result.x;
-        const auto& y = result.y;
-        const auto& phi = result.phi;
-        if (x.size() != y.size() || x.size() != phi.size()) {
-            std::cout << "states sizes are not equal when do trajectory partitioning of "
-                      "Hybrid A Star result";
-            return false;
-        }
-
-        size_t horizon = x.size();
-        partitioned_result->clear();
-        partitioned_result->emplace_back();
-        auto* current_traj = &(partitioned_result->back());
-        double heading_angle = phi.front();
-        const math::Vec2d init_tracking_vector(x[1] - x[0], y[1] - y[0]);
-        double tracking_angle = init_tracking_vector.Angle();
-        bool current_gear =
-                std::abs(math::NormalizeAngle(tracking_angle - heading_angle)) <
-                (M_PI_2);
-        for (size_t i = 0; i < horizon - 1; ++i) {
-            heading_angle = phi[i];
-            const math::Vec2d tracking_vector(x[i + 1] - x[i], y[i + 1] - y[i]);
-            tracking_angle = tracking_vector.Angle();
-            bool gear =
-                    std::abs(math::NormalizeAngle(tracking_angle - heading_angle)) <
-                    (M_PI_2);
-            if (gear != current_gear) {
-                current_traj->x.push_back(x[i]);
-                current_traj->y.push_back(y[i]);
-                current_traj->phi.push_back(phi[i]);
-                partitioned_result->emplace_back();
-                current_traj = &(partitioned_result->back());
-                current_gear = gear;
-            }
-            current_traj->x.push_back(x[i]);
-            current_traj->y.push_back(y[i]);
-            current_traj->phi.push_back(phi[i]);
-        }
-        current_traj->x.push_back(x.back());
-        current_traj->y.push_back(y.back());
-        current_traj->phi.push_back(phi.back());
-
-        const auto start_timestamp = std::chrono::system_clock::now();
-
-        // Retrieve v, a and steer from path
-//        for (auto& result : *partitioned_result) {
-//            if (FLAGS_use_s_curve_speed_smooth) {
-//                if (!GenerateSCurveSpeedAcceleration(&result)) {
-//                    AERROR << "GenerateSCurveSpeedAcceleration fail";
-//                    return false;
-//                }
-//            } else {
-//                if (!GenerateSpeedAcceleration(&result)) {
-//                    AERROR << "GenerateSpeedAcceleration fail";
-//                    return false;
-//                }
-//            }
+//        if (result->a.size() != result->steer.size() ||
+//            result->x.size() - result->a.size() != 1) {
+//            std::cout << "control sizes not equal or not right";
+//            std::cout << " acceleration size: " << result->a.size();
+//            std::cout << " steer size: " << result->steer.size();
+//            std::cout << " x size: " << result->x.size();
+//            return false;
 //        }
-
-        const auto end_timestamp = std::chrono::system_clock::now();
-        std::chrono::duration<double> diff = end_timestamp - start_timestamp;
-        std::cout << "speed profile total time: " << diff.count() * 1000.0 << " ms.";
-        return true;
-}
-
-bool hybridAStarAlgorithm::GetTemporalProfile(HybridAStartResult* result) {
-        std::vector<HybridAStartResult> partitioned_results;
-        if (!TrajectoryPartition(*result, &partitioned_results)) {
-            std::cout << "TrajectoryPartition fail";
-            return false;
-        }
-        HybridAStartResult stitched_result;
-        for (const auto& result : partitioned_results) {
-            std::copy(result.x.begin(), result.x.end() - 1,
-                      std::back_inserter(stitched_result.x));
-            std::copy(result.y.begin(), result.y.end() - 1,
-                      std::back_inserter(stitched_result.y));
-            std::copy(result.phi.begin(), result.phi.end() - 1,
-                      std::back_inserter(stitched_result.phi));
-            std::copy(result.v.begin(), result.v.end() - 1,
-                      std::back_inserter(stitched_result.v));
-            std::copy(result.a.begin(), result.a.end(),
-                      std::back_inserter(stitched_result.a));
-            std::copy(result.steer.begin(), result.steer.end(),
-                      std::back_inserter(stitched_result.steer));
-        }
-        stitched_result.x.push_back(partitioned_results.back().x.back());
-        stitched_result.y.push_back(partitioned_results.back().y.back());
-        stitched_result.phi.push_back(partitioned_results.back().phi.back());
-        stitched_result.v.push_back(partitioned_results.back().v.back());
-        *result = stitched_result;
         return true;
 }
 
 bool hybridAStarAlgorithm::Plan(
-            double sx, double sy, double sphi, double ex, double ey, double ephi,
+            double sx,
+            double sy,
+            double sphi,
+            double ex,
+            double ey,
+            double ephi,
             const std::vector<double>& XYbounds,
             const std::vector<std::vector<math::Vec2d>>& obstacles_vertices_vec,
             HybridAStartResult* result) {
@@ -417,12 +406,13 @@ bool hybridAStarAlgorithm::Plan(
             // check if an analystic curve could be connected from current
             // configuration to the end configuration without collision. if so, search
             // ends.
-//            const double rs_start_time = Clock::NowInSeconds();
+//          const double rs_start_time = Clock::NowInSeconds();
             if (AnalyticExpansion(current_node)) {
                 break;
             }
-//            const double rs_end_time = Clock::NowInSeconds();
-//            rs_time += rs_end_time - rs_start_time;
+
+//          const double rs_end_time = Clock::NowInSeconds();
+//          rs_time += rs_end_time - rs_start_time;
             close_set_.emplace(current_node->GetIndex(), current_node);
             for (size_t i = 0; i < next_node_num_; ++i) {
                 std::shared_ptr<nodeTractor> next_node = Next_node_generator(current_node, i);
@@ -449,10 +439,12 @@ bool hybridAStarAlgorithm::Plan(
                 }
             }
         }
+
         if (final_node_ == nullptr) {
             std::cout << "Hybrid A searching return null ptr(open_set ran out)";
             return false;
         }
+
         if (!GetResult(result)) {
             std::cout << "GetResult failed";
             return false;
