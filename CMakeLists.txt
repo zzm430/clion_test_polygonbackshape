@@ -130,6 +130,14 @@ add_executable(polygonbackshape
         HybridAStar/hybrid_AStar_Algorithm.cpp
         HybridAStar/hybrid_AStar_test.h
         common/plot/debugHybridAStarShow.h
+        smooth/customobsFemAlgorithm/fem_obstacle_smooth_algorithm.h
+        smooth/customobsFemAlgorithm/fem_obstacle_smooth_algorithm.cpp
+        smooth/customobsFemAlgorithm/fem_obstacle_smooth_param.h
+        common/math/linear_interpolation.h
+        common/math/linear_interpolation.cpp
+        smooth/customFemAlgorithm/fem_pos_deviation_param.h
+        smooth/customobsFemAlgorithm/fem_obstacle_smooth_manager.h
+        smooth/customobsFemAlgorithm/fem_obstacle_smooth_manager.cpp
 )
 
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})

@@ -172,11 +172,13 @@ void piecewiseJerkAlgorithm::set_ddx_bounds(double ddx_lower_bound,
 void piecewiseJerkAlgorithm::set_dddx_bound(double dddx_bound) {
     set_dddx_bound(-dddx_bound, dddx_bound);
 }
+
 void piecewiseJerkAlgorithm::set_dddx_bound(double dddx_lower_bound,
                                           double dddx_upper_bound) {
     dddx_bound_.first = dddx_lower_bound;
     dddx_bound_.second = dddx_upper_bound;
 }
+
 void piecewiseJerkAlgorithm::set_weight_x(double weight_x) {
     weight_x_ = weight_x;
 }
@@ -237,7 +239,6 @@ const std::vector<double>& piecewiseJerkAlgorithm::opt_dx() const {
 const std::vector<double>& piecewiseJerkAlgorithm::opt_ddx() const {
     return ddx_;
 }
-
 
 void piecewiseJerkAlgorithm::CalculateAffineConstraint(
         std::vector<c_float>* A_data,

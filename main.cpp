@@ -25,14 +25,11 @@ namespace bg = boost::geometry;
 INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char **argv) {
-
-
     searchAlgorithm::hybridAStarTest hybridAStarTest1;
     hybridAStarTest1.test();
     std::cout <<" adfdsf!" << std::endl;
-    return 0;
 
-//    return 0;
+    return 0;
     //获取到原始点位信息
     std::cout << "the argc number is :" << argc  << std::endl;
     std::cout << "the argv frist is :" << *argv <<  std::endl;
@@ -43,7 +40,7 @@ int main(int argc, char **argv) {
     getMapData  getMapPoints;
     if(argc == 1){
         getMapPoints.loadMapOuter();
-    }else{
+    } else {
         loadPath = argv[1];
         std::cout << "the argv is :" << argv[1]<<std::endl;
         getMapPoints.loadMapOuter(loadPath);

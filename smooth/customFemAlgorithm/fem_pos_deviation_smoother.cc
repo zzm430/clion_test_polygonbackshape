@@ -9,6 +9,10 @@ FemPosDeviationSmoother::FemPosDeviationSmoother(){
 
 }
 
+FemPosDeviationSmoother::FemPosDeviationSmoother(const femPosDeviationParam & femParam)
+            :fem_pos_deviation_param_(femParam){
+}
+
 bool FemPosDeviationSmoother::Solve(
     const std::vector<std::pair<double, double>>& raw_point2d,
     const std::vector<double>& bounds,
@@ -67,35 +71,28 @@ bool FemPosDeviationSmoother::SqpWithOsqp(
   FemPosDeviationSqpOsqpInterface solver;
 
   solver.set_weight_fem_pos_deviation(
-          WEIGHT_FEM_POS_DEVIATION);
-  solver.set_weight_path_length(WEIGHT_PATH_LEGNTH);
-  solver.set_weight_ref_deviation(WEIGHT_REF_DEVIATION);
+          fem_pos_deviation_param_.weight_fem_pos_deviation);
+  solver.set_weight_path_length(fem_pos_deviation_param_.weight_path_length);
+  solver.set_weight_ref_deviation(fem_pos_deviation_param_.weight_ref_deviation);
   solver.set_weight_curvature_constraint_slack_var(
-          WEIGHT_CURVATURE_CONSTRAINT_SLACK_VAR);
-
-  solver.set_curvature_constraint(APPLY_CURVATURE_CONSTRAINT);
-
-  solver.set_sqp_sub_max_iter(SQP_SUB_MAX_ITER);
-  solver.set_sqp_ftol(SQP_FTOL);
-  solver.set_sqp_pen_max_iter(SQP_PEN_MAX_ITER);
-  solver.set_sqp_ctol(SQP_CTOL);
-
-  solver.set_max_iter(MAX_ITER_FEM);
-  solver.set_time_limit(TIME_LIMIT);
-  solver.set_verbose(VERBOSE);
-  solver.set_scaled_termination(SCALED_TERMINATION);
-  solver.set_warm_start(WARM_START_M);
-
+          fem_pos_deviation_param_.weight_curvature_constrain_slack_var);
+  solver.set_curvature_constraint(fem_pos_deviation_param_.apply_curvature_constraint);
+  solver.set_sqp_sub_max_iter(fem_pos_deviation_param_.sqp_sub_max_iter);
+  solver.set_sqp_ftol(fem_pos_deviation_param_.sqp_ftol);
+  solver.set_sqp_pen_max_iter(fem_pos_deviation_param_.sqp_pen_max_iter);
+  solver.set_sqp_ctol(fem_pos_deviation_param_.sqp_ctol);
+  solver.set_max_iter(fem_pos_deviation_param_.max_iter_fem);
+  solver.set_time_limit(fem_pos_deviation_param_.time_limit);
+  solver.set_verbose(fem_pos_deviation_param_.verboase);
+  solver.set_scaled_termination(fem_pos_deviation_param_.scaled_termination);
+  solver.set_warm_start(fem_pos_deviation_param_.warm_start_m);
   solver.set_ref_points(raw_point2d);
   solver.set_bounds_around_refs(bounds);
-
   if (!solver.Solve()) {
     return false;
   }
 
   std::vector<std::pair<double, double>> opt_xy = solver.opt_xy();
-
-
   opt_x->resize(opt_xy.size());
   opt_y->resize(opt_xy.size());
   for (size_t i = 0; i < opt_xy.size(); ++i) {

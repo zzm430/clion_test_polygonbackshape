@@ -7,9 +7,25 @@ testOriginPoly = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testOri
 testOriginPoly_x = testOriginPoly[0]
 testOriginPoly_y = testOriginPoly[1]
 
+testFTCPACV = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testFTCPACV.txt')
+testFTCPACV_x = testFTCPACV[0]
+testFTCPACV_y = testFTCPACV[1]
+
 referenceLine2 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/reference_pts2.txt')
 referenceLine2_x = referenceLine2[0]
 referenceLine2_y = referenceLine2[1]
+
+searchRegionShow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/searchRegionShow.txt')
+searchRegionShow_x = searchRegionShow[0]
+searchRegionShow_y = searchRegionShow[1]
+
+obstacleShow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/obstacleShow.txt')
+obstacleShow_x = obstacleShow[0]
+obstacleShow_y = obstacleShow[1]
+
+pathResultShow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/pathResultShow.txt')
+pathResultShow_x = pathResultShow[0]
+pathResultShow_y = pathResultShow[1]
 
 testVirtualLIne = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/testVirtualLIne.txt')
 testVirtualLIne_x = testVirtualLIne[0]
@@ -23,7 +39,7 @@ testObstacleOriginLine = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools
 testObstacleOriginLine_x = testObstacleOriginLine[0]
 testObstacleOriginLine_y = testObstacleOriginLine[1]
 
-tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
+# tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
 
 # test_PJPO_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt')
 # test_PJPO_path_x = test_PJPO_path[0]
@@ -85,9 +101,13 @@ ax.plot(referenceLine2_x,referenceLine2_y,color='b',markerfacecolor='green',mark
 ax.plot(testObstacleOriginLine_x,testObstacleOriginLine_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 ax.plot(testVirtualLIne_x,testVirtualLIne_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
 # ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.4,markersize=4)
+ax.plot(testFTCPACV_x,testFTCPACV_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(searchRegionShow_x,searchRegionShow_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(obstacleShow_x,obstacleShow_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(pathResultShow_x,pathResultShow_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 
 for path in paths:
-    ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
+    ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=4)
 
 for path1 in referpaths1:
     ax.plot(path1[0], path1[1], color='g', markerfacecolor='green', marker='o', label='keypoints data', linewidth=1.3,
@@ -100,15 +120,15 @@ for polygon in polygons:
    # for i, vertex in enumerate(polygon):
    #     plt.text(vertex[0], vertex[1], f'({vertex[0]}, {vertex[1]})', fontsize=8)
 
-for m in range(len(tractorHeadPtsStream111) - 1):
-    if m % 2 == 0:
-        coords11 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4)]
-        coords12 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4, 8)]
-        polygon1 = Polygon(coords12, closed=True, fill=False, edgecolor='green', alpha=0.9, linewidth=1)
-        polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor='gray', alpha=0.9, linewidth=1)
-        # 设置透明度为 0.5
-        ax.add_patch(polygon1)
-        ax.add_patch(polygonf1)
+# for m in range(len(tractorHeadPtsStream111) - 1):
+#     if m % 2 == 0:
+#         coords11 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4)]
+#         coords12 = [(tractorHeadPtsStream111[m][j], tractorHeadPtsStream111[m + 1][j]) for j in range(4, 8)]
+#         polygon1 = Polygon(coords12, closed=True, fill=False, edgecolor='green', alpha=0.9, linewidth=1)
+#         polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor='gray', alpha=0.9, linewidth=1)
+#         # 设置透明度为 0.5
+#         ax.add_patch(polygon1)
+#         ax.add_patch(polygonf1)
 
 # ax.plot(referenceLine2_x,referenceLine2_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 

@@ -3,7 +3,8 @@
 //
 
 #include "smooth/customFemAlgorithm/fem_pos_smooth_manager.h"
-
+#include "smooth/customFemAlgorithm/fem_pos_deviation_param.h"
+#include "common/common_param/common_parameters.h"
 namespace  smoothalgorithm{
 
     femSmoothManager::femSmoothManager(
@@ -25,7 +26,22 @@ namespace  smoothalgorithm{
         anchor_pts.front().lateral_bound_ = 0.0;
         anchor_pts.back().lateral_bound_ = 0.0;
 
-        FemPosDeviationSmoother   smoothFem;
+        femPosDeviationParam  femPosDeviationParamInstance;
+        femPosDeviationParamInstance.weight_fem_pos_deviation = WEIGHT_FEM_POS_DEVIATION;
+        femPosDeviationParamInstance.weight_path_length = WEIGHT_PATH_LEGNTH;
+        femPosDeviationParamInstance.weight_ref_deviation = WEIGHT_REF_DEVIATION;
+        femPosDeviationParamInstance.weight_curvature_constrain_slack_var = WEIGHT_CURVATURE_CONSTRAINT_SLACK_VAR;
+        femPosDeviationParamInstance.apply_curvature_constraint = APPLY_CURVATURE_CONSTRAINT;
+        femPosDeviationParamInstance.sqp_sub_max_iter = SQP_SUB_MAX_ITER;
+        femPosDeviationParamInstance.sqp_ftol = SQP_FTOL;
+        femPosDeviationParamInstance.sqp_pen_max_iter = SQP_PEN_MAX_ITER;
+        femPosDeviationParamInstance.sqp_ctol = SQP_CTOL;
+        femPosDeviationParamInstance.max_iter_fem = MAX_ITER_FEM;
+        femPosDeviationParamInstance.time_limit = TIME_LIMIT;
+        femPosDeviationParamInstance.verboase = VERBOSE;
+        femPosDeviationParamInstance.scaled_termination = SCALED_TERMINATION;
+        femPosDeviationParamInstance.warm_start_m = WARM_START_M;
+        FemPosDeviationSmoother   smoothFem(femPosDeviationParamInstance);
         normalizePoints(&xy_pts_);
 
         std::vector<double> bounds;

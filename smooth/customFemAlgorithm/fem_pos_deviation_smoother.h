@@ -5,6 +5,7 @@
 
 #include "common/common_param/common_parameters.h"
 #include "smooth/customFemAlgorithm/fem_pos_deviation_sqp_osqp_interface.h"
+#include "fem_pos_deviation_param.h"
 
 namespace smoothalgorithm {
 
@@ -26,7 +27,8 @@ namespace smoothalgorithm {
 
 class FemPosDeviationSmoother {
  public:
-  explicit FemPosDeviationSmoother();
+  FemPosDeviationSmoother();
+  FemPosDeviationSmoother(const femPosDeviationParam & femParam);
 
   bool Solve(const std::vector<std::pair<double, double>>& raw_point2d,
              const std::vector<double>& bounds,
@@ -44,6 +46,7 @@ class FemPosDeviationSmoother {
                    std::vector<double>* opt_y);
 
  private:
+    femPosDeviationParam fem_pos_deviation_param_;
 
 };
 }  // namespace math

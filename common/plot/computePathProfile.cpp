@@ -12,7 +12,7 @@ bool computePathProfileInfo::ComputePathProfile(
         std::vector<double>* dkappas) {
     //  CHECK_NOTNULL(headings);
     //  CHECK_NOTNULL(kappas);
-//    //  CHECK_NOTNULL(dkappas);
+    //  CHECK_NOTNULL(dkappas);
     headings->clear();
     kappas->clear();
     dkappas->clear();

@@ -4,9 +4,7 @@
 
 #ifndef POLYGONBACKSHAPE_VEC_2D_H
 #define POLYGONBACKSHAPE_VEC_2D_H
-
 #include <cmath>
-
 
 //   Vec2d::Vec2d(double x, double y)：构造函数，用来初始化二维向量对象的x、y坐标值。
 //   Vec2d::Vec2d()：默认构造函数，将二维向量对象的x、y坐标值初始化为0。
@@ -37,8 +35,8 @@
 //   bool Vec2d::operator==(const Vec2d &other) const：重载相等操作符。
 //   bool Vec2d::operator<(const Vec2d &rhs) const：重载小于操作符。
 
-
 namespace math {
+
     constexpr double kMathEpsilons = 1e-7;
 
     class Vec2d {

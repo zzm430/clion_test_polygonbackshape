@@ -285,26 +285,26 @@ double DiscretizedPath::Length() const {
     return back().s() - front().s();
 }
 
-//PathPoint DiscretizedPath::Evaluate(double path_s) const {
-//    CHECK(!empty());
-//    auto it_lower = QueryLowerBound(path_s);
-//    if (it_lower == begin()) {
-//        return front();
-//    }
-//    if (it_lower == end()) {
-//        return back();
-//    }
-//    return math::InterpolateUsingLinearApproximation(
-//            *(it_lower - 1), *it_lower, path_s);
-//}
+PathPoint DiscretizedPath::Evaluate(double path_s) const {
 
-//std::vector<PathPoint>::const_iterator DiscretizedPath::QueryLowerBound(
-//        double path_s) const {
-//    auto func = [](const PathPoint& tp, double path_s) {
-//        return tp.s() < path_s;
-//    };
-//    return std::lower_bound(begin(), end(), path_s, func);
-//}
+    auto it_lower = QueryLowerBound(path_s);
+    if (it_lower == begin()) {
+        return front();
+    }
+    if (it_lower == end()) {
+        return back();
+    }
+    return math::InterpolateUsingLinearApproximation(
+            *(it_lower - 1), *it_lower, path_s);
+}
+
+std::vector<PathPoint>::const_iterator DiscretizedPath::QueryLowerBound(
+        double path_s) const {
+    auto func = [](const PathPoint& tp, double path_s) {
+        return tp.s() < path_s;
+    };
+    return std::lower_bound(begin(), end(), path_s, func);
+}
 
 //PathPoint DiscretizedPath::EvaluateReverse(double path_s) const {
 //    CHECK(!empty());

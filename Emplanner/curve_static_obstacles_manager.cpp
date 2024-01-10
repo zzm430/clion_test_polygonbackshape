@@ -738,7 +738,6 @@ void curveStaticObstaclesManager::dealPJPO(
 
 }
 
-
 std::vector<polygonPoint> curveStaticObstaclesManager::getCurvePath(const polygonPoint orderedPt){
     auto result = storage_last_path_[orderedPt];
     return result;

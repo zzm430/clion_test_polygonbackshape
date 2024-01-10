@@ -127,18 +127,13 @@ public:
         return heading_;
     }
 
-
-
-
 private:
-
     double theta_;
     double s_;
     double kappa_;
     double dkappa_;
     double ddkappa_;
     double heading_;
-
 };
 
 struct polyPointHash{

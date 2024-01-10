@@ -6,14 +6,16 @@
 
 namespace searchAlgorithm{
 
-hybridAStarAlgorithm::hybridAStarAlgorithm(const vehicleParam &vehicleParam,
-                                               const coarseSearchParam &coarse_search_param) {
+hybridAStarAlgorithm::hybridAStarAlgorithm(const vehicleParam &vehicle_Param,
+                                               const coarseSearchParam &coarse_search_param):
+                                               vehicle_param_(vehicle_Param),
+                                               coarse_search_param_(coarse_search_param) {
     dubin_generator_ =
-            std::make_unique<Dubin>(vehicleParam, coarse_search_param);
+            std::make_unique<Dubin>(vehicle_Param, coarse_search_param);
     grid_a_star_heuristic_generator_ =
             std::make_unique<GridSearch>(coarse_search_param);
     next_node_num_ = coarse_search_param.next_node_num;
-    max_steer_angle_ = vehicleParam.max_frontWheel_SteerAngle;
+    max_steer_angle_ = vehicle_Param.max_frontWheel_SteerAngle;
     step_size_ = coarse_search_param.step_size;
     xy_grid_resolution_ =
             coarse_search_param.xy_resolution;
@@ -55,12 +57,9 @@ bool hybridAStarAlgorithm::AnalyticExpansion(std::shared_ptr<nodeTractor> curren
 //    if (min_cost > turing_radius_ * M_PI * 1.5) {
 //        return false;
 //    }
-
     auto& optimal_path = all_paths[optimal_path_index];
-
     final_node_ = LoadAnalyticPinCS(optimal_path, current_node, min_cost);
     return true;
-
 }
 
 std::shared_ptr<nodeTractor> hybridAStarAlgorithm::LoadAnalyticPinCS(
@@ -385,7 +384,7 @@ bool hybridAStarAlgorithm::Plan(
             std::cout << "end_node in collision with obstacles";
             return false;
         }
-//        double map_time = Clock::NowInSeconds();
+//      double map_time = Clock::NowInSeconds();
         grid_a_star_heuristic_generator_->GenerateDpMap(ex, ey, XYbounds_,
                                                         obstacles_linesegments_vec_);
 //       std::cout << "map time " << Clock::NowInSeconds() - map_time;
@@ -395,7 +394,7 @@ bool hybridAStarAlgorithm::Plan(
 
         // Hybrid A* begins
         size_t explored_node_num = 0;
-//        double astar_start_time = Clock::NowInSeconds();
+//      double astar_start_time = Clock::NowInSeconds();
         double heuristic_time = 0.0;
         double rs_time = 0.0;
         while (!open_pq_.empty()) {
@@ -451,7 +450,7 @@ bool hybridAStarAlgorithm::Plan(
         }
         std::cout << "explored node num is " << explored_node_num;
         std::cout << "heuristic time is " << heuristic_time;
-        std::cout << "reed shepp time is " << rs_time;
+        std::cout << "dubin time is " << rs_time;
 //        std::cout << "hybrid astar total time is "
 //               << Clock::NowInSeconds() - astar_start_time;
         return true;

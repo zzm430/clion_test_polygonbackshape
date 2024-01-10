@@ -18,33 +18,88 @@ namespace searchAlgorithm{
         virtual ~hybridAStarTest() = default;
 
         void test(){
-
             // 开始计时
             auto start = std::chrono::high_resolution_clock::now();
-            double sx = -10.0;
-            double sy = 0.0;
-            double sphi = 0.0;
-            double ex = -3.0;
-            double ey = 13;
-            double ephi = 0.0;
+
+            //计算方向向量的夹脚
+            polygonPoint  vector_refer(1,0);
+            polygonPoint  vector_1(93.74,469.24);
+            polygonPoint  vector_2(-163.38,11.961);
+            double theta_1 = std::atan2(vector_1.y,vector_1.x);
+            double theta_2 = std::atan2(vector_2.y,vector_2.x);
+            std::cout << "the theta_1 is : " << theta_1 << std::endl;
+            std::cout << "the theta_2 is : " << theta_2 << std::endl;
+            double sx = 254.48;
+            double sy = 462.85;
+            double sphi = 1.37;
+            double ex = 249.7;
+            double ey = 480.12;
+            double ephi = 3.06;
             std::vector<std::vector<math::Vec2d>> obstacles_list;
             HybridAStartResult result;
             math::Vec2d obstacle_vertice_a(1, 12);
             math::Vec2d obstacle_vertice_b(-4.0, 23);
             math::Vec2d obstacle_vertice_c(3,-14);
             math::Vec2d obstacle_vertice_d(10,-3);
-            std::vector<math::Vec2d> obstacle = {obstacle_vertice_a,
-                                                 obstacle_vertice_b,
-                                                 obstacle_vertice_c,
-                                                 obstacle_vertice_d};
+            std::vector<math::Vec2d> obstacle,obstacle1;
 
             std::vector<double> XYbounds_;
-            XYbounds_.push_back(-50.0);
-            XYbounds_.push_back(50.0);
-            XYbounds_.push_back(-50.0);
-            XYbounds_.push_back(50.0);
+            XYbounds_.push_back(225);
+            XYbounds_.push_back(275);
+            XYbounds_.push_back(460);
+            XYbounds_.push_back(510);
 
+            polygonPoint     circle_test(255,480),circle_test1(253,467.5);
+            std::vector<polygonPoint>  circle_polygon,circle_polygon1;
+            double invertal_dis = 2 * M_PI / 30;
+            for( int i = 0;i < 30 ; i++ ){
+                polygonPoint temp,temp1;
+                temp.x = circle_test.x + 1 * cos(invertal_dis * i);
+                temp.y = circle_test.y + 1 * sin(invertal_dis * i);
+                temp1.x = circle_test1.x + 2 * cos(invertal_dis * i);
+                temp1.y = circle_test1.y + 2 * sin(invertal_dis * i);
+                circle_polygon.push_back(temp);
+                circle_polygon1.push_back(temp1);
+            }
+            circle_polygon.push_back(circle_polygon[0]);
+            circle_polygon1.push_back(circle_polygon1[0]);
+            for(auto i : circle_polygon){
+                obstacle.push_back(math::Vec2d(i.x,i.y));
+            }
+            for(auto i : circle_polygon1){
+                obstacle1.push_back(math::Vec2d(i.x,i.y));
+            }
+
+
+#ifdef DEBUG_HYBRIDASTAR
+            std::ofstream   searchRegionShow;
+            searchRegionShow.open("/home/zzm/Desktop/test_path_figure-main/src/searchRegionShow.txt",std::ios::out);
+            searchRegionShow << " " << XYbounds_[0] ;
+            searchRegionShow << " " << XYbounds_[1] ;
+            searchRegionShow << " " << XYbounds_[1] ;
+            searchRegionShow << " " << XYbounds_[0] ;
+            searchRegionShow << " " << XYbounds_[0] ;
+            searchRegionShow << std::endl;
+            searchRegionShow << " " << XYbounds_[2] ;
+            searchRegionShow << " " << XYbounds_[2] ;
+            searchRegionShow << " " << XYbounds_[3] ;
+            searchRegionShow << " " << XYbounds_[3] ;
+            searchRegionShow << " " << XYbounds_[2] ;
+            searchRegionShow << std::endl;
+
+            std::ofstream   obstacleShow;
+            obstacleShow.open("/home/zzm/Desktop/test_path_figure-main/src/obstacleShow.txt",std::ios::out);
+            for(auto i : obstacle1){
+                obstacleShow << " " << i.x();
+            }
+            obstacleShow << std::endl;
+            for(auto j : obstacle1){
+                obstacleShow << " " << j.y();
+            }
+            obstacleShow << std::endl;
+#endif
             obstacles_list.emplace_back(obstacle);
+            obstacles_list.emplace_back(obstacle1);
             coarseSearchParam  coarseSearchParamtest;
             vehicleParam   vehicleParamtest;
             vehicleParamtest.tractor_wheel_base = TRACTOR_WHEEL_BASE;
@@ -86,28 +141,20 @@ namespace searchAlgorithm{
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             double milliseconds = duration.count();
             std::cout << "代码运行时间: " << milliseconds << " 毫秒" << std::endl;
-//            plt::ion();
+
 #ifdef DEBUG_HYBRIDASTAR
-            plt::figure_size(800, 800);
-            plt::grid(false);
-            plt::axis("equal");
-            plt::title("Search Process");
-            KeywordType keywords{{"linewidth", "3"}, {"color", "k"}, {"marker", "D"}};
-            std::vector<double> path_x(result.x.size());
-            std::vector<double> path_y(result.x.size());
+            std::ofstream pathResultShow;
+            pathResultShow.open("/home/zzm/Desktop/test_path_figure-main/src/pathResultShow.txt",std::ios::out);
             for(size_t i = 0;i < result.x.size();i++){
-                path_x[i] = result.x.at(i);
-                path_y[i] = result.y.at(i);
+                pathResultShow << " " << result.x.at(i);
             }
-            plt::plot(path_x, path_y,keywords);
-            plt::grid(true);
-            plt::show();
-            plt::save("plot_image.png");
-            plt::ioff();
+            pathResultShow << std::endl;
+            for(size_t i = 0;i < result.y.size();i++){
+                pathResultShow << " " << result.y.at(i);
+            }
+            pathResultShow << std::endl;
 #endif
-
         }
-
 
     private:
         std::unique_ptr<hybridAStarAlgorithm> hybrid_test;

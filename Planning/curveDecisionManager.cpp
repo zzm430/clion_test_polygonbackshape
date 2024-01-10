@@ -744,33 +744,34 @@ void curveDecisionManager::processFTCPACV(){
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
         }
 
-
 #ifdef DEBUG_CPA_INFO
         //对整个FT-CPA-CV的path点位进行展示
         std::vector<polygonPoint>  storageALLPath;
-        std::reverse(path1.begin(),path1.end());
-        std::reverse(path2.begin(),path2.end());
-        for(auto i : path1){
-            storageALLPath.push_back(i);
-        }
-        for(auto i : pts){
-            storageALLPath.push_back(i);
-        }
-        for(auto i: path2){
-            storageALLPath.push_back(i);
-        }
+        if(ridgeNumber_ == 1 && ptIndex_ == 1){
+            std::reverse(path1.begin(),path1.end());
+            std::reverse(path2.begin(),path2.end());
+            for(auto i : path1){
+                storageALLPath.push_back(i);
+            }
+            for(auto i : pts){
+                storageALLPath.push_back(i);
+            }
+            for(auto i: path2){
+                storageALLPath.push_back(i);
+            }
 
-        std::ofstream   testFTCPACV;
-        testFTCPACV.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACV.txt",std::ios::out);
-        for(auto i : storageALLPath){
-            testFTCPACV << " " << i.x ;
+            std::ofstream   testFTCPACV;
+            testFTCPACV.open("/home/zzm/Desktop/test_path_figure-main/src/testFTCPACV.txt",std::ios::out);
+            for(auto i : storageALLPath){
+                testFTCPACV << " " << i.x ;
+            }
+            testFTCPACV << std::endl;
+            for(auto j : storageALLPath){
+                testFTCPACV <<" " << j.y;
+            }
+            testFTCPACV << std::endl;
+            testFTCPACV.close();
         }
-        testFTCPACV << std::endl;
-        for(auto j : storageALLPath){
-            testFTCPACV <<" " << j.y;
-        }
-        testFTCPACV << std::endl;
-        testFTCPACV.close();
 
 //        //记录曲率相关数据
 //        curveCurvatureCalculate curveCurvatureCalculateInstance(pts);

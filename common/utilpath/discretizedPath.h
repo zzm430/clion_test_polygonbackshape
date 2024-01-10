@@ -46,21 +46,35 @@ struct PathPoint   {
     double heading() const {
         return heading_;
     }
+
     void set_heading(double heading) {
         heading_ = heading;
     }
+
+    void set_x(double x){
+        x_ = x;
+    }
+
+    void set_y(double y){
+        y_ = y;
+    }
+
     void set_s(double s) {
         s_ = s;
     }
+
     void set_theta(double theta) {
         theta_ = theta;
     }
+
     void set_kappa(double kappa) {
         kappa_ = kappa;
     }
+
     void set_dkappa(double dkappa) {
         dkappa_ = dkappa;
     }
+
     void set_ddkappa(double ddkappa) {
         ddkappa_ = ddkappa;
     }
@@ -128,7 +142,7 @@ public:
 
     double Length() const;
 //
-//    data::PathPoint Evaluate(double path_s) const;
+    PathPoint Evaluate(double path_s) const;
 //
 //    data::PathPoint EvaluateReverse(double path_s) const;
 //
@@ -188,8 +202,8 @@ public:
                          SLBoundary* slBoundary) const;
 
 protected:
-//    std::vector<data::PathPoint>::const_iterator QueryLowerBound(
-//            double path_s) const;
+    std::vector<PathPoint>::const_iterator QueryLowerBound(
+            double path_s) const;
 //    std::vector<data::PathPoint>::const_iterator QueryUpperBound(
 //            double path_s) const;
 
