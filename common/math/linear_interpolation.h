@@ -6,11 +6,12 @@
 #define POLYGONBACKSHAPE_LINEAR_INTERPOLATION_H
 
 #include <cmath>
-#include "common/utilpath/discretizedPath.h"
+#include "common/utilpath/path_point.h"
 #include "common/utilpath/path_slPoint.h"
 #include "common/math/vec_2d.h"
 #include "common/math/math_utils.h"
 #include "easylogging++.h"
+
 namespace math{
     /**
  * @brief Linear interpolation between two points of type T.
@@ -46,11 +47,13 @@ namespace math{
  * @param a The value of the spherically interpolated angle.
  * @return Interpolated angle.
  */
+
     double slerp(const double a0, const double t0, const double a1, const double t1,
                  const double t);
 
     slPoint InterpolateUsingLinearApproximation(const slPoint &p0,
-                                                const slPoint &p1, const double w);
+                                                const slPoint &p1,
+                                                const double w);
 
     PathPoint InterpolateUsingLinearApproximation(const PathPoint &p0,
                                                   const PathPoint &p1,

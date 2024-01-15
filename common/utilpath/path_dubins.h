@@ -6,7 +6,7 @@
 #define POLYGONBACKSHAPE_PATH_DUBINS_H
 #include <vector>
 
-struct dubinPath{
+struct dubinPath {
     std::vector<double> segs_lengths;
     std::vector<char> segs_types;
     double total_length = 0.0;

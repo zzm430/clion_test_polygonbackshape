@@ -41,6 +41,16 @@ namespace  smoothalgorithm{
         femPosDeviationParamInstance.verboase = VERBOSE;
         femPosDeviationParamInstance.scaled_termination = SCALED_TERMINATION;
         femPosDeviationParamInstance.warm_start_m = WARM_START_M;
+
+        femPosDeviationParamInstance.qp_weigth_fem_pos_deviation = QP_WEIGHT_FEM_POS_DEVIATION;
+        femPosDeviationParamInstance.qp_weight_path_length = QP_WEIGHT_PATH_LENGTH;
+        femPosDeviationParamInstance.qp_weigth_ref_deviation = QP_WEIGHT_FEM_POS_DEVIATION;
+        femPosDeviationParamInstance.qp_max_iter = QP_MAX_ITER;
+        femPosDeviationParamInstance.qp_time_limit = QP_TIME_LIMIT;
+        femPosDeviationParamInstance.qp_verbose = QP_VERBOSE;
+        femPosDeviationParamInstance.qp_sacled_termination = QP_SACLED_TERMINATION;
+        femPosDeviationParamInstance.qp_warm_start = QP_WARM_START;
+
         FemPosDeviationSmoother   smoothFem(femPosDeviationParamInstance);
         normalizePoints(&xy_pts_);
 

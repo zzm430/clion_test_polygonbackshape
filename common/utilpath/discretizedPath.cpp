@@ -294,8 +294,10 @@ PathPoint DiscretizedPath::Evaluate(double path_s) const {
     if (it_lower == end()) {
         return back();
     }
-    return math::InterpolateUsingLinearApproximation(
-            *(it_lower - 1), *it_lower, path_s);
+
+    return math::InterpolateUsingLinearApproximation(*(it_lower - 1),
+                                                     *it_lower,
+                                                     path_s);
 }
 
 std::vector<PathPoint>::const_iterator DiscretizedPath::QueryLowerBound(

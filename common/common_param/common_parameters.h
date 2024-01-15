@@ -63,7 +63,7 @@
 //#define  F1                       1
 //#define  F2                       1
 //#define  F3                       1
-#define  CIRCLE_RIDIS_R             6        //圆半径
+#define  CIRCLE_RIDIS_R             8        //圆半径
 #define  MAX_CIRCLE_RIDIS_R         12       //设置的最大圆半径
 #define  FISHNail_DIFF_DIS          0.2      //间隔20cm
 #define  CPA_DIFF_DIS               0.2      //CPA系列算法间隔
@@ -152,15 +152,42 @@
 #define DEBUG_HYBRIDASTAR
 
 //定制fem避障算法参数
-#define EGO_LENGTH   4
+#define EGO_LENGTH   3
 #define EGO_WIDTH    4
-#define BACK_EDGE_TO_CENTER 2.2
-#define INTERPOLATED_DELTA_S 0.1
-#define REANCHORING_TRAILS_NUM 50
+#define BACK_EDGE_TO_CENTER 0.8
+#define INTERPOLATED_DELTA_S 0.3
+#define REANCHORING_TRAILS_NUM 500
 #define REANCHORING_LENGTH_STDDEV 0.25
 #define ESTIMATE_BOUND  false
-#define DEFAULT_BOUND   2.0
+#define DEFAULT_BOUND   8
 #define VEHICLE_SHORTEST_DIMENSION 1.04
-#define COLLISION_DECREASE_RATIO 0.9
+#define COLLISION_DECREASE_RATIO 1.2
+
+//customFem避障算法相关参数设定
+#define  APPLY_CURVATURE_CONSTRAINT_TWO  true
+#define  WEIGHT_FEM_POS_DEVIATION_TWO    1
+#define  WEIGHT_PATH_LEGNTH_TWO          0
+#define  WEIGHT_REF_DEVIATION_TWO        0
+#define  MAX_ITER_FEM_TWO                500
+#define  TIME_LIMIT_TWO                  5
+#define  VERBOSE_TWO                     false
+#define  SCALED_TERMINATION_TWO          true
+#define  WARM_START_M_TWO                true
+#define  BOUND_TWO                       6
+#define  WEIGHT_CURVATURE_CONSTRAINT_SLACK_VAR_TWO 1
+#define  SQP_SUB_MAX_ITER_TWO                      0.0
+#define  SQP_FTOL_TWO                              0.0
+#define  SQP_PEN_MAX_ITER_TWO                      0.0
+#define  SQP_CTOL_TWO                              0.0
+
+//fem + qp算法参数设定
+#define QP_WEIGHT_FEM_POS_DEVIATION 1
+#define QP_WEIGHT_PATH_LENGTH 0
+#define QP_WEIGTH_REF_DEVIATION 0
+#define QP_MAX_ITER     400
+#define QP_TIME_LIMIT   5
+#define QP_VERBOSE     false
+#define QP_SACLED_TERMINATION true
+#define QP_WARM_START   true
 
 #endif    //COMMON_PARAMETERS_H

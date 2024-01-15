@@ -138,6 +138,8 @@ add_executable(polygonbackshape
         smooth/customFemAlgorithm/fem_pos_deviation_param.h
         smooth/customobsFemAlgorithm/fem_obstacle_smooth_manager.h
         smooth/customobsFemAlgorithm/fem_obstacle_smooth_manager.cpp
+        common/utilpath/path_point.h
+        common/print/boxPrint.h
 )
 
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})

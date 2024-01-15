@@ -23,6 +23,6 @@ public:
    double default_bound;
    double vehicle_shortest_dimension;
    double collision_decrease_ratio;
-
 };
+
 #endif //POLYGONBACKSHAPE_FEM_OBSTACLE_SMOOTH_PARAM_H

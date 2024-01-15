@@ -18,45 +18,47 @@ bool FemPosDeviationSmoother::Solve(
     const std::vector<double>& bounds,
     std::vector<double>* opt_x,
     std::vector<double>* opt_y) {
-  if (APPLY_CURVATURE_CONSTRAINT) {
+  if ( APPLY_CURVATURE_CONSTRAINT ) {
     return SqpWithOsqp(raw_point2d, bounds, opt_x, opt_y);
+  } else{
+      return QpWithOsqp(raw_point2d, bounds, opt_x, opt_y);
   }
-//  return QpWithOsqp(raw_point2d, bounds, opt_x, opt_y);
+//
 }
 
-//bool FemPosDeviationSmoother::QpWithOsqp(
-//    const std::vector<std::pair<double, double>>& raw_point2d,
-//    const std::vector<double>& bounds,
-//    std::vector<double>* opt_x,
-//    std::vector<double>* opt_y) {
-//  if (opt_x == nullptr || opt_y == nullptr) {
-//    return false;
-//  }
-//
-//  FemPosDeviationOsqpInterface solver;
-//
-//  solver.set_weight_fem_pos_deviation(
-//      config_.fem_pos.weight_fem_pos_deviation());
-//  solver.set_weight_path_length(config_.fem_pos.weight_path_length());
-//  solver.set_weight_ref_deviation(config_.fem_pos.weight_ref_deviation());
-//
-//  solver.set_max_iter(config_.fem_pos.max_iter());
-//  solver.set_time_limit(config_.fem_pos.time_limit());
-//  solver.set_verbose(config_.fem_pos.verbose());
-//  solver.set_scaled_termination(config_.fem_pos.scaled_termination());
-//  solver.set_warm_start(config_.fem_pos.warm_start());
-//
-//  solver.set_ref_points(raw_point2d);
-//  solver.set_bounds_around_refs(bounds);
-//
-//  if (!solver.Solve()) {
-//    return false;
-//  }
-//
-//  *opt_x = solver.opt_x();
-//  *opt_y = solver.opt_y();
-//  return true;
-//}
+bool FemPosDeviationSmoother::QpWithOsqp(
+    const std::vector<std::pair<double, double>>& raw_point2d,
+    const std::vector<double>& bounds,
+    std::vector<double>* opt_x,
+    std::vector<double>* opt_y) {
+  if (opt_x == nullptr || opt_y == nullptr) {
+    return false;
+  }
+
+  FemPosDeviationOsqpInterface solver;
+
+  solver.set_weight_fem_pos_deviation(
+          fem_pos_deviation_param_.qp_weigth_fem_pos_deviation);
+  solver.set_weight_path_length(fem_pos_deviation_param_.qp_weight_path_length);
+  solver.set_weight_ref_deviation(fem_pos_deviation_param_.weight_ref_deviation);
+
+  solver.set_max_iter(fem_pos_deviation_param_.qp_max_iter);
+  solver.set_time_limit(fem_pos_deviation_param_.qp_time_limit);
+  solver.set_verbose(fem_pos_deviation_param_.verboase);
+  solver.set_scaled_termination(fem_pos_deviation_param_.qp_sacled_termination);
+  solver.set_warm_start(fem_pos_deviation_param_.qp_warm_start);
+
+  solver.set_ref_points(raw_point2d);
+  solver.set_bounds_around_refs(bounds);
+
+  if (!solver.Solve()) {
+    return false;
+  }
+
+  *opt_x = solver.opt_x();
+  *opt_y = solver.opt_y();
+  return true;
+}
 
 bool FemPosDeviationSmoother::SqpWithOsqp(
     const std::vector<std::pair<double, double>>& raw_point2d,

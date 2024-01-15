@@ -12,6 +12,7 @@ public:
     femPosDeviationParam() = default;
     virtual ~femPosDeviationParam() = default;
 public:
+    //sqp
     double  weight_fem_pos_deviation;
     double  weight_path_length;
     double  weight_ref_deviation;
@@ -26,6 +27,16 @@ public:
     bool  verboase;
     bool  scaled_termination;
     bool  warm_start_m;
+
+    //qp
+    double qp_weigth_fem_pos_deviation;
+    double qp_weight_path_length;
+    double qp_weigth_ref_deviation;
+    double qp_max_iter;
+    double qp_time_limit;
+    bool qp_verbose;
+    bool qp_sacled_termination;
+    double qp_warm_start;
 
 };
 #endif //POLYGONBACKSHAPE_FEM_POS_DEVIATION_PARAM_H

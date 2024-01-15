@@ -19,9 +19,13 @@ searchRegionShow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/searc
 searchRegionShow_x = searchRegionShow[0]
 searchRegionShow_y = searchRegionShow[1]
 
-obstacleShow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/obstacleShow.txt')
+obstacleShow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testobstaclem.txt')
 obstacleShow_x = obstacleShow[0]
 obstacleShow_y = obstacleShow[1]
+
+# test_smoothed_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_smoothed_path.txt')
+# test_smoothed_path_x = test_smoothed_path[0]
+# test_smoothed_path_y = test_smoothed_path[1]
 
 pathResultShow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/pathResultShow.txt')
 pathResultShow_x = pathResultShow[0]
@@ -31,13 +35,23 @@ testVirtualLIne = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/testVi
 testVirtualLIne_x = testVirtualLIne[0]
 testVirtualLIne_y = testVirtualLIne[1]
 
-testfemSmooth = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testfemSmooth.txt')
-testfemSmooth_x = testfemSmooth[0]
-testfemSmooth_y = testfemSmooth[1]
+testfemObstaclePath = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testfemObstaclePath.txt')
+testfemObstaclePath_x = testfemObstaclePath[0]
+testfemObstaclePath_y = testfemObstaclePath[1]
+
+temp_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/temp_path.txt')
+temp_path_x = temp_path[0]
+temp_path_y = temp_path[1]
+
+test_temp_path1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_temp_path1.txt')
+test_temp_path1_x = test_temp_path1[0]
+test_temp_path1_y = test_temp_path1[1]
 
 testObstacleOriginLine = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/testObstacleOrginLine.txt')
 testObstacleOriginLine_x = testObstacleOriginLine[0]
 testObstacleOriginLine_y = testObstacleOriginLine[1]
+
+test_boxs_show = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show.txt')
 
 # tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
 
@@ -45,14 +59,18 @@ testObstacleOriginLine_y = testObstacleOriginLine[1]
 # test_PJPO_path_x = test_PJPO_path[0]
 # test_PJPO_path_y = test_PJPO_path[1]
 
-with open('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt', 'r') as file:
-    lines = file.readlines()
+test_obstacle_test = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_obstacle_test.txt')
+test_obstacle_test_x = test_obstacle_test[0]
+test_obstacle_test_y = test_obstacle_test[1]
 
-paths = []
-for i in range(0, len(lines), 2):
-    x_values = list(map(float, lines[i].split()))
-    y_values = list(map(float, lines[i + 1].split()))
-    paths.append((x_values, y_values))
+# with open('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt', 'r') as file:
+#     lines = file.readlines()
+#
+# paths = []
+# for i in range(0, len(lines), 2):
+#     x_values = list(map(float, lines[i].split()))
+#     y_values = list(map(float, lines[i + 1].split()))
+#     paths.append((x_values, y_values))
 
 with open('/home/zzm/Desktop/test_path_figure-main/src/pathProfile1.txt','r') as file1:
     lines1 = file1.readlines()
@@ -102,16 +120,26 @@ ax.plot(testObstacleOriginLine_x,testObstacleOriginLine_y,color='r',markerfaceco
 ax.plot(testVirtualLIne_x,testVirtualLIne_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
 # ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.4,markersize=4)
 ax.plot(testFTCPACV_x,testFTCPACV_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(searchRegionShow_x,searchRegionShow_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(searchRegionShow_x,searchRegionShow_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(obstacleShow_x,obstacleShow_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
-ax.plot(pathResultShow_x,pathResultShow_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.plot(pathResultShow_x,pathResultShow_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(testfemObstaclePath_x,testfemObstaclePath_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+# ax.plot(temp_path_x,temp_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
+# ax.plot(test_temp_path1_x,test_temp_path1_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 
-for path in paths:
-    ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=4)
+#  绘制线段
+for i in range(0, len(test_obstacle_test[0])-1, 2):
+    x = [test_obstacle_test[0][i], test_obstacle_test[0][i+1]]
+    y = [test_obstacle_test[1][i], test_obstacle_test[1][i+1]]
+    plt.plot(x, y,color='g',linewidth= 0.3,markersize=1)
+    plt.text(test_obstacle_test[0][i], test_obstacle_test[1][i], f"({test_obstacle_test[0][i]}, {test_obstacle_test[1][i]})")
 
-for path1 in referpaths1:
-    ax.plot(path1[0], path1[1], color='g', markerfacecolor='green', marker='o', label='keypoints data', linewidth=1.3,
-                markersize=4)
+# for path in paths:
+#     ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=4)
+#
+# for path1 in referpaths1:
+#     ax.plot(path1[0], path1[1], color='g', markerfacecolor='green', marker='o', label='keypoints data', linewidth=1.3,
+#                 markersize=4)
 
 #绘制多边形
 for polygon in polygons:
@@ -130,12 +158,37 @@ for polygon in polygons:
 #         ax.add_patch(polygon1)
 #         ax.add_patch(polygonf1)
 
+colors = ['red', 'green', 'blue', 'yellow']
+# for m in range(len(test_boxs_show) - 1):
+#     if m % 2 == 0:
+#         coords11 = [(test_boxs_show[m][j], test_boxs_show[m + 1][j]) for j in range(4)]
+#         polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor=colors[m // 2], alpha=0.9, linewidth=1)
+#         # 设置透明度为 0.5
+#         ax.add_patch(polygonf1)
+
+for m in range(len(test_boxs_show) - 1):
+    if m % 2 == 0:
+        coords11 = [(test_boxs_show[m][j], test_boxs_show[m + 1][j]) for j in range(4)]
+
+        if m // 2 < len(colors):
+            polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor=colors[m // 2], alpha=0.9, linewidth=0.1)
+        else:
+            # 如果颜色不足，则循环使用颜色列表中的颜色
+            polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor=colors[(m // 2) % len(colors)], alpha=0.9,
+                                linewidth=0.1)
+
+        ax.add_patch(polygonf1)
+        # 显示坐标点位
+        # for coord in coords11:
+        #     ax.text(coord[0], coord[1], f'({coord[0]}, {coord[1]})', fontsize=8, color='black', ha='center',
+        #             va='center')
+
 # ax.plot(referenceLine2_x,referenceLine2_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 
 print("x values:", x_values)
 print("y values:", y_values)
-#
-# for a, b in zip(CC_x,CC_y):
+
+# for a, b in zip(test_temp_path1_x,test_temp_path1_y):
 #         plt.text(a, b, (a, b), ha='center', va='bottom', fontsize=10)
 
 plt.axis('equal')  # 让横坐标间隔等于纵坐标间隔

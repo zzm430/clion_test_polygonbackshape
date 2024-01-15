@@ -83,9 +83,6 @@ public:
            std::vector<double> d_condition);
 
    static  double normalizeAngle(double angle);
-
-
-
 };
 
 

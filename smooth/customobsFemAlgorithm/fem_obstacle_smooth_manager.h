@@ -4,9 +4,11 @@
 
 #ifndef POLYGONBACKSHAPE_FEM_OBSTACLE_SMOOTH_MANAGER_H
 #define POLYGONBACKSHAPE_FEM_OBSTACLE_SMOOTH_MANAGER_H
+#include "common/math/common_math.h"
 #include "common/utilpath/path_polygonPoint.h"
 #include "smooth/customobsFemAlgorithm/fem_obstacle_smooth_algorithm.h"
 #include "smooth/customobsFemAlgorithm/fem_obstacle_smooth_param.h"
+#include "common/plot/computePathProfile.h"
 
 namespace  smoothalgorithm{
     class femObstacleManager{
@@ -20,6 +22,5 @@ namespace  smoothalgorithm{
         std::vector<polygonPoint>  origin_path_;
         std::vector<polygonPoint>  storage_smoothed_path_;
     };
-
 }
 #endif //POLYGONBACKSHAPE_FEM_OBSTACLE_SMOOTH_MANAGER_H

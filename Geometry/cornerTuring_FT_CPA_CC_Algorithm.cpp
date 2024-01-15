@@ -66,7 +66,7 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
                  pointbst(extendLeaveLine_1[1].x, extendLeaveLine_1[1].y));
     std::deque<pointbst> output1;
     boost::geometry::intersection(seg1, seg2, output1);
-    if (!output1.empty()){
+    if ( !output1.empty() ){
         std::cout << "Intersection point: ("
                   << output1.front().x()
                   << ", "
@@ -96,7 +96,7 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
     if(angleInt_ < M_PI){
         angleC = angleInt_ + M_PI;
         F2_ = 1;
-    }else{
+    } else {
         angleC = 3 * M_PI - angleInt_;
         F2_ = -1;
     }
@@ -128,9 +128,9 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
     reprojectionFTCPACC(storageAllPath_);
 
     //更新整个弯道的起始点和结束点
-//    common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
-//                                                 leaveLine_,
-//                                                 storageAllPath_);
+    //common::commonMath::curveStartAndEndPtUpdate(arriveLine_,
+    //                                                 leaveLine_,
+    //                                                 storageAllPath_);
 
     //增加弯道属性点前进信息
     for(int i = 0;i < storageAllPath_.size();i++){
@@ -140,6 +140,7 @@ cornerTuringFTCPACCAlgorithm::cornerTuringFTCPACCAlgorithm(
             storageAllPath_[i].pathPtType_ = pathPtType::FORWARD;
         }
     }
+
 #ifdef DEBUG_CPA_INFO
     std::string C4name = "/home/zzm/Desktop/test_path_figure-main/src/FTCPACC.txt";
     normalPrint C4file(C4name);

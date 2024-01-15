@@ -25,11 +25,11 @@ namespace bg = boost::geometry;
 INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char **argv) {
-    searchAlgorithm::hybridAStarTest hybridAStarTest1;
-    hybridAStarTest1.test();
-    std::cout <<" adfdsf!" << std::endl;
-
-    return 0;
+//    searchAlgorithm::hybridAStarTest hybridAStarTest1;
+//    hybridAStarTest1.test();
+//    std::cout <<" adfdsf!" << std::endl;
+//
+//    return 0;
     //获取到原始点位信息
     std::cout << "the argc number is :" << argc  << std::endl;
     std::cout << "the argv frist is :" << *argv <<  std::endl;
@@ -79,11 +79,9 @@ int main(int argc, char **argv) {
     temp_point.x = (narrowingPolygonPoints[0].x + narrowingPolygonPoints[1].x)/2;
     temp_point.y = (narrowingPolygonPoints[0].y + narrowingPolygonPoints[1].y)/2;
 
-
     instance_pathPolygonPlan.cgalUpdatePolygonPointsINcrease();
     instance_pathPolygonPlan.cgalUpatePolygonPointsSequence();
     instance_pathPolygonPlan.cgalComputebackShapeKeypoints();
-
 
     auto keypoints_m = instance_pathPolygonPlan.cgalGetBackShapeKeyPoints();
     LOG(INFO) << "the all ridge number is : " << keypoints_m.size();

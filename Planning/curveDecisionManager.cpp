@@ -60,7 +60,7 @@ void curveDecisionManager::processCurveType(){
                 curveType_ = CurveDecision::C_CPA_CC;
             }
         }
-    }else{
+    } else {
         //to do
     }
 }
@@ -564,7 +564,6 @@ void curveDecisionManager::processCCPA(){
 }
 
 void curveDecisionManager::processFTCPACC(){
-//    if(ridgeNumber_ == 0 && ptIndex_ == 2){
         cornerTuringFTCPACCAlgorithm cornerTuringFTCPACCAlgorithmInstance(
                 arriveLine_,
                 leaveLine_);
@@ -583,7 +582,6 @@ void curveDecisionManager::processFTCPACC(){
         }else{
             backshape_fishnail_curve_path_[cgalbackShape_keypoints_[ridgeNumber_][ptIndex_]] = all_path;
         }
-//    }
 }
 
 void curveDecisionManager::processFTCPACV(){
@@ -773,6 +771,8 @@ void curveDecisionManager::processFTCPACV(){
             testFTCPACV.close();
         }
 
+
+
 //        //记录曲率相关数据
 //        curveCurvatureCalculate curveCurvatureCalculateInstance(pts);
 //        auto kData = curveCurvatureCalculateInstance.getPathPtsR();
@@ -794,6 +794,44 @@ void curveDecisionManager::processFTCPACV(){
             tractorHeadPtsStream.writePts(pts_1,pts_2);
         }
 #endif
+
+#ifdef  DEBUG_CPA_INFO
+    if( ridgeNumber_ == 1  &&  ptIndex_ == 1){
+        //0到100做差值处理
+        polygonPoint p1(0,0),p2(100,0);
+        std::vector<polygonPoint> pts1;
+        pts1.push_back(p1);
+        pts1.push_back(p2);
+        auto testPts =  common::commonMath::densify2(pts1,100);
+        std::ofstream test_path;
+        test_path.open("/home/zzm/Desktop/test_path_figure-main/src/temp_path.txt",std::ios::out);
+        for(auto i : pts) {
+            test_path << " " << i.x ;
+        }
+        test_path << std::endl;
+        for(auto j : pts) {
+            test_path << " " << j.y;
+        }
+        test_path << std::endl;
+        //针对test_path做避障处理
+        smoothalgorithm::femObstacleManager femObstacleManagerIns(pts);
+        femObstacleManagerIns.process();
+        auto get_smoothed_path = femObstacleManagerIns.getSmoothedPath();
+        std::ofstream test_smoothed_path;
+        test_smoothed_path.open(
+                "/home/zzm/Desktop/test_path_figure-main/src/test_smoothed_path.txt",
+                std::ios::out);
+        for(auto i : get_smoothed_path){
+            test_smoothed_path <<" " <<  i.x ;
+        }
+        test_smoothed_path << std::endl;
+        for(auto j : get_smoothed_path){
+            test_smoothed_path <<" " << j.y;
+        }
+        test_smoothed_path << std::endl;
+    }
+#endif
+
 //    }
 }
 

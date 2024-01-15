@@ -5,6 +5,7 @@
 #ifndef POLYGONBACKSHAPE_FEM_OBSTACLE_SMOOTH_ALGORITHM_H
 #define POLYGONBACKSHAPE_FEM_OBSTACLE_SMOOTH_ALGORITHM_H
 #include <random>
+#include "common/designPattern/singleton.hpp"
 #include "Eigen/Eigen"
 #include "common/math/box2d.h"
 #include "common/math/line_segment_2d.h"
@@ -16,6 +17,7 @@
 #include "common/utilpath/path_polygonPoint.h"
 #include "easylogging++.h"
 #include "common/plot/computePathProfile.h"
+#include "common/print/boxPrint.h"
 
 namespace  smoothalgorithm{
    class femObstacleAnchoringSmoother{

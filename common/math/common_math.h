@@ -689,6 +689,21 @@ namespace common{
             return a.distanceTo(specifiedPoint) < b.distanceTo(specifiedPoint);
         }
 
+        //去除vector点位信息中的nan值
+        static void deleteNanPts(std::vector<polygonPoint> & pts){
+            std::vector<polygonPoint>  temp_storage_pts;
+            for(auto i : pts){
+                if(std::isnan(i.x) && std::isnan(i.y)){
+                    std::cout << "curve show NAN value !" << std::endl;
+                    continue;
+                }else{
+                    temp_storage_pts.push_back(i);
+                }
+            }
+            pts.clear();
+            pts = temp_storage_pts;
+        }
+
     };
 
 }

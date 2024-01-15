@@ -5,8 +5,6 @@
 
 #include <Emplanner/frenet_converter.h>
 
-
-
 //[x,y] --->[s,d]
 std::pair<double ,double> FrenetConverter::cartesianToFrenet1D(
         double rs,

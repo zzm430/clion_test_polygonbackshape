@@ -20,7 +20,7 @@
 #include "common/print/tractorPolyPrint2.h"
 #include "common/plot/curveCurvatureCalculate.h"
 #include "Decision/curveDecisionType.h"
-
+#include "smooth/customobsFemAlgorithm/fem_obstacle_smooth_manager.h"
 
 class curveDecisionManager {
 public:

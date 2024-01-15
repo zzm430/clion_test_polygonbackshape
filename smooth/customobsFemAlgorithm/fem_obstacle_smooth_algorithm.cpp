@@ -14,16 +14,15 @@ femObstacleAnchoringSmoother::femObstacleAnchoringSmoother(
     ego_width_ = fem_obstacle_param_.ego_width;
     center_shift_distance_ = ego_length_ /2.0
             - fem_obstacle_param_.back_edge_to_center;
+    gear_ = true;
 }
 
 bool femObstacleAnchoringSmoother::Smooth(const std::vector<polygonPoint> &pathPts) {
-
     if (pathPts.size() < 2) {
         LOG(ERROR) << "reference points size smaller than two, smoother early "
                   "returned";
         return false;
     }
-
     // Set obstacle in form of linesegments
     std::vector<std::vector<math::LineSegment2d>> obstacles_linesegments_vec;
     for (const auto& obstacle_vertices : obstacles_vertices_vec_) {
@@ -38,10 +37,11 @@ bool femObstacleAnchoringSmoother::Smooth(const std::vector<polygonPoint> &pathP
     }
     obstacles_linesegments_vec_ = std::move(obstacles_linesegments_vec);
 
-    // Interpolate the traj
+    //Interpolate the traj
     DiscretizedPath warm_start_path;
     size_t xWS_size = pathPts.size();
     double accumulated_s = 0.0;
+
     math::Vec2d last_path_point(pathPts[0].x, pathPts[0].y);
     for (size_t i = 0; i < xWS_size; ++i) {
         math::Vec2d cur_path_point(pathPts[i].x, pathPts[i].y);
@@ -79,6 +79,19 @@ bool femObstacleAnchoringSmoother::Smooth(const std::vector<polygonPoint> &pathP
         enforce_initial_kappa_ = true;
     }
 
+#ifdef  DEBUG_STATIC_OBSTACLE
+    std::ofstream  test_temp_path1;
+    test_temp_path1.open("/home/zzm/Desktop/test_path_figure-main/src/test_temp_path1.txt",std::ios::out);
+    for(auto i : interpolated_warm_start_point2ds){
+        test_temp_path1 << " " << i.first;
+    }
+    test_temp_path1 << std::endl;
+    for(auto j : interpolated_warm_start_point2ds){
+        test_temp_path1 << " " << j.second;
+    }
+    test_temp_path1 << std::endl;
+#endif
+
     // Adjust heading to ensure heading continuity
     AdjustStartEndHeading(pathPts, &interpolated_warm_start_point2ds);
 
@@ -100,14 +113,14 @@ bool femObstacleAnchoringSmoother::Smooth(const std::vector<polygonPoint> &pathP
     // Check initial path collision avoidance, if it fails, smoother assumption
     // fails. Try reanchoring
     input_colliding_point_index_.clear();
-    if (!CheckCollisionAvoidance(interpolated_warm_start_path,
-                                 &input_colliding_point_index_)) {
-        LOG(ERROR) << "Interpolated input path points colliding with obstacle";
-        // if (!ReAnchoring(colliding_point_index, &interpolated_warm_start_path)) {
-        //   AERROR << "Fail to reanchor colliding input path points";
-        //   return false;
-        // }
-    }
+//    if (!CheckCollisionAvoidance(interpolated_warm_start_path,
+//                                 &input_colliding_point_index_)) {
+//        LOG(ERROR) << "Interpolated input path points colliding with obstacle";
+////         if (!ReAnchoring(input_colliding_point_index_, &interpolated_warm_start_path)) {
+////           LOG(ERROR) << "Fail to reanchor colliding input path points";
+////           return false;
+////         }
+//    }
 
     // Smooth path to have smoothed x, y, phi, kappa and s
     DiscretizedPath smoothed_path_points;
@@ -115,6 +128,7 @@ bool femObstacleAnchoringSmoother::Smooth(const std::vector<polygonPoint> &pathP
                     &smoothed_path_points)) {
         return false;
     }
+
     for(auto i : smoothed_path_points){
         polygonPoint tempPt;
         tempPt.x = i.x();
@@ -334,7 +348,8 @@ bool femObstacleAnchoringSmoother::GenerateInitialBounds(
 }
 
 bool femObstacleAnchoringSmoother::SmoothPath(
-            const DiscretizedPath& raw_path_points, const std::vector<double>& bounds,
+            const DiscretizedPath& raw_path_points,
+            const std::vector<double>& bounds,
             DiscretizedPath* smoothed_path_points) {
         std::vector<std::pair<double, double>> raw_point2d;
         std::vector<double> flexible_bounds;
@@ -344,24 +359,35 @@ bool femObstacleAnchoringSmoother::SmoothPath(
         flexible_bounds = bounds;
 
       femPosDeviationParam  femPosDeviationParamInstance;
-      femPosDeviationParamInstance.weight_fem_pos_deviation = WEIGHT_FEM_POS_DEVIATION;
-      femPosDeviationParamInstance.weight_path_length = WEIGHT_PATH_LEGNTH;
-      femPosDeviationParamInstance.weight_ref_deviation = WEIGHT_REF_DEVIATION;
-      femPosDeviationParamInstance.weight_curvature_constrain_slack_var = WEIGHT_CURVATURE_CONSTRAINT_SLACK_VAR;
-      femPosDeviationParamInstance.apply_curvature_constraint = APPLY_CURVATURE_CONSTRAINT;
-      femPosDeviationParamInstance.sqp_sub_max_iter = SQP_SUB_MAX_ITER;
-      femPosDeviationParamInstance.sqp_ftol = SQP_FTOL;
-      femPosDeviationParamInstance.sqp_pen_max_iter = SQP_PEN_MAX_ITER;
-      femPosDeviationParamInstance.sqp_ctol = SQP_CTOL;
-      femPosDeviationParamInstance.max_iter_fem = MAX_ITER_FEM;
-      femPosDeviationParamInstance.time_limit = TIME_LIMIT;
-      femPosDeviationParamInstance.verboase = VERBOSE;
-      femPosDeviationParamInstance.scaled_termination = SCALED_TERMINATION;
-      femPosDeviationParamInstance.warm_start_m = WARM_START_M;
+      //sqp参数
+      femPosDeviationParamInstance.weight_fem_pos_deviation = WEIGHT_FEM_POS_DEVIATION_TWO;
+      femPosDeviationParamInstance.weight_path_length = WEIGHT_PATH_LEGNTH_TWO;
+      femPosDeviationParamInstance.weight_ref_deviation = WEIGHT_REF_DEVIATION_TWO;
+      femPosDeviationParamInstance.weight_curvature_constrain_slack_var = WEIGHT_CURVATURE_CONSTRAINT_SLACK_VAR_TWO;
+      femPosDeviationParamInstance.apply_curvature_constraint = APPLY_CURVATURE_CONSTRAINT_TWO;
+      femPosDeviationParamInstance.sqp_sub_max_iter = SQP_SUB_MAX_ITER_TWO;
+      femPosDeviationParamInstance.sqp_ftol = SQP_FTOL_TWO;
+      femPosDeviationParamInstance.sqp_pen_max_iter = SQP_PEN_MAX_ITER_TWO;
+      femPosDeviationParamInstance.sqp_ctol = SQP_CTOL_TWO;
+      femPosDeviationParamInstance.max_iter_fem = MAX_ITER_FEM_TWO;
+      femPosDeviationParamInstance.time_limit = TIME_LIMIT_TWO;
+      femPosDeviationParamInstance.verboase = VERBOSE_TWO;
+      femPosDeviationParamInstance.scaled_termination = SCALED_TERMINATION_TWO;
+      femPosDeviationParamInstance.warm_start_m = WARM_START_M_TWO;
+      //qp参数
+      femPosDeviationParamInstance.qp_weigth_fem_pos_deviation = QP_WEIGHT_FEM_POS_DEVIATION;
+      femPosDeviationParamInstance.qp_weight_path_length = QP_WEIGHT_PATH_LENGTH;
+      femPosDeviationParamInstance.qp_weigth_ref_deviation = QP_WEIGHT_FEM_POS_DEVIATION;
+      femPosDeviationParamInstance.qp_max_iter = QP_MAX_ITER;
+      femPosDeviationParamInstance.qp_time_limit = QP_TIME_LIMIT;
+      femPosDeviationParamInstance.qp_verbose = QP_VERBOSE;
+      femPosDeviationParamInstance.qp_sacled_termination = QP_SACLED_TERMINATION;
+      femPosDeviationParamInstance.qp_warm_start = QP_WARM_START;
+
       FemPosDeviationSmoother fem_pos_smoother(femPosDeviationParamInstance);
 
         // TODO(Jinyun): move to confs
-        const size_t max_iteration_num = 50;
+        const size_t max_iteration_num = 1000;
 
         bool is_collision_free = false;
         std::vector<size_t> colliding_point_index;
@@ -438,6 +464,32 @@ bool femObstacleAnchoringSmoother::CheckCollisionAvoidance(
                      path_points[i].y() + center_shift_distance_ * std::sin(heading)},
                     heading, ego_length_, ego_width_);
 
+#ifdef DEBUG_STATIC_OBSTACLE
+            auto corners_show = ego_box.GetAllCorners();
+            std::string test1 = "/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show.txt";
+            auto &tractorStream = common::Singleton::GetInstance<boxPrint>(test1);
+            tractorStream.writePts(corners_show);
+
+            //障碍物显示test
+            std::ofstream   test_obstacle_test;
+            test_obstacle_test.open(
+                                    "/home/zzm/Desktop/test_path_figure-main/src/test_obstacle_test.txt",
+                                    std::ios::out);
+            for(const auto i : obstacles_linesegments_vec_){
+                for(const auto j : i){
+                    test_obstacle_test << " " << j.start().x();
+                    test_obstacle_test << " "  << j.end().x();
+                }
+            }
+            test_obstacle_test << std::endl;
+            for(const auto i : obstacles_linesegments_vec_){
+                for(const auto j : i){
+                    test_obstacle_test << " " << j.start().y();
+                    test_obstacle_test << " "  << j.end().y();
+                }
+            }
+            test_obstacle_test << std::endl;
+#endif
             bool is_colliding = false;
             for (const auto& obstacle_linesegments : obstacles_linesegments_vec_) {
                 for (const math::LineSegment2d& linesegment : obstacle_linesegments) {
