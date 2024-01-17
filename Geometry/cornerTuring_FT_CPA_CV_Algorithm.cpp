@@ -244,7 +244,7 @@ void cornerTuringFTCPACVAlgorithm::computePathAboutPart2(
 
     double dLPCR = sqrt(pLIM_.x * pLIM_.x + pLIM_.y * pLIM_.y);
     double angleLPCR = atan(pLIM_.y/pLIM_.x);
-    for(int i = 0;i < num_samples -1 ;i++){
+    for(int i = 1;i < num_samples -1 ;i++){
         double current_angle = angle_start + i * angle_increment;
         //计算xlp(anglehp2)
         double xLP = pLIM_.x *
