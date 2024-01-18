@@ -82,7 +82,7 @@ void getMapData::updatepolygonSequence() {
             temp.y = it->y();
             updatedPointOuter_.push_back(temp);
         }
-    }else{                                   //逆时针则保持不变
+    } else {                                   //逆时针则保持不变
         LOG(INFO) << "the origin polygon is counterclockwise！";
         for(auto it : pointsOuter_){
             Point temp;

@@ -5,7 +5,9 @@
 #ifndef POLYGONBACKSHAPE_FEM_OBSTACLE_SMOOTH_ALGORITHM_H
 #define POLYGONBACKSHAPE_FEM_OBSTACLE_SMOOTH_ALGORITHM_H
 #include <random>
+#include <unordered_set>
 #include "common/designPattern/singleton.hpp"
+#include "common/plot/trailerCenterPtCalculate.h"
 #include "Eigen/Eigen"
 #include "common/math/box2d.h"
 #include "common/math/line_segment_2d.h"
@@ -18,6 +20,8 @@
 #include "easylogging++.h"
 #include "common/plot/computePathProfile.h"
 #include "common/print/boxPrint.h"
+#include "common/print/trailerPt.h"
+#include "common/print/trailerBoxPrint.h"
 
 namespace  smoothalgorithm{
    class femObstacleAnchoringSmoother{
@@ -32,6 +36,8 @@ namespace  smoothalgorithm{
        bool Smooth(const std::vector<polygonPoint> &pathPts);
 
        std::vector<polygonPoint> getStorageSmoothedPts();
+
+
 
    private:
        void AdjustStartEndHeading(
@@ -49,10 +55,15 @@ namespace  smoothalgorithm{
                        DiscretizedPath* smoothed_path_points);
 
        bool CheckCollisionAvoidance(const DiscretizedPath& path_points,
-                                    std::vector<size_t>* colliding_point_index);
+                                    std::vector<size_t>* colliding_point_index,
+                                    size_t counter);
 
        void AdjustPathBounds(const std::vector<size_t>& colliding_point_index,
                              std::vector<double>* bounds);
+
+       void AdjustPathPtsPosition(const std::vector<size_t> & colliding_point_index,
+                                  DiscretizedPath& path_points,
+                                  DiscretizedPath& transed_path_points) ;
 
        bool SetPathProfile(const std::vector<std::pair<double, double>>& point2d,
                            DiscretizedPath* raw_path_points);
@@ -60,12 +71,15 @@ namespace  smoothalgorithm{
        bool CheckGear(const Eigen::MatrixXd& xWS);
 
        double CalcHeadings(const DiscretizedPath& path_points, const size_t index);
+
+       void trailerCrashChecker(polygonPoint tractor_center_pt,
+                                const size_t i,
+                                std::vector<size_t>& colliding_point_index);
    private:
        // vehicle_param
        double ego_length_ = 0.0;
        double ego_width_  = 0.0;
        double center_shift_distance_ = 0.0;
-
 
        std::vector<std::vector<math::LineSegment2d>>
                obstacles_linesegments_vec_;

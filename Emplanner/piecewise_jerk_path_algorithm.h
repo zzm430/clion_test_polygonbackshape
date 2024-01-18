@@ -6,7 +6,7 @@
 #define POLYGONBACKSHAPE_PIECEWISE_JERK_PATH_ALGORITHM_H
 #include <utility>
 #include <vector>
-
+#include <chrono>
 #include "piecewise_jerk_algorithm.h"
 
 class piecewiseJerkPathAlgorithm : public piecewiseJerkAlgorithm {

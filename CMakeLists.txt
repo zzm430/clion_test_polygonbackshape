@@ -140,6 +140,10 @@ add_executable(polygonbackshape
         smooth/customobsFemAlgorithm/fem_obstacle_smooth_manager.cpp
         common/utilpath/path_point.h
         common/print/boxPrint.h
+        common/plot/trailerCenterPtCalculate.h
+        common/plot/trailerCenterPtCalculate.cpp
+        common/print/trailerPt.h
+        common/print/trailerBoxPrint.h
 )
 
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})

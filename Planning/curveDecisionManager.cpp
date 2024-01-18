@@ -814,9 +814,15 @@ void curveDecisionManager::processFTCPACV(){
         }
         test_path << std::endl;
         //针对test_path做避障处理
+        std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
         smoothalgorithm::femObstacleManager femObstacleManagerIns(pts);
         femObstacleManagerIns.process();
         auto get_smoothed_path = femObstacleManagerIns.getSmoothedPath();
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        std::chrono::duration<double, std::milli> duration = end - start;
+        double runtime_ms = duration.count();
+
+        std::cout << "代码运行时间DL-IAPS: " << runtime_ms << " 毫秒" << std::endl;
         std::ofstream test_smoothed_path;
         test_smoothed_path.open(
                 "/home/zzm/Desktop/test_path_figure-main/src/test_smoothed_path.txt",

@@ -31,6 +31,19 @@ pathResultShow = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/pathRes
 pathResultShow_x = pathResultShow[0]
 pathResultShow_y = pathResultShow[1]
 
+# data_trailer_file = '/home/zzm/Desktop/test_path_figure-main/src/trailer_path_test.txt'
+# trailer_points = []
+# with open(data_trailer_file, 'r') as f:
+#     lines = f.readlines()
+#     for line in lines:
+#         # 提取坐标点
+#         x, y = map(float, line.strip().split())
+#         trailer_points.append((x, y))
+
+# 绘制散点图
+# x_values_m = [point[0] for point in trailer_points]
+# y_values_m = [point[1] for point in trailer_points]
+
 testVirtualLIne = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools/testVirtualLIne.txt')
 testVirtualLIne_x = testVirtualLIne[0]
 testVirtualLIne_y = testVirtualLIne[1]
@@ -52,6 +65,8 @@ testObstacleOriginLine_x = testObstacleOriginLine[0]
 testObstacleOriginLine_y = testObstacleOriginLine[1]
 
 test_boxs_show = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show.txt')
+test_boxs_show1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show1.txt')
+test_boxs_trailer_show1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_trailer_show1.txt')
 
 # tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
 
@@ -62,6 +77,15 @@ test_boxs_show = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_bo
 test_obstacle_test = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_obstacle_test.txt')
 test_obstacle_test_x = test_obstacle_test[0]
 test_obstacle_test_y = test_obstacle_test[1]
+
+
+storage_temp_stream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/storage_temp_stream.txt')
+storage_temp_stream_x = storage_temp_stream[0]
+storage_temp_stream_y = storage_temp_stream[1]
+
+storage_tractor_stream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/storage_tractor_stream.txt')
+storage_tractor_stream_x = storage_tractor_stream[0]
+storage_tractor_stream_y = storage_tractor_stream[1]
 
 # with open('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt', 'r') as file:
 #     lines = file.readlines()
@@ -126,6 +150,9 @@ ax.plot(obstacleShow_x,obstacleShow_y,color='r',markerfacecolor='green',marker='
 ax.plot(testfemObstaclePath_x,testfemObstaclePath_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 # ax.plot(temp_path_x,temp_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
 # ax.plot(test_temp_path1_x,test_temp_path1_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+# ax.scatter(x_values_m, y_values_m, color='red', s=5)             #path点位坐标展示
+# ax.plot(storage_temp_stream_x,storage_temp_stream_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
+# ax.plot(storage_tractor_stream_x,storage_tractor_stream_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=1)
 
 #  绘制线段
 for i in range(0, len(test_obstacle_test[0])-1, 2):
@@ -171,10 +198,10 @@ for m in range(len(test_boxs_show) - 1):
         coords11 = [(test_boxs_show[m][j], test_boxs_show[m + 1][j]) for j in range(4)]
 
         if m // 2 < len(colors):
-            polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor=colors[m // 2], alpha=0.9, linewidth=0.1)
+            polygonf1 = Polygon(coords11, closed=True, fill=False, facecolor='yellow', alpha=0.9, linewidth=0.1)
         else:
             # 如果颜色不足，则循环使用颜色列表中的颜色
-            polygonf1 = Polygon(coords11, closed=True, fill=False, edgecolor=colors[(m // 2) % len(colors)], alpha=0.9,
+            polygonf1 = Polygon(coords11, closed=True, fill=False, facecolor='yellow', alpha=0.9,
                                 linewidth=0.1)
 
         ax.add_patch(polygonf1)
@@ -182,6 +209,30 @@ for m in range(len(test_boxs_show) - 1):
         # for coord in coords11:
         #     ax.text(coord[0], coord[1], f'({coord[0]}, {coord[1]})', fontsize=8, color='black', ha='center',
         #             va='center')
+
+# for m in range(len(test_boxs_show1) - 1):
+#     if m % 2 == 0:
+#         coords111 = [(test_boxs_show1[m][j], test_boxs_show1[m + 1][j]) for j in range(4)]
+#
+#         if m // 2 < len(colors):
+#             polygonf11 = Polygon(coords111, closed=True, fill=False, facecolor='blue', alpha=0.9, linewidth=0.1)
+#         else:
+#             # 如果颜色不足，则循环使用颜色列表中的颜色
+#             polygonf11 = Polygon(coords111, closed=True, fill=False, facecolor='blue', alpha=0.9, linewidth=0.1)
+#
+#         ax.add_patch(polygonf11)
+
+# for m in range(len(test_boxs_trailer_show1) - 1):
+#     if m % 2 == 0:
+#         coords112 = [(test_boxs_trailer_show1[m][j], test_boxs_trailer_show1[m + 1][j]) for j in range(4)]
+#
+#         if m // 2 < len(colors):
+#             polygonf12 = Polygon(coords112, closed=True, fill=False, facecolor='red', alpha=0.7, linewidth=0.1)
+#         else:
+#             # 如果颜色不足，则循环使用颜色列表中的颜色
+#             polygonf12 = Polygon(coords112, closed=True, fill=False, facecolor='red', alpha=0.7,
+#                                 linewidth=0.1)
+#         ax.add_patch(polygonf12)
 
 # ax.plot(referenceLine2_x,referenceLine2_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 

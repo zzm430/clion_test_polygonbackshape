@@ -262,7 +262,6 @@ void curveStaticObstaclesManager::computeOriginReferenceLinePts(
     for(auto i : reference_pts3){
         reference_allpts.push_back(i);
     }
-
 }
 
 void curveStaticObstaclesManager::transOriginPathToDiscretizedPath(
@@ -298,7 +297,6 @@ void curveStaticObstaclesManager::transOriginPathToDiscretizedPath(
                         0);
         anchor_path.push_back(temp);
     }
-
 }
 
 void curveStaticObstaclesManager::computeOriginReferenceCenterLinePts(
@@ -371,13 +369,12 @@ void curveStaticObstaclesManager::computeOriginReferenceCenterLinePts(
     for(auto i : reference_pts3){
         reference_allpts.push_back(i);
     }
-
 }
 
 
 bool curveStaticObstaclesManager::curveGeneratePathFromDiscretePts(
         const DiscretizedPath& anchor_pts,
-        DiscretizedPath& pathProfile){
+        DiscretizedPath& pathProfile) {
     if(anchor_pts.empty()){
         std::cout << "anchor points empty." << std::endl;
         return false;
@@ -426,7 +423,7 @@ void curveStaticObstaclesManager::computeObstacleCrashCheck(
                          const  std::vector<std::vector<polygonPoint>> &polygonPts,
                          const  std::vector<polygonPoint> & path_line,
                          std::vector<polygon>& obstacle_polygons,
-                         std::vector<polygonPoint> & centroid_pts){
+                         std::vector<polygonPoint> & centroid_pts) {
     typedef double coordinate_type;
     typedef boost::geometry::model::d2::point_xy<coordinate_type> point;
     typedef boost::geometry::model::polygon<point> polygon;
@@ -510,7 +507,7 @@ void curveStaticObstaclesManager::computeObstacleCrashCheck(
 
 void curveStaticObstaclesManager::pjpoInitialize(
         const std::vector<polygonPoint> & consider_static_obstacles_pts,
-        DiscretizedPath & pathProfile){
+        DiscretizedPath & pathProfile) {
     //pjpo处理
     //对平滑过后的点重新进行差值
     //先获取其属性
@@ -530,7 +527,7 @@ void curveStaticObstaclesManager::pjpoInitialize(
 void curveStaticObstaclesManager::pjpodealSLBoundary(
         const  DiscretizedPath & pathProfile,
         const  std::vector<polygonPoint> orderedPolygon,
-        std::vector<std::pair<double, double>>* boundary){
+        std::vector<std::pair<double, double>>* boundary) {
 
     //利用障碍物对其进行sl边界计算
     SLBoundary obstacleSL_pts;
@@ -664,6 +661,7 @@ void curveStaticObstaclesManager::dealPJPO(
             path_reference_l.push_back(value);
         }
 
+        std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
         if (customPJPOM.optimizePath(start_state,
                                      end_state,
                                         path_reference_l,
@@ -676,13 +674,16 @@ void curveStaticObstaclesManager::dealPJPO(
                                      &opt_dl,
                                      &opt_ddl)) {
             auto optm_l = opt_l;
-            for (auto i : optm_l) {
-                std::cout << i;
-            }
-            std::cout << std::endl;
-            std::cout << optm_l.size() << std::endl;
-
+//            for (auto i : optm_l) {
+//                std::cout << i;
+//            }
+//            std::cout << std::endl;
+//            std::cout << optm_l.size() << std::endl;
         }
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        std::chrono::duration<double, std::milli> duration = end - start;
+        double runtime_ms = duration.count();
+        std::cout << "代码运行时间PJPO: " << runtime_ms << " 毫秒" << std::endl;
 
         std::vector<polygonPoint> storage_path;
         //将对应的s.l转到大地坐标系下

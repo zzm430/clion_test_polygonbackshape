@@ -103,6 +103,15 @@ bool femObstacleAnchoringSmoother::Smooth(const std::vector<polygonPoint> &pathP
         return false;
     }
 
+#ifdef  DEBUG_STATIC_OBSTACLE
+    std::ofstream  test_curve_kappa2;
+    test_curve_kappa2.open("/home/zzm/Desktop/test_path_figure-main/src/test_curve_kappa2.txt",std::ios::out);
+    for(auto i : interpolated_warm_start_path){
+        test_curve_kappa2 << " " << i.kappa();
+    }
+    test_curve_kappa2 << std::endl;
+#endif
+
     // Generate feasible bounds for each path point
     std::vector<double> bounds;
     if (!GenerateInitialBounds(interpolated_warm_start_path, &bounds)) {
@@ -128,6 +137,15 @@ bool femObstacleAnchoringSmoother::Smooth(const std::vector<polygonPoint> &pathP
                     &smoothed_path_points)) {
         return false;
     }
+
+#ifdef  DEBUG_STATIC_OBSTACLE
+    std::ofstream  test_curve_kappa1;
+    test_curve_kappa1.open("/home/zzm/Desktop/test_path_figure-main/src/test_curve_kappa1.txt",std::ios::out);
+    for(auto i : smoothed_path_points){
+        test_curve_kappa1 << " " << i.kappa();
+    }
+    test_curve_kappa1 << std::endl;
+#endif
 
     for(auto i : smoothed_path_points){
         polygonPoint tempPt;
@@ -356,6 +374,9 @@ bool femObstacleAnchoringSmoother::SmoothPath(
         for (const auto& path_point : raw_path_points) {
             raw_point2d.emplace_back(path_point.x(), path_point.y());
         }
+        //对原始坐标点进行点位检查
+        DiscretizedPath   temp_path_storage;
+        SetPathProfile(raw_point2d,&temp_path_storage);
         flexible_bounds = bounds;
 
       femPosDeviationParam  femPosDeviationParamInstance;
@@ -387,13 +408,13 @@ bool femObstacleAnchoringSmoother::SmoothPath(
       FemPosDeviationSmoother fem_pos_smoother(femPosDeviationParamInstance);
 
         // TODO(Jinyun): move to confs
-        const size_t max_iteration_num = 1000;
+        const size_t max_iteration_num = 30;
 
         bool is_collision_free = false;
         std::vector<size_t> colliding_point_index;
         std::vector<std::pair<double, double>> smoothed_point2d;
         size_t counter = 0;
-
+        DiscretizedPath  iter_use;
         while (!is_collision_free) {
             if (counter > max_iteration_num) {
                 LOG(ERROR) << "Maximum iteration reached, path smoother early stops";
@@ -404,6 +425,14 @@ bool femObstacleAnchoringSmoother::SmoothPath(
 
             std::vector<double> opt_x;
             std::vector<double> opt_y;
+
+            if(!iter_use.empty()){
+                std::vector<std::pair<double, double>>  temp_storage;
+                for(auto i : iter_use){
+                    temp_storage.push_back({i.x(),i.y()});
+                }
+                raw_point2d = temp_storage;
+            }
             if (!fem_pos_smoother.Solve(raw_point2d, flexible_bounds, &opt_x, &opt_y)) {
                 LOG(ERROR) << "Smoothing path fails";
                 return false;
@@ -427,9 +456,71 @@ bool femObstacleAnchoringSmoother::SmoothPath(
                 return false;
             }
 
-            is_collision_free =
-                    CheckCollisionAvoidance(*smoothed_path_points, &colliding_point_index);
+            //临时测试
+            std::vector<polygonPoint>   storage_temp_path;
+            for(auto i : *smoothed_path_points){
+                polygonPoint  tempPt(i.x(),i.y());
+                tempPt.set_heading(i.theta());
+                trailerCenterPtCalculate trailerCenterPtCalculate(tempPt);
+                polygonPoint trailerCenterPt = trailerCenterPtCalculate.getTrailerCenterPt();
+                trailerCenterPt.set_theta(i.theta());
+                storage_temp_path.push_back(trailerCenterPt);
+            }
 
+#ifdef  DEBUG_STATIC_OBSTACLE
+            std::ofstream   storage_temp_stream;
+            storage_temp_stream.open("/home/zzm/Desktop/test_path_figure-main/src/storage_temp_stream.txt",std::ios::out);
+            for(auto i : storage_temp_path){
+                storage_temp_stream << " " << i.x;
+            }
+            storage_temp_stream << std::endl;
+            for(auto j : storage_temp_path){
+                storage_temp_stream << " " << j.y;
+            }
+            storage_temp_stream << std::endl;
+
+            std::ofstream storage_tractor_stream;
+            storage_tractor_stream.open("/home/zzm/Desktop/test_path_figure-main/src/storage_tractor_stream.txt",std::ios::out);
+            for(auto i : *smoothed_path_points){
+                storage_tractor_stream << " " << i.x();
+            }
+            storage_tractor_stream << std::endl;
+            for(auto j : *smoothed_path_points){
+                storage_tractor_stream << " " << j.y();
+            }
+            storage_tractor_stream << std::endl;
+//
+//            for(auto i : *smoothed_path_points){
+//                math::Box2d ego_box(
+//                        {i.x() + center_shift_distance_ * std::cos(i.theta()),
+//                         i.y() + center_shift_distance_ * std::sin(i.theta())},
+//                        i.theta(), 2, 1);
+//                auto  corners_show = ego_box.GetAllCorners();
+//                std::string test1 = "/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show1.txt";
+//                auto &tractorStream = common::Singleton::GetInstance<boxPrint>(test1);
+//                tractorStream.writePts(corners_show);
+//            }
+//
+//            for(auto j : storage_temp_path){
+//                math::Box2d trailer_box(
+//                        {j.x + TRAILER_CENTER_SHIFT_DISTANCE * std::cos(j.theta()),
+//                         j.y + TRAILER_CENTER_SHIFT_DISTANCE * std::sin(j.theta())},
+//                        j.theta(), TRAILER_LENGTH, TRAILER_WIDTH);
+//                auto  corners_show2 = trailer_box.GetAllCorners();
+//                std::string test2 = "/home/zzm/Desktop/test_path_figure-main/src/test_boxs_trailer_show1.txt";
+//                auto &tractorStream2 = common::Singleton::GetInstance<trailerBoxPrint>(test2);
+//                tractorStream2.writePts(corners_show2);
+//            }
+#endif
+            is_collision_free =
+                    CheckCollisionAvoidance(*smoothed_path_points, &colliding_point_index,counter);
+
+            //更新路径点的位置
+            if(!colliding_point_index.empty()){
+                AdjustPathPtsPosition(colliding_point_index,
+                                      *smoothed_path_points,
+                                      iter_use);
+            }
             LOG(DEBUG) << "loop iteration number is " << counter;
             ++counter;
         }
@@ -438,7 +529,8 @@ bool femObstacleAnchoringSmoother::SmoothPath(
 
 bool femObstacleAnchoringSmoother::CheckCollisionAvoidance(
             const DiscretizedPath& path_points,
-            std::vector<size_t>* colliding_point_index) {
+            std::vector<size_t>* colliding_point_index,
+            size_t counter) {
         CHECK_NOTNULL(colliding_point_index);
 
         colliding_point_index->clear();
@@ -465,10 +557,12 @@ bool femObstacleAnchoringSmoother::CheckCollisionAvoidance(
                     heading, ego_length_, ego_width_);
 
 #ifdef DEBUG_STATIC_OBSTACLE
-            auto corners_show = ego_box.GetAllCorners();
-            std::string test1 = "/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show.txt";
-            auto &tractorStream = common::Singleton::GetInstance<boxPrint>(test1);
-            tractorStream.writePts(corners_show);
+            if(counter == 4){
+                auto corners_show = ego_box.GetAllCorners();
+                std::string test1 = "/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show.txt";
+                auto &tractorStream = common::Singleton::GetInstance<boxPrint>(test1);
+                tractorStream.writePts(corners_show);
+            }
 
             //障碍物显示test
             std::ofstream   test_obstacle_test;
@@ -504,12 +598,64 @@ bool femObstacleAnchoringSmoother::CheckCollisionAvoidance(
                     break;
                 }
             }
+#ifdef TRAILER_POSE_CHECK
+            polygonPoint tempPtM(path_points[i].x(),path_points[i].y());
+            tempPtM.set_heading(path_points[i].theta());
+            trailerCrashChecker(      tempPtM,
+                                             i,
+                                *colliding_point_index);
+#endif
         }
 
         if (!colliding_point_index->empty()) {
             return false;
         }
         return true;
+}
+
+
+void femObstacleAnchoringSmoother::trailerCrashChecker(
+                                                       polygonPoint tractor_center_pt,
+                                                       const size_t i,
+                                                       std::vector<size_t>& colliding_point_index){
+    std::unordered_set<size_t>  check_index;
+    for(auto j : colliding_point_index){
+        check_index.insert(j);
+    }
+    trailerCenterPtCalculate trailerCenterPtCalculate(tractor_center_pt);
+    polygonPoint trailerCenterPt = trailerCenterPtCalculate.getTrailerCenterPt();
+
+#ifdef  DEBUG_STATIC_OBSTACLE
+    std::ofstream  trailer_path_test;
+    std::string test_path = "/home/zzm/Desktop/test_path_figure-main/src/trailer_path_test.txt";
+    auto &trailerStream = common::Singleton::GetInstance<trailerPt>(test_path);
+    trailerStream.writePts(tractor_center_pt);
+#endif
+
+    math::Box2d  trailer_box(
+            {trailerCenterPt.x + TRAILER_CENTER_SHIFT_DISTANCE * cos(tractor_center_pt.heading()),
+            trailerCenterPt.y + TRAILER_CENTER_SHIFT_DISTANCE * sin(tractor_center_pt.heading())},
+            tractor_center_pt.heading(),
+            TRAILER_LENGTH,
+            TRAILER_WIDTH);
+    auto corners_show = trailer_box.GetAllCorners();
+
+    bool is_colliding = false;
+    for (const auto& obstacle_linesegments : obstacles_linesegments_vec_) {
+        for (const math::LineSegment2d& linesegment : obstacle_linesegments) {
+            if (trailer_box.HasOverlap(linesegment)) {
+                if(check_index.find(i) == check_index.end()){
+                    colliding_point_index.push_back(i);
+                    LOG(DEBUG) << "point at " << i << "collied with LineSegment "<< std::endl;
+                    is_colliding = true;
+                    break;
+                }
+            }
+        }
+        if (is_colliding) {
+            break;
+        }
+    }
 }
 
 void femObstacleAnchoringSmoother::AdjustPathBounds(
@@ -533,6 +679,54 @@ void femObstacleAnchoringSmoother::AdjustPathBounds(
         if (enforce_initial_kappa_) {
             bounds->at(2) = 0.0;
         }
+}
+
+
+void femObstacleAnchoringSmoother::AdjustPathPtsPosition(const std::vector<size_t> & colliding_point_index,
+                                                         DiscretizedPath& path_points,
+                                                         DiscretizedPath& transed_path_points) {
+          //针对障碍物做对应的sl坐标点投影,找到最小的l值对应的s的值
+          //1.将障碍物点位投影到path上，找到最小的s,l坐标点
+          slPoint  min_dis_slPt;
+          double   min_s = DBL_MAX,max_s = -DBL_MAX;
+          for(auto i : obstacles_vertices_vec_){
+              for(auto j : i){
+                  slPoint  temp_slPt;
+                  math::Vec2d temPPt(j.x(),j.y());
+                  path_points.XYToSL(temPPt,&temp_slPt);
+                  if(min_s > temp_slPt.s()){
+                      min_s = temp_slPt.s();
+                  }
+                  if(max_s < temp_slPt.s()){
+                      max_s = temp_slPt.s();
+                  }
+                  if(fabs(min_dis_slPt.l_) > fabs(temp_slPt.l_)){
+                      min_dis_slPt.s_ = temp_slPt.s_;
+                      min_dis_slPt.l_ = temp_slPt.l_;
+                  }
+              }
+          }
+          //2.根据碰撞点索引找到对应的sl坐标点
+          size_t start_idx = colliding_point_index[0];
+          size_t end_idx = colliding_point_index[colliding_point_index.size()-1];
+          std::vector<std::pair<double, double>>  trans_pts;
+        for(int i = 0 ;i < path_points.size() ;i++){
+            if( i >= start_idx - 5 && i<= end_idx + 5){
+                slPoint temp_slpt;
+                math::Vec2d  tempPt(path_points[i].x(),path_points[i].y());
+                path_points.XYToSL(tempPt,&temp_slpt);
+                //对sl坐标点进行更新
+                temp_slpt.l_ = -min_dis_slPt.l_ + 0.6;
+                //将该点转换到大地坐标系下
+                polygonPoint  transed_pt;
+                path_points.SLToXY(temp_slpt.s(),temp_slpt.l(),transed_pt);
+                trans_pts.push_back({transed_pt.x,transed_pt.y});
+            } else {
+                trans_pts.push_back({path_points[i].x(),path_points[i].y()});
+            }
+        }
+        //转换得到新的路径点
+        SetPathProfile(trans_pts,&transed_path_points);
 }
 
 

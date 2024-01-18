@@ -63,7 +63,7 @@
 //#define  F1                       1
 //#define  F2                       1
 //#define  F3                       1
-#define  CIRCLE_RIDIS_R             8        //圆半径
+#define  CIRCLE_RIDIS_R             10       //圆半径
 #define  MAX_CIRCLE_RIDIS_R         12       //设置的最大圆半径
 #define  FISHNail_DIFF_DIS          0.2      //间隔20cm
 #define  CPA_DIFF_DIS               0.2      //CPA系列算法间隔
@@ -104,7 +104,7 @@
 #define DIFF_PTS           0.4
 
 //static obstale manager
-#define  DEBUG_STATIC_OBSTACLE
+//#define  DEBUG_STATIC_OBSTACLE
 #define  SAFE_OBSTACLE_THR_ZERO  0.0
 #define  SAFE_OBSTACLE_THR_FIRST  1
 #define  SAFE_OBSTACLE_THR_SECOND 0.6
@@ -152,16 +152,16 @@
 #define DEBUG_HYBRIDASTAR
 
 //定制fem避障算法参数
-#define EGO_LENGTH   3
+#define EGO_LENGTH   2.8
 #define EGO_WIDTH    4
 #define BACK_EDGE_TO_CENTER 0.8
 #define INTERPOLATED_DELTA_S 0.3
 #define REANCHORING_TRAILS_NUM 500
 #define REANCHORING_LENGTH_STDDEV 0.25
 #define ESTIMATE_BOUND  false
-#define DEFAULT_BOUND   8
+#define DEFAULT_BOUND   3
 #define VEHICLE_SHORTEST_DIMENSION 1.04
-#define COLLISION_DECREASE_RATIO 1.2
+#define COLLISION_DECREASE_RATIO 0.8
 
 //customFem避障算法相关参数设定
 #define  APPLY_CURVATURE_CONSTRAINT_TWO  true
@@ -189,5 +189,12 @@
 #define QP_VERBOSE     false
 #define QP_SACLED_TERMINATION true
 #define QP_WARM_START   true
+
+//根据拖拉机的后轮中心点计算农具的中心点
+//#define TRAILER_POSE_CHECK
+#define TRACTOR_CENTER_TO_TRAILER_CENTER_DIS 2.5
+#define TRAILER_LENGTH   3
+#define TRAILER_WIDTH    4
+#define TRAILER_CENTER_SHIFT_DISTANCE 0.7
 
 #endif    //COMMON_PARAMETERS_H

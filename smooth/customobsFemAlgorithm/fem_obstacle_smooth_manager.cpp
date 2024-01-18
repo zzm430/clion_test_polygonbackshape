@@ -34,7 +34,7 @@ namespace smoothalgorithm{
 
     void femObstacleManager::process() {
         std::vector<std::vector<math::Vec2d>>  obstacles_vertices_vec;
-        polygonPoint     circle_test(257,477);
+        polygonPoint     circle_test(255,476);
         std::vector<polygonPoint>  circle_polygon,circle_polygon1;
         double invertal_dis = 2 * M_PI / 5;
         for( int i = 0;i < 5 ; i++ ){
