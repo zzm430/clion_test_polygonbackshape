@@ -30,6 +30,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-qualifiers")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-vla")
 
+
 ## -------- folder relative path definition -----------
 string(CONCAT CONF_FOLDER_PATH_STR ${CMAKE_CURRENT_SOURCE_DIR} "/")
 message(STATUS "conf folder path : " ${CONF_FOLDER_PATH_STR})
@@ -49,6 +50,10 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 find_package(Eigen3 QUIET)
 include_directories("/usr/include/eigen3/")
 
+#find_package(IPOPT REQUIRED)
+#include_directories(${IPOPT_INCLUDE_DIRS})
+#include_directories("/usr/local/adolc_base/include/")
+link_directories("/usr/local/lib64/")
 
 if(CGAL_FOUND)
     message(STATUS "Found CGAL library")
@@ -144,6 +149,11 @@ add_executable(polygonbackshape
         common/plot/trailerCenterPtCalculate.cpp
         common/print/trailerPt.h
         common/print/trailerBoxPrint.h
+        smooth/customFemIpoptAlgorithm/fem_pos_deviation_ipopt_interface.h
+        smooth/customFemIpoptAlgorithm/fem_pos_deviation_ipopt_interface.cpp
+        smooth/customFemIpoptAlgorithm/fem_pos_deviation_ipopt_manager.h
+        smooth/customFemIpoptAlgorithm/fem_pos_deviation_ipopt_manager.cpp
+        smooth/customFemIpoptAlgorithm/fem_pos_deviation_ipopt_param.h
 )
 
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
@@ -153,6 +163,7 @@ target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})
 target_link_libraries(polygonbackshape ${Matlab_LIBRARIES})
 target_link_libraries(polygonbackshape  osqp::osqp)
 target_link_libraries(polygonbackshape ${PYTHON_LIBRARIES})
+target_link_libraries(polygonbackshape adolc)
 
 
 

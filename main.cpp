@@ -30,6 +30,8 @@ int main(int argc, char **argv) {
 //    std::cout <<" adfdsf!" << std::endl;
 //
 //    return 0;
+//测试fem_ipopt算法
+
     //获取到原始点位信息
     std::cout << "the argc number is :" << argc  << std::endl;
     std::cout << "the argv frist is :" << *argv <<  std::endl;
