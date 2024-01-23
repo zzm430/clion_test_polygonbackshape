@@ -7,7 +7,7 @@
 #include "fem_pos_deviation_ipopt_interface.h"
 #include "fem_pos_deviation_ipopt_param.h"
 #include "easylogging++.h"
-namespace smoothalgorithm{
+namespace smoothalgorithm {
 
     class femPosIpoptSmoother{
     public:

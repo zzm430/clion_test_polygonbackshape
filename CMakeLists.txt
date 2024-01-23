@@ -53,7 +53,9 @@ include_directories("/usr/include/eigen3/")
 #find_package(IPOPT REQUIRED)
 #include_directories(${IPOPT_INCLUDE_DIRS})
 #include_directories("/usr/local/adolc_base/include/")
+link_directories("/usr/local/lib/")
 link_directories("/usr/local/lib64/")
+
 
 if(CGAL_FOUND)
     message(STATUS "Found CGAL library")
@@ -163,7 +165,9 @@ target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})
 target_link_libraries(polygonbackshape ${Matlab_LIBRARIES})
 target_link_libraries(polygonbackshape  osqp::osqp)
 target_link_libraries(polygonbackshape ${PYTHON_LIBRARIES})
-target_link_libraries(polygonbackshape adolc)
+target_link_libraries(polygonbackshape ColPack)
+target_link_libraries(polygonbackshape adolc )
+target_link_libraries(polygonbackshape ipopt )
 
 
 

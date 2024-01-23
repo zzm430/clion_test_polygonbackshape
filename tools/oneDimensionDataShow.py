@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 # 读取txt文件中的数据
-with open('/home/zzm/Desktop/test_path_figure-main/src/test_curve_kappa1.txt', 'r') as file:
+with open('/home/zzm/Desktop/test_path_figure-main/src/testcurveInfo.txt', 'r') as file:
     data = file.readline().strip().split()
 
 # 将数据转换为数值类型
