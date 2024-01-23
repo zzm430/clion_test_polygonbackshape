@@ -70,10 +70,6 @@ test_boxs_trailer_show1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/sr
 
 # tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
 
-# test_PJPO_path = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt')
-# test_PJPO_path_x = test_PJPO_path[0]
-# test_PJPO_path_y = test_PJPO_path[1]
-
 test_obstacle_test = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_obstacle_test.txt')
 test_obstacle_test_x = test_obstacle_test[0]
 test_obstacle_test_y = test_obstacle_test[1]
@@ -87,14 +83,14 @@ storage_tractor_stream = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src
 storage_tractor_stream_x = storage_tractor_stream[0]
 storage_tractor_stream_y = storage_tractor_stream[1]
 
-# with open('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt', 'r') as file:
-#     lines = file.readlines()
-#
-# paths = []
-# for i in range(0, len(lines), 2):
-#     x_values = list(map(float, lines[i].split()))
-#     y_values = list(map(float, lines[i + 1].split()))
-#     paths.append((x_values, y_values))
+with open('/home/zzm/Desktop/test_path_figure-main/src/test_PJPO_path1.txt', 'r') as file:
+    lines = file.readlines()
+
+paths = []
+for i in range(0, len(lines), 2):
+    x_values = list(map(float, lines[i].split()))
+    y_values = list(map(float, lines[i + 1].split()))
+    paths.append((x_values, y_values))
 
 with open('/home/zzm/Desktop/test_path_figure-main/src/pathProfile1.txt','r') as file1:
     lines1 = file1.readlines()
@@ -142,7 +138,6 @@ ax.plot(referenceLine2_x,referenceLine2_y,color='b',markerfacecolor='green',mark
 # ax.plot(testOriginPoly_x,testOriginPoly_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 8.3,markersize=1)
 ax.plot(testObstacleOriginLine_x,testObstacleOriginLine_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
 ax.plot(testVirtualLIne_x,testVirtualLIne_y,color='y',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=4)
-# ax.plot(test_PJPO_path_x,test_PJPO_path_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 2.4,markersize=4)
 ax.plot(testFTCPACV_x,testFTCPACV_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 # ax.plot(searchRegionShow_x,searchRegionShow_y,color='g',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(obstacleShow_x,obstacleShow_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
@@ -161,8 +156,8 @@ for i in range(0, len(test_obstacle_test[0])-1, 2):
     plt.plot(x, y,color='g',linewidth= 0.3,markersize=1)
     plt.text(test_obstacle_test[0][i], test_obstacle_test[1][i], f"({test_obstacle_test[0][i]}, {test_obstacle_test[1][i]})")
 
-# for path in paths:
-#     ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=4)
+for path in paths:
+    ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=4)
 #
 # for path1 in referpaths1:
 #     ax.plot(path1[0], path1[1], color='g', markerfacecolor='green', marker='o', label='keypoints data', linewidth=1.3,

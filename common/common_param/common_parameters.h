@@ -104,7 +104,7 @@
 #define DIFF_PTS           0.4
 
 //static obstale manager
-//#define  DEBUG_STATIC_OBSTACLE
+#define  DEBUG_STATIC_OBSTACLE
 #define  SAFE_OBSTACLE_THR_ZERO  0.0
 #define  SAFE_OBSTACLE_THR_FIRST  1
 #define  SAFE_OBSTACLE_THR_SECOND 0.6
@@ -123,7 +123,6 @@
 #define CURVE_VEL          2             //转弯时参考速度
 #define PJPO_SAFE_OBSTACLE_THR  1.5
 #define PJPO_SAFE_OBSTACLE_THR_FIRST 2.3
-
 
 //混合AStar算法
 #define TRACTOR_FRONTEDGE_TO_CENTER 1.5
@@ -196,7 +195,6 @@
 #define TRAILER_LENGTH   3
 #define TRAILER_WIDTH    4
 #define TRAILER_CENTER_SHIFT_DISTANCE 0.7
-
 
 //fem + ipopt求解参数
 #define WEIGHT_FEM_POS_DEVIATION_IPOPT  10e3
