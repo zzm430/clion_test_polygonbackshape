@@ -188,18 +188,18 @@ colors = ['red', 'green', 'blue', 'yellow']
 #         # 设置透明度为 0.5
 #         ax.add_patch(polygonf1)
 
-for m in range(len(test_boxs_show) - 1):
-    if m % 2 == 0:
-        coords11 = [(test_boxs_show[m][j], test_boxs_show[m + 1][j]) for j in range(4)]
-
-        if m // 2 < len(colors):
-            polygonf1 = Polygon(coords11, closed=True, fill=False, facecolor='yellow', alpha=0.9, linewidth=0.1)
-        else:
-            # 如果颜色不足，则循环使用颜色列表中的颜色
-            polygonf1 = Polygon(coords11, closed=True, fill=False, facecolor='yellow', alpha=0.9,
-                                linewidth=0.1)
-
-        ax.add_patch(polygonf1)
+# for m in range(len(test_boxs_show) - 1):
+#     if m % 2 == 0:
+#         coords11 = [(test_boxs_show[m][j], test_boxs_show[m + 1][j]) for j in range(4)]
+#
+#         if m // 2 < len(colors):
+#             polygonf1 = Polygon(coords11, closed=True, fill=False, facecolor='yellow', alpha=0.9, linewidth=0.1)
+#         else:
+#             # 如果颜色不足，则循环使用颜色列表中的颜色
+#             polygonf1 = Polygon(coords11, closed=True, fill=False, facecolor='yellow', alpha=0.9,
+#                                 linewidth=0.1)
+#
+#         ax.add_patch(polygonf1)
         # 显示坐标点位
         # for coord in coords11:
         #     ax.text(coord[0], coord[1], f'({coord[0]}, {coord[1]})', fontsize=8, color='black', ha='center',
