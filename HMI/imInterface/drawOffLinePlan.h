@@ -19,22 +19,9 @@
 #include "HMI/implot/implot.h"
 #include "math.h"
 
-// 数据结构定义
-struct TableRow {
-    std::string column1;
-    std::string column2;
-};
-
-// 模拟的 TableView 数据
-std::vector<TableRow> tableViewData = {
-        {"A1", "B1"},
-        {"A2", "B2"},
-        {"A3", "B3"}
-};
 
 class drawOffLinePlan {
 public:
-
     drawOffLinePlan() ;
     virtual ~drawOffLinePlan() = default;
     void  drawInitialize();

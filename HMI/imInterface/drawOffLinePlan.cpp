@@ -397,6 +397,20 @@ void  drawOffLinePlan::processTableViewWindow(){
     // 使用ImGui的表格控件（Table）或其他适合的控件来展示tableView的数据
     ImGui::Text("TableView Data:");
 
+        // 数据结构定义
+    struct TableRow {
+        std::string column1;
+        std::string column2;
+    };
+
+    // 模拟的 TableView 数据
+    std::vector<TableRow> tableViewData1 = {
+            {"A1", "B1"},
+            {"A2", "B2"},
+            {"A3", "B3"}
+    };
+
+
     // 使用Table控件展示tableView的数据
     if (ImGui::BeginTable("table1", 3,
                           ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
@@ -407,15 +421,15 @@ void  drawOffLinePlan::processTableViewWindow(){
         ImGui::TableHeadersRow();
 
         // 添加数据
-        for (int row = 0; row < tableViewData.size(); row++)
+        for (int row = 0; row < tableViewData1.size(); row++)
         {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::Text("Row %d", row);
             ImGui::TableNextColumn();
-            ImGui::Text("%s", tableViewData[row].column1.c_str());
+            ImGui::Text("%s", tableViewData1[row].column1.c_str());
             ImGui::TableNextColumn();
-            ImGui::Text("%s", tableViewData[row].column2.c_str());
+            ImGui::Text("%s", tableViewData1[row].column2.c_str());
         }
         ImGui::EndTable();
     }
@@ -443,6 +457,4 @@ void  drawOffLinePlan::processDebugDataShow(){
     }
     ImGui::End();
 }
-
-
 

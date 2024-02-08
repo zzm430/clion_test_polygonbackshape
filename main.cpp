@@ -25,6 +25,8 @@
 #include "common/common_param/common_parameters.h"
 #include "common/plot/computePathProfile.h"
 
+#include "HMI/imInterface/drawOffLinePlan.h"
+
 #include <fstream>
 #include <vector>
 
@@ -244,6 +246,13 @@ int main(int argc, char **argv) {
         cgal_all_path.push_back(cgal_routing_pts);
     }
     LOG(INFO) << "the program can enter here　2 !";
+
+    //HMI界面显示
+    drawOffLinePlan  drawOffLinePlan;
+    drawOffLinePlan.drawInitialize();
+    drawOffLinePlan.drawProcess();
+    drawOffLinePlan.deleteDrawResource();
+
     return 0;
 
     //获取routing信息
