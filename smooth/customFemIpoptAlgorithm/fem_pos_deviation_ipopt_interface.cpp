@@ -117,10 +117,9 @@ bool FemPosDeviationIpoptInterface::get_bounds_info(int n, double* x_l,
 
   // c. slack var constraints
   for (size_t i = slack_constr_start_index_; i < slack_constr_end_index_; ++i) {
-    g_l[i] = 0.0;
-    g_u[i] = 1e20;
+    g_l[i] = 0;
+    g_u[i] = 1e5;
   }
-
   return true;
 }
 

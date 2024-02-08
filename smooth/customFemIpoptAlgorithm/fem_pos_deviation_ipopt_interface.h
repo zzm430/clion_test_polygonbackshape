@@ -135,7 +135,7 @@ class FemPosDeviationIpoptInterface : public Ipopt::TNLP {
   double weight_ref_deviation_ = 1.0;
   double weight_curvature_constraint_slack_var_ = 1.0e2;
 
-  double curvature_constraint_ = 0.2;
+  double curvature_constraint_ = 0.1;
 
   size_t num_of_variables_ = 0;
   size_t num_of_constraints_ = 0;

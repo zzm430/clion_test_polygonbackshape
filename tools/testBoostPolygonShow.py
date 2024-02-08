@@ -64,8 +64,8 @@ testObstacleOriginLine = np.loadtxt('/home/zzm/clion_test_polygonbackshape/tools
 testObstacleOriginLine_x = testObstacleOriginLine[0]
 testObstacleOriginLine_y = testObstacleOriginLine[1]
 
-test_boxs_show = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show.txt')
-test_boxs_show1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show1.txt')
+# test_boxs_show = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show.txt')
+# test_boxs_show1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_show1.txt')
 test_boxs_trailer_show1 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/test_boxs_trailer_show1.txt')
 
 # tractorHeadPtsStream111 = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/tractorObstaclesPJPO.txt')
@@ -156,8 +156,8 @@ for i in range(0, len(test_obstacle_test[0])-1, 2):
     plt.plot(x, y,color='g',linewidth= 0.3,markersize=1)
     plt.text(test_obstacle_test[0][i], test_obstacle_test[1][i], f"({test_obstacle_test[0][i]}, {test_obstacle_test[1][i]})")
 
-for path in paths:
-    ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=4)
+# for path in paths:
+#     ax.plot(path[0], path[1],color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 3.3,markersize=4)
 #
 # for path1 in referpaths1:
 #     ax.plot(path1[0], path1[1], color='g', markerfacecolor='green', marker='o', label='keypoints data', linewidth=1.3,

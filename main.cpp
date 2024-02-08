@@ -25,6 +25,9 @@
 #include "common/common_param/common_parameters.h"
 #include "common/plot/computePathProfile.h"
 
+#include <fstream>
+#include <vector>
+
 namespace bg = boost::geometry;
 
 INITIALIZE_EASYLOGGINGPP
@@ -67,8 +70,28 @@ int main(int argc, char **argv) {
 //    std::vector<double> bounds;
 //    bounds.push_back(0);
 //    for(int i = 1;i < pts_size ;i++){
-//        bounds.push_back(5);
+//        bounds.push_back(10);
 //    }
+//
+//    //读取fem文件中的test文本文件
+//    std::ifstream   fileTemp("/home/zzm/Desktop/test_path_figure-main/src/testfemObstaclePath.txt");
+//    std::vector<std::vector<double>>  strage_m;
+//    std::string line;
+//    while(std::getline(fileTemp,line)){
+//        std::istringstream  iss(line);
+//        double value;
+//        std::vector<double> temp;
+//        while(iss >> value){
+//             temp.push_back(value);
+//        }
+//        strage_m.push_back(temp);
+//    }
+//    storage_origin_pts.clear();
+//    for(auto i = 0;i < strage_m[0].size();i++){
+//        storage_origin_pts.push_back({strage_m[0][i],strage_m[1][i]});
+//    }
+//
+//
 //
 //    std::vector<double>  opt_x;
 //    std::vector<double>  opt_y;

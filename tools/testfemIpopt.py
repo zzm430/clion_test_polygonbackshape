@@ -11,10 +11,15 @@ testoriginPath = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testori
 testoriginPath_x = testoriginPath[0]
 testoriginPath_y = testoriginPath[1]
 
+testfemObstaclePath = np.loadtxt('/home/zzm/Desktop/test_path_figure-main/src/testfemObstaclePath.txt')
+testfemObstaclePath_x = testfemObstaclePath[0]
+testfemObstaclePath_y = testfemObstaclePath[1]
+
 f=plt.figure();
 ax=f.add_subplot(111)
-ax.plot(testfemipopt_x,testfemipopt_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 1.3,markersize=1)
+ax.plot(testfemipopt_x,testfemipopt_y,color='r',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
 ax.plot(testoriginPath_x,testoriginPath_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.3,markersize=1)
+ax.plot(testfemObstaclePath_x,testfemObstaclePath_y,color='b',markerfacecolor='green',marker='o',label='keypoints data',linewidth= 0.2,markersize=1)
 
 plt.axis('equal')  # 让横坐标间隔等于纵坐标间隔
 f.tight_layout()
