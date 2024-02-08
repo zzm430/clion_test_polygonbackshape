@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(polygonbackshape)
 
-
 # set(CMAKE_BUILD_TYPE "Release")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
@@ -30,7 +29,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-qualifiers")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-vla")
 
-
 ## -------- folder relative path definition -----------
 string(CONCAT CONF_FOLDER_PATH_STR ${CMAKE_CURRENT_SOURCE_DIR} "/")
 message(STATUS "conf folder path : " ${CONF_FOLDER_PATH_STR})
@@ -56,6 +54,13 @@ include_directories("/usr/include/eigen3/")
 link_directories("/usr/local/lib/")
 link_directories("/usr/local/lib64/")
 
+#HMI
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/HMI/imgui)
+set(IMPLOT_DIR ${CMAKE_SOURCE_DIR}/HMI/implot)
+include_directories($(IMGUI_DIR))
+include_directories($(IMPLOT_DIR))
+file(GLOB IMGUI_SOURCES "${CMAKE_SOURCE_DIR}/HMI/imgui/*.cpp")
+file(GLOB IMPLOT_SOURCES "${CMAKE_SOURCE_DIR}/HMI/implot/*.cpp")
 
 if(CGAL_FOUND)
     message(STATUS "Found CGAL library")
@@ -65,14 +70,11 @@ endif()
 
 include_directories(${Boost_INCLUDE_DIRS})
 
-
 # 添加CGAL库的头文件路径
 include_directories(${CGAL_INCLUDE_DIRS})
 include_directories(.)
 #include_directories(${OpenCV_INCLUDE_DIRS})
 #include_directories(${PYTHON_INCLUDE_DIRS})
-
-
 
 add_executable(polygonbackshape
               main.cpp
@@ -156,18 +158,35 @@ add_executable(polygonbackshape
         smooth/customFemIpoptAlgorithm/fem_pos_deviation_ipopt_manager.h
         smooth/customFemIpoptAlgorithm/fem_pos_deviation_ipopt_manager.cpp
         smooth/customFemIpoptAlgorithm/fem_pos_deviation_ipopt_param.h
+        ${IMGUI_SOURCES}
+        ${IMPLOT_SOURCES}
+        HMI/imInterface/drawOffLinePlan.h
+        HMI/imInterface/drawOffLinePlan.cpp
 )
 
+
 target_include_directories(polygonbackshape PRIVATE ${Matlab_INCLUDE_DIRS})
-target_link_libraries(polygonbackshape ${Boost_LIBRARIES})
+target_link_libraries(polygonbackshape  ${Boost_LIBRARIES}
+                                        ${CGAL_LIBRARIES}
+                                        ${Matlab_LIBRARIES}
+                                        ${PYTHON_LIBRARIES}
+                                        osqp::osqp
+                                        ColPack
+                                        adolc
+                                        ipopt
+                                        GL
+                                        GLU
+                                        glfw3
+                                        X11
+                                        Xxf86vm
+                                        Xrandr
+                                        pthread
+                                        Xi
+                                        dl
+                                        Xinerama
+                                        Xcursor)
 #target_link_libraries(polygonbackshape ${Boost_LIBRARIES} ${OpenCV_LIBS})
-target_link_libraries(polygonbackshape ${CGAL_LIBRARIES})
-target_link_libraries(polygonbackshape ${Matlab_LIBRARIES})
-target_link_libraries(polygonbackshape  osqp::osqp)
-target_link_libraries(polygonbackshape ${PYTHON_LIBRARIES})
-target_link_libraries(polygonbackshape ColPack)
-target_link_libraries(polygonbackshape adolc )
-target_link_libraries(polygonbackshape ipopt )
+
 
 
 
